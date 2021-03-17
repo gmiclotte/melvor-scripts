@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Auto Farming
-// @version      1.0
+// @version      1.1
 // @description  Automatically plants your seeds, prioritizes highest level tree seed and equal allotment and herb produce. Comment seeds you don't want to plant and equipment you don't want to use.
 // @author		 GMiclotte
 // @match        https://*.melvoridle.com/*
