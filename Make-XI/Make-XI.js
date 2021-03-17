@@ -10,13 +10,13 @@
 // @grant        none
 // ==/UserScript==
 /* jshint esversion: 6 */
- 
+
 // Note that this script is made for MelvorIdle version 0.19
- 
+
 function script() {
     // Loading script
     console.log('Melvor Make-XI Loaded');
- 
+
     // Funtion to check if task is complete
     function taskComplete(skillID) {
         if (window.makeLeft === 0) {
@@ -28,16 +28,18 @@ function script() {
             window.makeLeft = Infinity;
         }
     }
- 
-    const newVerb = (name, verb, selected, start) => {return {
-        name: name,
-        verb: verb,
-        id: `#${verb}X`,
-        verbX: `${verb}X`,
-        start: start,
-        selected: () => window[selected],
-    }};
- 
+
+    const newVerb = (name, verb, selected, start) => {
+        return {
+            name: name,
+            verb: verb,
+            id: `#${verb}X`,
+            verbX: `${verb}X`,
+            start: start,
+            selected: () => window[selected],
+        }
+    };
+
     const skillVerbs = {
         //[CONSTANTS.skill.Firemaking]: newVerb('Firemaking', 'Burn', 'selectedLog', 'burnLog'),
         //[CONSTANTS.skill.Cooking]: newVerb('Cooking', 'Cook', 'selectedFood', 'startCooking'),
@@ -48,21 +50,21 @@ function script() {
         [CONSTANTS.skill.Herblore]: newVerb('Herblore', 'Brew', 'selectedHerblore', 'startHerblore'),
         [CONSTANTS.skill.Magic]: newVerb('Magic', 'Cast', 'selectedAltMagic', 'castMagic'),
     };
- 
- 
-    const TempContainerMakeX = ['<small class="mr-2" id="','"><button type="button" class="btn btn-warning m-3" onclick="setMakeX(',');">','</button></small>'];
+
+
+    const TempContainerMakeX = ['<small class="mr-2" id="', '"><button type="button" class="btn btn-warning m-3" onclick="setMakeX(', ');">', '</button></small>'];
     //$("#skill-fm-logs-selected-qty").after(TempContainerMakeX[0]+"BurnX"+TempContainerMakeX[1]+"CONSTANTS.skill.Firemaking"+TempContainerMakeX[2]+"Burn X"+TempContainerMakeX[3]);
     //$("#skill-cooking-food-selected-qty").after(TempContainerMakeX[0]+"CookX"+TempContainerMakeX[1]+"CONSTANTS.skill.Cooking"+TempContainerMakeX[2]+"Cook X"+TempContainerMakeX[3]);
-    $("#smith-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"SmithX"+TempContainerMakeX[1]+"CONSTANTS.skill.Smithing"+TempContainerMakeX[2]+"Smith X"+TempContainerMakeX[3]);
-    $("#fletch-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"FletchX"+TempContainerMakeX[1]+"CONSTANTS.skill.Fletching"+TempContainerMakeX[2]+"Fletch X"+TempContainerMakeX[3]);
-    $("#craft-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"CraftX"+TempContainerMakeX[1]+"CONSTANTS.skill.Crafting"+TempContainerMakeX[2]+"Craft X"+TempContainerMakeX[3]);
-    $("#runecraft-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"CreateX"+TempContainerMakeX[1]+"CONSTANTS.skill.Runecrafting"+TempContainerMakeX[2]+"Create X"+TempContainerMakeX[3]);
-    $("#herblore-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"BrewX"+TempContainerMakeX[1]+"CONSTANTS.skill.Herblore"+TempContainerMakeX[2]+"Brew X"+TempContainerMakeX[3]);
-    $("#magic-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0]+"CastX"+TempContainerMakeX[1]+"CONSTANTS.skill.Magic"+TempContainerMakeX[2]+"Cast X"+TempContainerMakeX[3]);
- 
+    $("#smith-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "SmithX" + TempContainerMakeX[1] + "CONSTANTS.skill.Smithing" + TempContainerMakeX[2] + "Smith X" + TempContainerMakeX[3]);
+    $("#fletch-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "FletchX" + TempContainerMakeX[1] + "CONSTANTS.skill.Fletching" + TempContainerMakeX[2] + "Fletch X" + TempContainerMakeX[3]);
+    $("#craft-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "CraftX" + TempContainerMakeX[1] + "CONSTANTS.skill.Crafting" + TempContainerMakeX[2] + "Craft X" + TempContainerMakeX[3]);
+    $("#runecraft-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "CreateX" + TempContainerMakeX[1] + "CONSTANTS.skill.Runecrafting" + TempContainerMakeX[2] + "Create X" + TempContainerMakeX[3]);
+    $("#herblore-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "BrewX" + TempContainerMakeX[1] + "CONSTANTS.skill.Herblore" + TempContainerMakeX[2] + "Brew X" + TempContainerMakeX[3]);
+    $("#magic-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "CastX" + TempContainerMakeX[1] + "CONSTANTS.skill.Magic" + TempContainerMakeX[2] + "Cast X" + TempContainerMakeX[3]);
+
     window.makeLeft = Infinity;
     let startedNow = false;
- 
+
     function makeX(clicked, skillID) {
         const verb = skillVerbs[skillID].verb;
         const verbx = skillVerbs[skillID].verbx;
@@ -89,10 +91,10 @@ function script() {
             refs[skillID](true);
             $(id).children().first().html(verb + " X");
         }
- 
+
     }
- 
-    window.setMakeX = function(skillID) {
+
+    window.setMakeX = function (skillID) {
         const verb = skillVerbs[skillID].verb;
         const verbx = skillVerbs[skillID].verbx;
         const id = skillVerbs[skillID].id;
@@ -121,7 +123,7 @@ function script() {
         startedNow = true;
         skillVerbs[skillID].start(true);
     };
- 
+
     const refs = {};
     const wrapper = (id) => {
         const start = skillVerbs[id].start;
@@ -133,16 +135,16 @@ function script() {
         skillVerbs[id].start = window[start];
     }
     Object.getOwnPropertyNames(skillVerbs).forEach(skillID => wrapper(skillID));
- 
+
 }
- 
+
 (function () {
     function injectScript(main) {
         const scriptElement = document.createElement('script');
         scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
         document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
     }
- 
+
     function loadScript() {
         if ((window.isLoaded && !window.currentlyCatchingUp)
             || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
@@ -151,6 +153,6 @@ function script() {
             injectScript(script);
         }
     }
- 
+
     const scriptLoader = setInterval(loadScript, 200);
 })();

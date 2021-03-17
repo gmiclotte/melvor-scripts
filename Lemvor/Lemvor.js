@@ -8,7 +8,7 @@
 // @exclude      https://wiki.melvoridle.com*
 // @noframes
 // ==/UserScript==
- 
+
 function script() {
     // convert object to array
     const unpack = object => Object.getOwnPropertyNames(object).map(prop => object[prop]);
@@ -40,12 +40,12 @@ function script() {
     ].forEach(list => {
         list.forEach(entry => entry.media = lemon);
     });
- 
+
     // update lemons
     document.getElementsByTagName('img').forEach(img => {
         img.src = lemon;
     });
- 
+
     // make 0's lemons too
     numberWithCommas = (x) => {
         if (x === null || x === undefined) {
@@ -56,7 +56,7 @@ function script() {
         }
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/0/g, '🍋');
     }
- 
+
     // update some lemons
     loadBank();
     updateNav();
@@ -80,14 +80,14 @@ function script() {
     });
     updateStats();
 }
- 
+
 (function () {
     function injectScript(main) {
         const scriptElement = document.createElement('script');
         scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
         document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
     }
- 
+
     function loadScript() {
         if ((window.isLoaded && !window.currentlyCatchingUp)
             || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
@@ -96,6 +96,6 @@ function script() {
             injectScript(script);
         }
     }
- 
+
     const scriptLoader = setInterval(loadScript, 200);
 })();

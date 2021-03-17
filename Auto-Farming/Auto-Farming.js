@@ -8,7 +8,7 @@
 // @grant        none
 // @namespace    github.com/gmiclotte
 // ==/UserScript==
- 
+
 function script() {
     window.maf = {}
     maf.allotmentSeedOrder = [
@@ -39,7 +39,7 @@ function script() {
         CONSTANTS.item.Yew_Tree_Seed,
         CONSTANTS.item.Magic_Tree_Seed,
     ];
- 
+
     // gear
     maf.farmGear = {
         Cape: [
@@ -56,7 +56,7 @@ function script() {
             CONSTANTS.item.Ancient_Ring_Of_Skills,
         ],
     };
- 
+
     maf.checkGrown = function () {
         for (let j = 0; j < newFarmingAreas.length; j++) {
             for (let i = 0; i < newFarmingAreas[j].patches.length; i++) {
@@ -71,7 +71,7 @@ function script() {
         }
         return false
     }
- 
+
     maf.checkEmpty = function () {
         for (let j = 0; j < newFarmingAreas.length; j++) {
             for (let i = 0; i < newFarmingAreas[j].patches.length; i++) {
@@ -86,7 +86,7 @@ function script() {
         }
         return false
     }
- 
+
     maf.harvest = function () {
         for (let j = 0; j < newFarmingAreas.length; j++) {
             for (let i = 0; i < newFarmingAreas[j].patches.length; i++) {
@@ -96,7 +96,7 @@ function script() {
             }
         }
     }
- 
+
     maf.harvestWithGear = function () {
         if (isInCombat) {
             maf.harvest();
@@ -127,10 +127,10 @@ function script() {
             }
             return false;
         };
- 
+
         // save Shield since it might be unequipped when equipping weapon
         current.Shield = equippedItems[CONSTANTS.equipmentSlot.Shield];
- 
+
         // swap gear
         Object.getOwnPropertyNames(maf.farmGear).forEach(x => {
             if (swapped[x]) {
@@ -140,10 +140,10 @@ function script() {
             current[x] = equippedItems[CONSTANTS.equipmentSlot[x]];
             swapped[x] = swapEquipped(maf.farmGear[x], CONSTANTS.equipmentSlot[x]);
         });
- 
+
         // harvest
         maf.harvest()
- 
+
         // swap back gear
         Object.getOwnPropertyNames(maf.farmGear).forEach(x => {
             if (swapped[x] && current[x] !== 0) {
@@ -154,7 +154,7 @@ function script() {
             equipItem(current.Shield, 1, 0);
         }
     }
- 
+
     maf.farm = function (idx, seedCount, seedOrder, priority = "level") {
         // count patches
         let totalPatches = newFarmingAreas[idx].patches.filter(x => x.unlocked);
@@ -207,7 +207,7 @@ function script() {
             }
         });
     }
- 
+
     maf.autoFarming = setInterval(() => {
         try {
             if (maf.checkGrown()) {
@@ -227,20 +227,20 @@ function script() {
             }
         }
     }, 5000);
- 
+
     ///////
     //log//
     ///////
     console.log("Melvor Auto Farming Loaded");
 }
- 
+
 (function () {
     function injectScript(main) {
         const scriptElement = document.createElement('script');
         scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
         document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
     }
- 
+
     function loadScript() {
         if ((window.isLoaded && !window.currentlyCatchingUp)
             || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
@@ -249,6 +249,6 @@ function script() {
             injectScript(script);
         }
     }
- 
+
     const scriptLoader = setInterval(loadScript, 200);
 })();
