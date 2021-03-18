@@ -1002,12 +1002,12 @@ function intervalAdjustment(initial, poolXp, masteryXp, skillInterval) {
             break;
         case CONSTANTS.skill.Crafting:
             if (poolXp >= initial.poolLim[2]) {
-                adjustedInterval -= 200;
+                flatReduction += 200;
             }
             break;
         case CONSTANTS.skill.Fletching:
             if (poolXp >= initial.poolLim[3]) {
-                adjustedInterval -= 200;
+                flatReduction += 200;
             }
             break;
         case CONSTANTS.skill.Agility:
