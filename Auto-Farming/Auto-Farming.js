@@ -122,7 +122,7 @@ function script() {
             if (!checkEquipped(valid, slot)) {
                 for (let i = 0; i < valid.length; i++) {
                     if (checkBankForItem(valid[i])) {
-                        equipItem(valid[i], 1, 0);
+                        equipItem(valid[i], 1, selectedEquipmentSet);
                         console.log("MAF swapped:", items[valid[i]].name);
                         return true;
                     }
@@ -150,11 +150,11 @@ function script() {
         // swap back gear
         Object.getOwnPropertyNames(maf.farmGear).forEach(x => {
             if (swapped[x] && current[x] !== 0) {
-                equipItem(current[x], 1, 0);
+                equipItem(current[x], 1, selectedEquipmentSet);
             }
         });
         if (swapped.Weapon && current.Shield !== 0) {
-            equipItem(current.Shield, 1, 0);
+            equipItem(current.Shield, 1, selectedEquipmentSet);
         }
     }
 
