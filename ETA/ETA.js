@@ -1035,7 +1035,7 @@ function intervalRespawnAdjustment(initial, currentInterval, poolXp, masteryXp, 
                 rockHP += 10;
             }
             // potions can preserve rock HP
-            let preservation = herbloreBonuses[10].bonus[1]
+            let preservation = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
             if (preservation !== null) {
                 rockHP /= (1 - preservation / 100);
             }
@@ -1535,10 +1535,6 @@ function calcJunkChance(initial, masteryXp, poolXp) {
     if (masteryLevel >= 50) {
         junkChance -= 3;
     }
-    // potion
-    if (herbloreBonuses[7].bonus[0] === 0 && herbloreBonuses[7].charges > 0) {
-        junkChance -= herbloreBonuses[7].bonus[1];
-    }
     // no junk if mastery level > 65 or pool > 25%
     if (masteryLevel >= 65
         || junkChance < 0
@@ -1954,10 +1950,6 @@ function setupTimeRemaining(initial) {
     initial.flatIntervalReduction += getTotalFromModifierArray("decreasedSkillInterval", initial.skillID);
     initial.flatIntervalReduction -= getTotalFromModifierArray("increasedSkillInterval", initial.skillID);
     if (initial.skillID === CONSTANTS.skill.Agility) {
-        // add agility potion effect
-        if (herbloreBonuses[26].bonus[0] === 0 && herbloreBonuses[26].charges > 0) {
-            initial.percentIntervalReduction += herbloreBonuses[26].bonus[1];
-        }
         // set initial lap time
         initial.agiLapTime = 0;
         if (initial.skillID === CONSTANTS.skill.Agility) {
