@@ -42,11 +42,7 @@ function script() {
 
     // gear
     maf.farmGear = {
-        Cape: [
-            CONSTANTS.item.Cape_of_Completion,
-            CONSTANTS.item.Max_Skillcape,
-            CONSTANTS.item.Farming_Skillcape,
-        ],
+        Cape: [],
         Weapon: [
             CONSTANTS.item.Bobs_Rake,
         ],
@@ -56,6 +52,13 @@ function script() {
             CONSTANTS.item.Ancient_Ring_Of_Skills,
         ],
     };
+    if (completionStats >= 100) {
+        maf.farmGear.Cape.push(CONSTANTS.item.Cape_of_Completion);
+    }
+    if (checkMaxCapeRequirements()) {
+        maf.farmGear.Cape.push(CONSTANTS.item.Max_Skillcape);
+    }
+    maf.farmGear.Cape.push(CONSTANTS.item.Farming_Skillcape);
 
     maf.checkGrown = function () {
         for (let j = 0; j < newFarmingAreas.length; j++) {
