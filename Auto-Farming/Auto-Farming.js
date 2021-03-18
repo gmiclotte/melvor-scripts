@@ -5,6 +5,7 @@
 // @author		 GMiclotte
 // @match        https://*.melvoridle.com/*
 // @exclude      https://wiki.melvoridle.com*
+// @noframes
 // @grant        none
 // @namespace    github.com/gmiclotte
 // ==/UserScript==
