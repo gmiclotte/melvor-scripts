@@ -1113,9 +1113,6 @@ function skillXpAdjustment(initial, itemXp, itemID, poolXp, masteryXp) {
             const fishXp = itemXp * (1 - junkChance);
             const junkXp = 1 * junkChance;
             itemXp = (fishXp + junkXp);
-            if (equippedItems.includes(CONSTANTS.item.Pirates_Lost_Ring)) {
-                xpMultiplier += items[CONSTANTS.item.Pirates_Lost_Ring].fishingBonusXP / 100;
-            }
             break;
         }
 
