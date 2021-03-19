@@ -1410,11 +1410,6 @@ function configureFishing(initial) {
     const max = items[initial.itemID].maxFishingInterval;
     const min = items[initial.itemID].minFishingInterval;
     initial.skillInterval = Math.floor(avgRoll * (max - min)) + min;
-    // handle gear and rod
-    let fishingAmuletBonus = 1;
-    if (equippedItems.includes(CONSTANTS.item.Amulet_of_Fishing)) {
-        fishingAmuletBonus = 1 - items[CONSTANTS.item.Amulet_of_Fishing].fishingSpeedBonus / 100;
-    }
     initial = configureGathering(initial);
     // correctly set masteryID
     initial.masteryID = fishingAreas[initial.currentAction].fish[initial.fishID];
