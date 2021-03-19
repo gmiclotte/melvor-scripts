@@ -190,6 +190,11 @@ function script() {
                 skillIDs: [],
             };
 
+            // golbin raid
+            this.relevantModifiers.golbin = {
+                names: [this.singletonModifiers.golbinRaid],
+                skillIDs: [],
+            };
 
             // all combat
             this.relevantModifiers.combat = {
@@ -216,8 +221,70 @@ function script() {
                 ],
             };
 
+            // melee combat
+            this.relevantModifiers.melee = {
+                names: [
+                    this.creasedModifiers.skilling,
+                    this.creasedModifiers.combat,
+                    this.creasedModifiers.hitpoints,
+                    this.creasedModifiers.defence,
+                    this.creasedModifiers.melee,
+                    this.creasedModifiers.slayer,
+                    this.creasedModifiers.prayer,
+                ],
+                skillIDs: [
+                    CONSTANTS.skill.Attack,
+                    CONSTANTS.skill.Strength,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                ],
+            };
+
+            // ranged combat
+            this.relevantModifiers.ranged = {
+                names: [
+                    this.creasedModifiers.skilling,
+                    this.creasedModifiers.combat,
+                    this.creasedModifiers.hitpoints,
+                    this.creasedModifiers.defence,
+                    this.creasedModifiers.ranged,
+                    this.creasedModifiers.slayer,
+                    this.creasedModifiers.prayer,
+                ],
+                skillIDs: [
+                    CONSTANTS.skill.Ranged,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                ],
+            };
+
+            // magic combat
+            this.relevantModifiers.magic = {
+                names: [
+                    this.creasedModifiers.skilling,
+                    this.creasedModifiers.combat,
+                    this.creasedModifiers.hitpoints,
+                    this.creasedModifiers.defence,
+                    this.creasedModifiers.magic,
+                    this.creasedModifiers.slayer,
+                    this.creasedModifiers.prayer,
+                ],
+                skillIDs: [
+                    CONSTANTS.skill.Magic,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                ],
+            };
+
             // gathering skills
-            ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'].forEach(name => {
+            this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'];
+            this.gatheringSkills.forEach(name => {
                 this.relevantModifiers[name] = {
                     names: [
                         this.creasedModifiers.skilling,
@@ -237,7 +304,8 @@ function script() {
             });
 
             // production skills
-            ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore'].forEach(name => {
+            this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore'];
+            this.productionSkills.forEach(name => {
                 this.relevantModifiers[name] = {
                     names: [
                         this.creasedModifiers.skilling,
@@ -369,25 +437,17 @@ function script() {
             let passives = `<h5 class=\"font-w600 font-size-sm mb-1 text-combat-smoke\">${text}</h5><h5 class=\"font-w600 font-size-sm mb-3 text-warning\"></h5>`;
             passives += `<h5 class="font-w600 font-size-sm mb-3 text-warning"><small>(Does not include non-modifier effects)</small></h5>`;
             passives += this.makeTagButton('all', 'All Modifiers', 'assets/media/main/completion_log.svg');
+            passives += this.makeTagButton('golbinRaid', 'Golbin Raid', 'assets/media/main/raid_coins.svg');
             passives += this.makeTagButton('combat', 'Combat', 'assets/media/skills/combat/combat.svg');
-            [
-                'Woodcutting',
-                'Fishing',
-                'Firemaking',
-                'Cooking',
-                'Mining',
-                'Smithing',
-                'Thieving',
-                'Farming',
-                'Fletching',
-                'Crafting',
-                'Runecrafting',
-                'Herblore',
-                'Agility',
-            ].forEach(skill => passives += this.makeTagButton(skill, skill, `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`));
+            passives += this.makeTagButton('melee', 'Melee', 'assets/media/skills/attack/attack.svg');
+            passives += this.makeTagButton('ranged', 'Ranged', 'assets/media/skills/ranged/ranged.svg');
+            passives += this.makeTagButton('magic', 'Combat Magic', 'assets/media/skills/combat/spellbook.svg');
+            passives += '<br/>';
+            this.gatheringSkills.forEach(skill => passives += this.makeTagButton(skill, skill, `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`));
+            passives += '<br/>';
+            this.productionSkills.forEach(skill => passives += this.makeTagButton(skill, skill, `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`));
             passives += this.makeTagButton('altMagic', 'Alt. Magic', 'assets/media/skills/magic/magic.svg');
             passives += this.printRelevantModifiersHtml(modifiers, 'All Modifiers', tag);
-            console.log(passives)
             Swal.fire({
                 html: passives,
             });
@@ -432,4 +492,3 @@ function script() {
 
     const scriptLoader = setInterval(loadScript, 200);
 })();
-
