@@ -27,13 +27,13 @@ function script() {
                 // modifiers that relate to both combat and non-combat skilling
                 skilling: {
                     ChanceToPreservePotionCharge: 0,
+                    ChanceToDoubleItemsGlobal: 0,
                     GPFromSales: 0,
                     GPGlobal: 0,
                     GlobalSkillXP: 0,
                     HiddenSkillLevel: [],
                     PotionChargesFlat: 0,
                     SkillXP: [],
-
                 },
                 // modifiers that only relate to combat and are not classified in a finer group
                 combat: {
@@ -108,7 +108,6 @@ function script() {
                 },
                 // modifiers that apply to general non-combat skilling
                 nonCombat: {
-                    ChanceToDoubleItemsGlobal: 0,
                     ChanceToDoubleItemsSkill: [],
                     SkillInterval: [],
                     SkillIntervalPercent: [],
