@@ -351,6 +351,108 @@ function script() {
             return result[0].value | result[0][1];
         }
 
+        printPlayerModifier(modifier, value) {
+            const result = printPlayerModifier(modifier, value);
+            if (result[0].length > 0) {
+                return result;
+            }
+            let toPrint = '';
+            // positive modifiers
+            switch (modifier) {
+                // positive
+                case 'golbinRaidWaveSkipCostReduction':
+                    toPrint = `-${value}% Wave Skip Cost`;
+                    break;
+                case 'golbinRaidIncreasedMinimumFood':
+                    toPrint = `+${value} Minimum Food Quantity Roll`;
+                    break;
+                case 'golbinRaidIncreasedMaximumAmmo':
+                    toPrint = `+${value}% Maximum Ranged Ammo Quantity Roll`;
+                    break;
+                case 'golbinRaidIncreasedMaximumRunes':
+                    toPrint = `+${value}% Maximum Runes Quantity Roll`;
+                    break;
+                case 'golbinRaidPrayerUnlocked':
+                    toPrint = value === 0 ? 'Prayer Locked in Golbin Raid' : 'Prayer Unlocked in Golbin Raid';
+                    break;
+                case 'golbinRaidIncreasedPrayerLevel':
+                    toPrint = `+${value} Prayer Level in Golbin Raid`;
+                    break;
+                case 'golbinRaidIncreasedPrayerPointsStart':
+                    toPrint = `+${value} Initial Prayer Points`;
+                    break;
+                case 'golbinRaidIncreasedPrayerPointsWave':
+                    toPrint = `+${value} Prayer Points per Wave`;
+                    break;
+                case 'golbinRaidPassiveSlotUnlocked':
+                    toPrint = value === 0 ? 'Passive Slot Locked in Golbin Raid' : 'Passive Slot Unlocked in Golbin Raid';
+                    break;
+                case 'golbinRaidIncreasedStartingRuneCount':
+                    toPrint = `+${value} Initial Runes`;
+                    break;
+                case 'golbinRaidStartingWeapon':
+                    toPrint = 'Starting Weapon: ' + (value === 0
+                        ? 'Bronze Scimitar'
+                        : items[value].name);
+                    break;
+                case 'freeBonfires':
+                    toPrint = value < 1 ? 'No Free Bonfires' : 'Free Bonfires';
+                    break;
+            }
+            if (toPrint.length > 0) {
+                return [toPrint, value > 0 ? 'text-success' : 'text-warning'];
+            }
+            // negative modifiers
+            switch (modifier) {
+            }
+            if (toPrint.length > 0) {
+                return [toPrint, value > 0 ? 'text-danger' : 'text-warning'];
+            }
+            // creased modifiers
+            switch (modifier.slice(9)) {
+                case 'BirdNestDropRate':
+                    toPrint = `${value}% Bird Nest Drop Rate`;
+                    break;
+                case 'ChanceNoDamageMining':
+                    toPrint = `${value}% to do Zero Damage to Mining Rocks`;
+                    break;
+                case 'SeeingGoldChance':
+                    toPrint = `${value}% Chance for Silver Ore to Produce a Gold Bar`;
+                    break;
+                case 'ChanceDoubleHarvest':
+                    toPrint = `${value}% Chance for Double Harvest`;
+                    break;
+                case 'ChanceForElementalRune':
+                    toPrint = `${value}% Chance for Random Elemental Runes`;
+                    break;
+                case 'ElementalRuneGain':
+                    toPrint = `${value} Random Elemental Runes`;
+                    break;
+                case 'ChanceRandomPotionHerblore':
+                    toPrint = `${value}% Chance for Random Tier Herblore Potion`;
+                    break;
+                case 'AttackRolls':
+                    toPrint = `${value} Additional Attack Rolls`;
+                    if (value !== 1) {
+                        toPrint += 's';
+                    }
+                    break;
+                case 'AltMagicSkillXP':
+                    toPrint = `${value}% Alt. Magic Skill XP`;
+                    break;
+            }
+            if (toPrint.length > 0) {
+                if (modifier.slice(0, 9) === 'increased') {
+                    return [`+${toPrint}`, value > 0 ? 'text-success' : 'text-warning'];
+                }
+                if (modifier.slice(0, 9) === 'decreased') {
+                    return [`-${toPrint}`, value > 0 ? 'text-danger' : 'text-warning'];
+                }
+            }
+            // unknown modifiers
+            return [`${modifier}: ${value}`, 'text-warning']
+        }
+
         printDiffModifier(modifier, increased, decreased, skillID = undefined) {
             // compute difference
             const value = increased - decreased;
@@ -365,9 +467,9 @@ function script() {
             valueToPrint = skillID !== undefined ? [skillID, valueToPrint] : valueToPrint;
             // print increased or decreased
             if (positive) {
-                return [printPlayerModifier('increased' + modifier, valueToPrint)];
+                return [this.printPlayerModifier('increased' + modifier, valueToPrint)];
             } else {
-                return [printPlayerModifier('decreased' + modifier, valueToPrint)];
+                return [this.printPlayerModifier('decreased' + modifier, valueToPrint)];
             }
         }
 
@@ -377,7 +479,7 @@ function script() {
                 if (modifiers[modifier] === 0) {
                     return [];
                 }
-                return [printPlayerModifier(modifier, modifiers[modifier])];
+                return [this.printPlayerModifier(modifier, modifiers[modifier])];
             }
             // increased-decreased type modifier
             const increased = modifiers['increased' + modifier];
