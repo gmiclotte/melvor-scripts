@@ -489,7 +489,7 @@ function script() {
                     toPrint = `${value}% Chance for Random Tier Herblore Potion`;
                     break;
                 case 'AttackRolls':
-                    toPrint = `${value} Additional Attack Rolls`;
+                    toPrint = `${value} Additional Attack Roll`;
                     if (value !== 1) {
                         toPrint += 's';
                     }
