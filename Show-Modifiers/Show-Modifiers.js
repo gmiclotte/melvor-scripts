@@ -194,6 +194,32 @@ function script() {
                 },
             }
 
+            this.knownModifiers = {};
+            Object.getOwnPropertyNames(this.creasedModifiers).forEach(subset => {
+                Object.getOwnPropertyNames(this.creasedModifiers[subset]).forEach(modifier => {
+                    this.knownModifiers[`increased${modifier}`] = true;
+                    this.knownModifiers[`decreased${modifier}`] = true;
+                });
+            });
+            Object.getOwnPropertyNames(this.singletonModifiers).forEach(subset => {
+                Object.getOwnPropertyNames(this.singletonModifiers[subset]).forEach(modifier => {
+                    this.knownModifiers[modifier] = true;
+                });
+            });
+
+            // check for unknown modifiers
+            let hasUnknownModifiers = false;
+            Object.getOwnPropertyNames(playerModifiers).forEach(modifier => {
+                if (this.knownModifiers[modifier]) {
+                    return;
+                }
+                hasUnknownModifiers = true;
+                this.log(`unknown modifier ${modifier}`);
+            });
+            if (!hasUnknownModifiers) {
+                this.log('no unknown modifiers detected!')
+            }
+
             this.relevantModifiers = {};
 
             // all
