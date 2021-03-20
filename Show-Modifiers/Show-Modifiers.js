@@ -356,6 +356,7 @@ function script() {
                 names: [
                     this.creasedModifiers.skilling,
                     this.creasedModifiers.nonCombat,
+                    this.creasedModifiers.altMagic,
                 ],
                 skillIDs: [],
             };
