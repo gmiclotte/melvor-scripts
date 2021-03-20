@@ -15,8 +15,9 @@ function script() {
 
     class ShowModifiers {
 
-        constructor(name) {
+        constructor(name, logName) {
             this.name = name;
+            this.logName = logName;
             // increased - decreased
             this.creasedModifiers = {
                 // modifiers that do not directly relate to skilling
@@ -340,6 +341,9 @@ function script() {
             };
         }
 
+        log(...args) {
+            console.log(`${this.logName}:`, ...args);
+        }
 
         arrayModifierToSkill(array, skillID) {
             const result = array.filter(x => {
@@ -556,7 +560,7 @@ function script() {
     }
 
     const name = 'melvorShowModifiers';
-    window[name] = new ShowModifiers(name);
+    window[name] = new ShowModifiers(name, 'Show Modifiers');
     let modifierButton = () => {
         return '<div class="dropdown d-inline-block ml-2">'
             + '<button type="button" '
