@@ -319,11 +319,12 @@ function script() {
                         CONSTANTS.skill[name]
                     ],
                 };
-                if (this.creasedModifiers[name] !== undefined) {
-                    this.relevantModifiers[name].push(this.creasedModifiers[name]);
+                const lname = name.toLowerCase();
+                if (this.creasedModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.creasedModifiers[lname]);
                 }
-                if (this.singletonModifiers[name] !== undefined) {
-                    this.relevantModifiers[name].push(this.singletonModifiers[name]);
+                if (this.singletonModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.singletonModifiers[lname]);
                 }
             });
 
@@ -341,11 +342,12 @@ function script() {
                         CONSTANTS.skill[name]
                     ],
                 };
-                if (this.creasedModifiers[name] !== undefined) {
-                    this.relevantModifiers[name].push(this.creasedModifiers[name]);
+                const lname = name.toLowerCase();
+                if (this.creasedModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.creasedModifiers[lname]);
                 }
-                if (this.singletonModifiers[name] !== undefined) {
-                    this.relevantModifiers[name].push(this.singletonModifiers[name]);
+                if (this.singletonModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.singletonModifiers[lname]);
                 }
             });
 
