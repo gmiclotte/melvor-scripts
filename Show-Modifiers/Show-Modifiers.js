@@ -38,6 +38,7 @@ function script() {
                 },
                 // modifiers that only relate to combat and are not classified in a finer group
                 combat: {
+                    AttackRolls: 0,
                     ChanceToDoubleLootCombat: 0,
                     DamageToAllMonsters: 0,
                     DamageToBosses: 0,
@@ -121,20 +122,39 @@ function script() {
                     GlobalMasteryXP: 0,
                     MasteryXP: [],
                 },
+                // specific skills
+                agility: {
+                    GPFromAgility: 0,
+                },
+                altMagic: {
+                    AltMagicSkillXP: 0,
+                },
                 farming: {
+                    ChanceDoubleHarvest: 0,
                     FarmingYield: 0,
                 },
+                herblore: {
+                    ChanceRandomPotionHerblore: 0,
+                },
                 mining: {
+                    ChanceNoDamageMining: 0,
                     ChanceToDoubleOres: 0,
                     MiningNodeHP: 0,
+                },
+                runecrafting: {
+                    ChanceForElementalRune: 0,
+                    ElementalRuneGain: 0,
+                },
+                smithing: {
+                    SeeingGoldChance: 0,
                 },
                 thieving: {
                     ChanceToDoubleLootThieving: 0,
                     GPFromThieving: 0,
                     GPFromThievingFlat: 0,
                 },
-                agility: {
-                    GPFromAgility: 0,
+                woodcutting: {
+                    BirdNestDropRate: 0,
                 },
                 // modifiers that are not actually implemented in the game
                 unimplemented: {
@@ -150,6 +170,10 @@ function script() {
                     autoSlayerUnlocked: 0,
                     dungeonEquipmentSwapping: 0,
                     increasedEquipmentSets: 0,
+                },
+                // specific skills
+                firemaking: {
+                    freeBonfires: 0,
                 },
                 woodcutting: {
                     increasedTreeCutLimit: 0,
