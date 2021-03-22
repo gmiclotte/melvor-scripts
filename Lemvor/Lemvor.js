@@ -10,10 +10,43 @@
 // ==/UserScript==
 
 function script() {
-    // convert object to array
-    const unpack = object => Object.getOwnPropertyNames(object).map(prop => object[prop]);
+
     // lemon
     const lemon = getItemMedia(CONSTANTS.item.Lemon);
+
+    // hats
+    const hats = [
+        getItemMedia(CONSTANTS.item.Green_Party_Hat),
+        getItemMedia(CONSTANTS.item.Purple_Party_Hat),
+        getItemMedia(CONSTANTS.item.Red_Party_Hat),
+        getItemMedia(CONSTANTS.item.Yellow_Party_Hat),
+    ];
+
+    window.lemvor = {
+        partyInterval: undefined,
+        partyMode(probability, hatProbability) {
+            document.getElementsByTagName('img').forEach(img => {
+                if (Math.random() > probability) {
+                    return;
+                }
+                if (Math.random() > hatProbability) {
+                    img.src = lemon;
+                    return;
+                }
+                const hat = hats[Math.floor(Math.random() * hats.length)];
+                img.src = hat;
+            });
+        },
+        itsTimeToParty(probability = .5, hatProbability = 0.1, interval = 500) {
+            lemvor.partyInterval = setInterval(() => lemvor.partyMode(probability, hatProbability), interval);
+        },
+        stopThePartyBooooo() {
+            clearInterval(lemvor.partyInterval);
+        },
+    }
+
+    // convert object to array
+    const unpack = object => Object.getOwnPropertyNames(object).map(prop => object[prop]);
     // when life gives you media, make some lemons
     [
         // arrays of objects that have media
