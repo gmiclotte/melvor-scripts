@@ -42,7 +42,15 @@ function script() {
         },
         stopThePartyBooooo() {
             clearInterval(lemvor.partyInterval);
+            lemvor.partyInterval = undefined;
         },
+        toggleParty() {
+            if (lemvor.partyInterval === undefined) {
+                lemvor.itsTimeToParty();
+            } else {
+                lemvor.stopThePartyBooooo();
+            }
+        }
     }
 
     // convert object to array
@@ -73,6 +81,22 @@ function script() {
     ].forEach(list => {
         list.forEach(entry => entry.media = lemon);
     });
+
+    // add party button
+    const partyButton = () => {
+        return '<div class="dropdown d-inline-block ml-2">'
+            + '<button type="button" '
+            + 'class="btn btn-sm btn-dual text-combat-smoke" '
+            + 'id="page-header-modifiers" '
+            + `onclick="window.lemvor.toggleParty();" `
+            + 'aria-haspopup="true" '
+            + 'aria-expanded="true">'
+            + `<img class="skill-icon-xxs" src="${lemon}">`
+            + '</button>'
+            + '</div>';
+    }
+    let node = document.getElementById('page-header-potions-dropdown').parentNode;
+    node.parentNode.insertBefore($(partyButton().trim())[0], node);
 
     // update lemons
     document.getElementsByTagName('img').forEach(img => {
