@@ -25,8 +25,6 @@
     function script() {
         // Loading script
         console.log('Melvor Completion Log Helper Loaded');
-        var sheet = document.styleSheets[5];
-        sheet.insertRule(".item-in-bank-on {border: 1px gold dotted}");
 
         $('#modal-item-log').find('.block-options').prepend('<button id="toggleItems" class="btn btn-sm btn-success" style="margin:0px 10px; float:left;">Toggle Found</button>');
         $('#modal-item-log').find('.block-options').prepend('<img class="skill-icon-xs m-1 BankBordersOn pointer-enabled" id="toggleBankBorders" style="opacity:50%" src="assets/media/main/bank_header.svg">');
@@ -38,10 +36,10 @@
             $("#toggleBankBorders").click(function () {
                 if ($("#toggleBankBorders").hasClass("BankBordersOff")) {
                     $("#toggleBankBorders").removeClass("BankBordersOff").addClass("BankBordersOn").css('opacity', '100%');
-                    $(".item-in-bank").removeClass("item-in-bank-off").addClass("item-in-bank-on");
+                    document.getElementsByClassName('item-in-bank').forEach(x => x.style.border = '1px gold dotted');
                 } else {
                     $("#toggleBankBorders").removeClass("BankBordersOn").addClass("BankBordersOff").css('opacity', '50%');
-                    $(".item-in-bank").removeClass("item-in-bank-on").addClass("item-in-bank-off");
+                    document.getElementsByClassName('item-in-bank').forEach(x => x.style.border = '');
                 }
             });
         });
@@ -135,8 +133,8 @@
                     itemTooltip = "<div class='text-center'>" + items[i].name + ignoreCompletion + "</div>";
                 }
                 let haveInBank = getBankId(i);
-                if (haveInBank !== false) {
-                    $('#item-log-img-' + i).addClass("item-in-bank").addClass("item-in-bank-off");
+                if (haveInBank !== -1) {
+                    $('#item-log-img-' + i).addClass("item-in-bank");
                 }
                 tippy("#item-log-img-" + i, {
                     content: itemTooltip,
