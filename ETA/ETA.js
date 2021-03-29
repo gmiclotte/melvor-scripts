@@ -501,7 +501,7 @@ function script() {
                     let initial = initialVariables(skillID, checkTaskComplete);
                     initial.currentAction = data;
                     initial.agilityObstacles = data;
-                    initial.multiple = ETA.PARALLEL;
+                    initial.multiple = ETA.SEQUENTIAL;
                     // run time remaining
                     asyncTimeRemaining(initial);
                 }
@@ -1036,7 +1036,6 @@ function script() {
             if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx) && initial.hasMastery && !initial.isGathering) {
                 initial.staticPreservation += items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve; // Add base 10% chance
             }
-            console.log(initial.staticPreservation)
             return initial;
         }
 
@@ -1522,25 +1521,23 @@ function script() {
                 }
             }
 
-            // time for current loop
+            // time for current iteration
             // gain tokens, unless we're using them
             if (!ETASettings.USE_TOKENS) {
                 current.tokens += avgTokensPerS * expectedS;
             }
             // Update time and Xp
             switch (initial.multiple) {
+                // active total time is number of actions * action time, number of actions is time spent / (action time + "respawn")
                 case ETA.SINGLE:
                     current.activeTotalTime += expectedMS / averageActionTimes[0] * currentIntervals[0];
                     break;
 
                 case ETA.PARALLEL:
-                    current.activeTotalTime += expectedMS / averageActionTimes.reduce((a, b) => (a + b), 0) * currentIntervals.reduce((a, b) => (a + b), 0);
-                    break;
-
                 case ETA.SEQUENTIAL:
-                    const loopTime = averageActionTimes.reduce((a, b) => (a + b), 0) / currentIntervals.length;
-                    const activeTime = currentIntervals.reduce((a, b) => (a + b), 0);
-                    current.activeTotalTime += expectedMS / loopTime * activeTime;
+                    current.activeTotalTime += expectedMS
+                        / averageActionTimes.reduce((a, b) => (a + b), 0)
+                        * currentIntervals.reduce((a, b) => (a + b), 0);
                     break;
             }
             current.sumTotalTime += expectedMS;
@@ -1620,6 +1617,7 @@ function script() {
                 poolH: 0,
                 tokensH: 0,
                 actionTime: 0,
+                actionsH: 0,
             };
             initial.actions.forEach((x, i) => {
                 const initialInterval = intervalAdjustment(initial, initial.poolXp, x.masteryXp, x.skillInterval);
@@ -1629,14 +1627,23 @@ function script() {
                     // compute current mastery xp / h using the getMasteryXpToAdd from the game or the method from this script
                     // const masteryXpPerAction = getMasteryXpToAdd(initial.skillID, initial.masteryID, initialInterval);
                     const masteryXpPerAction = calcMasteryXpToAdd(initial, initial.totalMasteryLevel, initial.skillXp, x.masteryXp, initial.poolXp, initialInterval, x.itemID);
-                    rates.masteryXpH += masteryXpPerAction / initialAverageActionTime * 1000 * 3600;
+                    const masteryXpH = masteryXpPerAction / initialAverageActionTime * 1000 * 3600
+                    rates.masteryXpH += masteryXpH;
                     // pool percentage per hour
-                    rates.poolH += calcPoolXpToAdd(initial.skillXp, masteryXpPerAction) / initialAverageActionTime * 1000 * 3600 / initial.maxPoolXp;
+                    rates.poolH += calcPoolXpToAdd(initial.skillXp, masteryXpH) / initial.maxPoolXp;
                     rates.tokensH += 3600 * 1000 / initialAverageActionTime / actionsPerToken(initial.skillID, initial.skillXp, x.masteryXp);
                 }
                 rates.actionTime += initialInterval;
-                rates.timePerAction = initialAverageActionTime;
+                rates.actionsH += 3600 * 1000 / initialAverageActionTime;
             });
+            if (initial.multiple === ETA.PARALLEL) {
+                rates.actionTime /= initial.actions.length;
+            }
+            if (initial.multiple === ETA.SEQUENTIAL) {
+                rates.actionsH /= initial.actions.length;
+            }
+            // each token contributes one thousandth of the pool and then convert to percentage
+            rates.poolH = (rates.poolH + rates.tokensH / 1000) * 100;
             return rates;
         }
 
@@ -1654,10 +1661,10 @@ function script() {
                 rates.poolH = (current.poolXp - initial.poolXp) * 3600 * 1000 / current.sumTotalTime / initial.maxPoolXp;
                 rates.tokensH = (current.tokens - initial.tokens) * 3600 * 1000 / current.sumTotalTime;
                 rates.actionTime = current.activeTotalTime / current.actionCount;
-                rates.timePerAction = current.sumTotalTime / current.actionCount;
+                rates.actionsH += 3600 * 1000 / current.sumTotalTime * current.actionCount;
+                // each token contributes one thousandth of the pool and then convert to percentage
+                rates.poolH = (rates.poolH + rates.tokensH / 1000) * 100;
             }
-            // each token contributes one thousandth of the pool and then convert to percentage
-            rates.poolH = (rates.poolH + rates.tokensH / 1000) * 100;
             return rates;
         }
 
@@ -1955,7 +1962,7 @@ function script() {
             }
             if (ETASettings.SHOW_ACTION_TIME) {
                 timeLeftElement.textContent += "\r\nAction time: " + formatNumber(Math.ceil(results.rates.actionTime) / 1000) + 's';
-                timeLeftElement.textContent += "\r\nActions/h: " + formatNumber(Math.round(100 * 3600 * 1000 / Math.floor(results.rates.timePerAction)) / 100);
+                timeLeftElement.textContent += "\r\nActions/h: " + formatNumber(Math.round(100 * results.rates.actionsH) / 100);
             }
             if (!initial.isGathering) {
                 if (msLeft === 0) {
@@ -1966,17 +1973,18 @@ function script() {
                         + "\r\nETA: " + dateFormat(now, finishedTime);
                 }
             }
-            initial.actions.map(x => {
-                if ((initial.isGathering || initial.skillID === CONSTANTS.skill.Cooking) && x.itemID !== undefined) {
+            if (initial.actions.length === 1 && (initial.isGathering || initial.skillID === CONSTANTS.skill.Cooking)) {
+                const itemID = initial.actions[0].itemID;
+                if (itemID !== undefined) {
                     const youHaveElementId = timeLeftElementId + "-YouHave";
                     $("#" + youHaveElementId).replaceWith(''
                         + `<small id="${youHaveElementId}">`
-                        + `<span>You have: ${formatNumber(getQtyOfItem(x.itemID))}</span>`
-                        + `<img class="skill-icon-xs mr-2" src="${items[x.itemID].media}">`
+                        + `<span>You have: ${formatNumber(getQtyOfItem(itemID))}</span>`
+                        + `<img class="skill-icon-xs mr-2" src="${items[itemID].media}">`
                         + "</small>"
                     );
                 }
-            });
+            }
             timeLeftElement.style.display = "block";
             return timeLeftElement;
         }
