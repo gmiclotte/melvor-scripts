@@ -719,14 +719,13 @@ function script() {
                 return 0;
             }
             const masteryLevel = convertXpToLvl(masteryXp);
-            const poolProgress = 100 * poolXp / initial.maxPoolXp;
 
             // modifiers and base rhaelyx
             let preservationChance = initial.staticPreservation;
             // skill specific bonuses
             switch (initial.skillID) {
                 case CONSTANTS.skill.Cooking:
-                    if (poolProgress >= masteryCheckpoints[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
                     break;
@@ -742,10 +741,10 @@ function script() {
                     } else if (masteryLevel >= 20) {
                         preservationChance += 5;
                     }
-                    if (poolProgress >= masteryCheckpoints[1]) {
+                    if (poolReached(initial, poolXp, 1)) {
                         preservationChance += 5;
                     }
-                    if (poolProgress >= masteryCheckpoints[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 5;
                     }
                     break;
@@ -760,19 +759,19 @@ function script() {
                     if (masteryLevel >= 99) {
                         preservationChance += 5;
                     }
-                    if (poolProgress >= masteryCheckpoints[1]) {
+                    if (poolReached(initial, poolXp, 1)) {
                         preservationChance += 5;
                     }
                     break;
                 case CONSTANTS.skill.Runecrafting:
-                    if (poolProgress >= masteryCheckpoints[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
                     break;
                 case CONSTANTS.skill.Herblore:
                     preservationChance += 0.2 * masteryLevel - 0.2;
                     if (masteryLevel >= 99) preservationChance += 5;
-                    if (poolProgress >= masteryCheckpoints[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 5;
                     }
                     break;
@@ -784,6 +783,13 @@ function script() {
                 preservationChance = 80;
             }
             return preservationChance;
+        }
+
+        function poolReached(initial, poolXp, idx) {
+            if (initial.completionCape) {
+                return true;
+            }
+            return poolXp >= initial.poolLim[idx];
         }
 
         // Adjust interval based on unlocked bonuses
@@ -799,23 +805,23 @@ function script() {
                     }
                     break;
                 case CONSTANTS.skill.Firemaking:
-                    if (poolXp >= initial.poolLim[1]) {
+                    if (poolReached(initial, poolXp, 1)) {
                         percentReduction += 10;
                     }
                     percentReduction += convertXpToLvl(masteryXp) * 0.1;
                     break;
                 case CONSTANTS.skill.Mining:
-                    if (poolXp >= initial.poolLim[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         flatReduction += 200;
                     }
                     break;
                 case CONSTANTS.skill.Crafting:
-                    if (poolXp >= initial.poolLim[2]) {
+                    if (poolReached(initial, poolXp, 2)) {
                         flatReduction += 200;
                     }
                     break;
                 case CONSTANTS.skill.Fletching:
-                    if (poolXp >= initial.poolLim[3]) {
+                    if (poolReached(initial, poolXp, 3)) {
                         flatReduction += 200;
                     }
                     break;
@@ -841,17 +847,15 @@ function script() {
                     if (petUnlocked[4]) {
                         rockHP += 5;
                     }
-                    if (poolXp >= initial.poolLim[3]) {
+                    if (poolReached(initial, poolXp, 3)) {
                         rockHP += 10;
                     }
                     // potions can preserve rock HP
-                    let preservation = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
-                    if (preservation !== null) {
-                        rockHP /= (1 - preservation / 100);
-                    }
+                    let noDamageChance = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
+                    rockHP /= (1 - noDamageChance / 100);
                     // compute average time per action
                     let spawnTime = miningData[initial.currentAction].respawnInterval;
-                    if (poolXp > initial.poolLim[1]) {
+                    if (poolReached(initial, poolXp, 1)) {
                         spawnTime *= 0.9;
                     }
                     adjustedInterval = (adjustedInterval * rockHP + spawnTime) / rockHP;
@@ -864,7 +868,7 @@ function script() {
                         successRate = 100;
                     } else {
                         let increasedSuccess = 0;
-                        if (poolXp >= initial.poolLim[1]) {
+                        if (poolReached(initial, poolXp, 1)) {
                             increasedSuccess = 10;
                         }
                         successRate = Math.floor((skillLevel[CONSTANTS.skill.Thieving] - npc.level) * 0.7
@@ -897,7 +901,7 @@ function script() {
             let staticXpBonus = initial.staticXpBonus;
             switch (initial.skillID) {
                 case CONSTANTS.skill.Herblore:
-                    if (poolXp >= initial.poolLim[1]) {
+                    if (poolReached(initial, poolXp, 1)) {
                         staticXpBonus += 0.03;
                     }
                     break;
@@ -905,7 +909,7 @@ function script() {
             let xpMultiplier = 1;
             switch (initial.skillID) {
                 case CONSTANTS.skill.Runecrafting:
-                    if (poolXp >= initial.poolLim[1] && items[itemID].type === "Rune") {
+                    if (poolReached(initial, poolXp, 1) && items[itemID].type === "Rune") {
                         xpMultiplier += 1.5;
                     }
                     break;
@@ -982,6 +986,7 @@ function script() {
                 recordCraft: Infinity, // Amount of craftable items for limiting resource
                 hasMastery: skillID !== CONSTANTS.skill.Magic, // magic has no mastery, so we often check this
                 multiple: ETA.SINGLE,
+                completionCape: equippedItems.includes(CONSTANTS.item.Cape_of_Completion),
                 // gathering skills are treated differently, so we often check this
                 isGathering: isGathering(skillID),
                 // Generate default values for script
@@ -1031,6 +1036,7 @@ function script() {
             if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx) && initial.hasMastery && !initial.isGathering) {
                 initial.staticPreservation += items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve; // Add base 10% chance
             }
+            console.log(initial.staticPreservation)
             return initial;
         }
 
@@ -1249,13 +1255,13 @@ function script() {
             // General Mastery Xp formula
             let xpToAdd = ((calcTotalUnlockedItems(initial.skillID, skillXp) * totalMasteryLevel) / getTotalMasteryLevelForSkill(initial.skillID) + convertXpToLvl(masteryXp) * (getTotalItemsInSkill(initial.skillID) / 10)) * (modifiedTimePerAction / 1000) / 2;
             // Skill specific mastery pool modifier
-            if (poolXp >= initial.poolLim[0]) {
+            if (poolReached(initial, poolXp, 0)) {
                 xpModifier += 0.05;
             }
             // Firemaking pool and log modifiers
             if (initial.skillID === CONSTANTS.skill.Firemaking) {
                 // If current skill is Firemaking, we need to apply mastery progression from actions and use updated poolXp values
-                if (poolXp >= initial.poolLim[3]) {
+                if (poolReached(initial, poolXp, 3)) {
                     xpModifier += 0.05;
                 }
                 for (let i = 0; i < MASTERY[CONSTANTS.skill.Firemaking].xp.length; i++) {
@@ -1340,7 +1346,7 @@ function script() {
             // no junk if mastery level > 65 or pool > 25%
             if (masteryLevel >= 65
                 || junkChance < 0
-                || poolXp >= initial.poolLim[1]) {
+                || poolReached(initial, poolXp, 1)) {
                 junkChance = 0;
             }
             return junkChance / 100;
