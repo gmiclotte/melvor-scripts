@@ -826,7 +826,8 @@ function script() {
             // apply modifiers
             adjustedInterval *= 1 - percentReduction / 100;
             adjustedInterval -= flatReduction;
-            return Math.ceil(adjustedInterval);
+            adjustedInterval = Math.ceil(adjustedInterval);
+            return Math.max(250, adjustedInterval);
         }
 
         // Adjust interval based on down time
