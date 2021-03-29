@@ -1661,7 +1661,7 @@ function script() {
                 rates.poolH = (current.poolXp - initial.poolXp) * 3600 * 1000 / current.sumTotalTime / initial.maxPoolXp;
                 rates.tokensH = (current.tokens - initial.tokens) * 3600 * 1000 / current.sumTotalTime;
                 rates.actionTime = current.activeTotalTime / current.actionCount;
-                rates.actionsH += 3600 * 1000 / current.sumTotalTime * current.actionCount;
+                rates.actionsH = 3600 * 1000 / current.sumTotalTime * current.actionCount;
                 // each token contributes one thousandth of the pool and then convert to percentage
                 rates.poolH = (rates.poolH + rates.tokensH / 1000) * 100;
             }
