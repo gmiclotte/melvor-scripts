@@ -77,7 +77,6 @@ function script() {
         // objects of arrays of objects that have media
         ...unpack(MILESTONES),
         ...unpack(SHOP),
-        ...unpack(masteryMedia),
     ].forEach(list => {
         list.forEach(entry => entry.media = lemon);
     });
