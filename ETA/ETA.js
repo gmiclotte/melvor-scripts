@@ -852,6 +852,9 @@ function script() {
                     }
                     // potions can preserve rock HP
                     let noDamageChance = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
+                    if (noDamageChance >= 100) {
+                        break;
+                    }
                     rockHP /= (1 - noDamageChance / 100);
                     // compute average time per action
                     let spawnTime = miningData[initial.currentAction].respawnInterval;
