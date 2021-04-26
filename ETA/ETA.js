@@ -844,12 +844,10 @@ function script() {
                 case CONSTANTS.skill.Mining:
                     // compute max rock HP
                     let rockHP = 5 /*base*/ + convertXpToLvl(masteryXp);
-                    if (petUnlocked[4]) {
-                        rockHP += 5;
-                    }
                     if (poolReached(initial, poolXp, 3)) {
                         rockHP += 10;
                     }
+                    rockHP += playerModifiers.increasedMiningNodeHP - playerModifiers.decreasedMiningNodeHP;
                     // potions can preserve rock HP
                     let noDamageChance = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
                     if (noDamageChance >= 100) {
