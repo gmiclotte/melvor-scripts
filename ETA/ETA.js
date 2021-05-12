@@ -40,7 +40,7 @@ function script() {
             UNCAP_POOL: true,
             // true will show the current xp/h and mastery xp/h; false shows average if using all resources
             // does not affect anything if SHOW_XP_RATE is false
-            CURRENT_RATES: false,
+            CURRENT_RATES: true,
             // set to true to include mastery tokens in time until 100% pool
             USE_TOKENS: false,
             // set to true to show partial level progress in the ETA tooltips
