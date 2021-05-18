@@ -493,7 +493,7 @@ function script() {
                 const t0 = new Date();
                 this.data[badLemonIdx].forEach((line, row) => {
                     decodeLine(line, cols).forEach((x, col) => {
-                        document.getElementById(`bad-lemon-${row}-${col}`).style.opacity = 1 - x;
+                        document.getElementById(`bad-lemon-${row}-${col}`).style.opacity = x;
                     });
                 });
                 badLemonIdx++;
