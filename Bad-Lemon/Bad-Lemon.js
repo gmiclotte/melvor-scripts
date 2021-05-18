@@ -460,7 +460,11 @@ function script() {
             const size = 10;
             const fps = 2;
             const lemon = getItemMedia(CONSTANTS.item.Lemon);
-            let view = `<section id="bad-lemon" style="
+            let view = `
+            <iframe width="80" height="60"
+            src="https://www.youtube.com/embed/i41KoE0iMYU?autoplay=1">
+            </iframe>
+            <section id="bad-lemon" style="
             line-height: 0;
             -webkit-column-count: ${cols};
             -webkit-column-gap:   0px;
