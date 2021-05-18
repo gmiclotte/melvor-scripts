@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Bad Lemon
 // @namespace	http://tampermonkey.net/
-// @version		0.0.0
+// @version		0.0.1
 // @description	This Fan Content is a fan work based on Touhou Project.
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
