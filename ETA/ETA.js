@@ -47,6 +47,8 @@ function script() {
             SHOW_PARTIAL_LEVELS: false,
             // set to true to hide the required resources in the ETA tooltips
             HIDE_REQUIRED: false,
+            // set to true to include "potential" Summoning exp from created tablets
+            USE_TABLETS: false,
             // set to true to play a sound when we run out of resources or reach a target
             DING_RESOURCES: true,
             DING_LEVEL: true,
@@ -179,13 +181,14 @@ function script() {
                 SHOW_ACTION_TIME: 'Show action times',
                 UNCAP_POOL: 'Show pool past 100%',
                 CURRENT_RATES: 'Show current rates',
-                USE_TOKENS: '"Use" Mastery tokens',
+                USE_TOKENS: '"Use" Mastery tokens for final Pool %',
                 SHOW_PARTIAL_LEVELS: 'Show partial levels',
                 HIDE_REQUIRED: 'Hide required resources',
                 DING_RESOURCES: 'Ding when out of resources',
                 DING_LEVEL: 'Ding on level target',
                 DING_MASTERY: 'Ding on mastery target',
                 DING_POOL: 'Ding on pool target',
+                USE_TABLETS: '"Use" all created Summoning Tablets',
             };
             Object.getOwnPropertyNames(titles).forEach(property => {
                 const title = titles[property];
@@ -250,7 +253,6 @@ function script() {
                 });
             });
         }
-
 
         ////////
         //ding//
@@ -343,8 +345,6 @@ function script() {
             node = document.getElementById('runecraft-item-have');
             node.parentNode.insertBefore(tempContainer('timeLeftRunecrafting'), node.nextSibling);
             // Crafting
-            node = document.getElementById('craft-item-have');
-            node.parentNode.insertBefore(tempContainer('timeLeftCrafting'), node.nextSibling);
             // Herblore
             node = document.getElementById('herblore-item-have');
             node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
@@ -359,6 +359,9 @@ function script() {
             // Alt. Magic
             node = document.getElementById('magic-item-have-and-div');
             node.parentNode.insertBefore(tempContainer('timeLeftMagic'), node.nextSibling);
+            // Summoning
+            node = document.getElementById('summoning-item-have');
+            node.parentNode.insertBefore(tempContainer('timeLeftSummoning'), node.nextSibling);
         }
 
         ETA.makeMiningDisplay = function () {
@@ -536,6 +539,8 @@ function script() {
                 case CONSTANTS.skill.Magic:
                     initial.currentAction = selectedAltMagic;
                     break;
+                case CONSTANTS.skill.Summoning:
+                    initial.currentAction = selectedSummon;
             }
             if (initial.currentAction === undefined || initial.currentAction === null) {
                 return;
@@ -557,6 +562,12 @@ function script() {
         ////////////////////
         // Function to get unformatted number for Qty
         function getQtyOfItem(itemID) {
+            if (itemID === -4) {
+                return gp;
+            }
+            if (itemID === -5) {
+                return slayerCoins;
+            }
             const bankID = getBankId(itemID);
             if (bankID === -1) {
                 return 0;
@@ -939,6 +950,13 @@ function script() {
                     }
                     break;
                 }
+
+                case CONSTANTS.skill.Summoning: {
+                    if (ETASettings.USE_TABLETS) {
+                        const qty = calcSummoningTabletQty(initial, poolXp, convertXpToLvl(masteryXp));
+                        itemXp += qty * initial.useTabletXp;
+                    }
+                }
             }
             return itemXp * staticXpBonus * xpMultiplier;
         }
@@ -984,7 +1002,7 @@ function script() {
                 flatIntervalReduction: 0,
                 percentIntervalReduction: 0,
                 skillReq: [], // Needed items for craft and their quantities
-                recordCraft: Infinity, // Amount of craftable items for limiting resource
+                itemQty: {}, // Initial amount of resources
                 hasMastery: skillID !== CONSTANTS.skill.Magic, // magic has no mastery, so we often check this
                 multiple: ETA.SINGLE,
                 completionCape: equippedItems.includes(CONSTANTS.item.Cape_of_Completion),
@@ -1125,6 +1143,23 @@ function script() {
             return initial;
         }
 
+        function configureSummoning(initial) {
+            initial.itemID = summoningItems[initial.currentAction].itemID;
+            initial.itemXp = getBaseSummoningXP(initial.currentAction);
+            initial.useTabletXp = getBaseSummoningXP(initial.currentAction, true);
+            initial.skillInterval = 5000;
+            initial.recipeID = summoningData.defaultRecipe[items[initial.itemID].masteryID[1]];
+            // costs can change with increasing pool / mastery
+            initial.skillReq = items[initial.itemID].summoningReq[initial.recipeID].map((r, i) => {
+                return {
+                    id: r.id,
+                    qty: getSummoningRecipeQty(initial.itemID, initial.recipeID, i),
+                };
+            });
+            initial.chanceToDouble = calculateChanceToDouble(CONSTANTS.skill.Summoning, false, 0, 0, items[initial.itemID]);
+            return initial;
+        }
+
         function configureMagic(initial) {
             initial.skillInterval = 2000;
             //Find need runes for spell
@@ -1182,7 +1217,6 @@ function script() {
 
         function configureGathering(initial) {
             initial.skillReq = [];
-            initial.recordCraft = 0;
             initial.masteryID = initial.currentAction;
             return initial;
         }
@@ -1246,6 +1280,53 @@ function script() {
                 initial.actions = initial.currentAction.map(x => agiAction(x));
             }
             return configureGathering(initial);
+        }
+
+        function calcSummoningRecipeQty(initial, poolXp, recipeItemIndex, masteryLevel) {
+            const recipe = items[initial.itemID].summoningReq[initial.recipeID][recipeItemIndex];
+
+            // gp cost or sc cost
+            if (recipe.id === -4 || recipe.id === -5) {
+                return Math.max(1, SUMMONING.Settings.recipeGPCost);
+            }
+
+            // non-shard item cost
+            if (items[recipe.id].type !== undefined && items[recipe.id].type !== "Shard") {
+                let recipeGPCostReduction = Math.floor(masteryLevel / 10);
+                const recipeGPCost = SUMMONING.Settings.recipeGPCost * (1 - (recipeGPCostReduction * 5) / 100);
+                return Math.max(1, Math.floor(recipeGPCost / items[recipe.id].sellsFor));
+            }
+
+            // shard cost
+            let qty = recipe.qty;
+            // shard cost
+            // mastery shard reduction
+            if (masteryLevel >= 50) {
+                qty--;
+            }
+            if (masteryLevel >= 99) {
+                qty--;
+            }
+            // pool shard reduction
+            if (poolReached(initial, poolXp, 1)&& items[initial.itemID].summoningTier <= 2) {
+                qty--;
+            } else if (poolReached(initial, poolXp, 3) && items[initial.itemID].summoningTier === 3) {
+                qty--;
+            }
+            // modifier shard reduction
+            qty -= playerModifiers.decreasedSummoningShardCost - playerModifiers.increasedSummoningShardCost;
+            return Math.max(1, qty);
+        }
+
+        function calcSummoningTabletQty(initial, poolXp, masteryLevel) {
+            let qty = 25;
+            if (poolReached(initial, poolXp, 3)) {
+                qty += 10;
+            }
+            if (masteryLevel >= 99) {
+                qty += 10;
+            }
+            return qty * (1 + initial.chanceToDouble / 100);
         }
 
         // Calculate mastery xp based on unlocked bonuses
@@ -1358,13 +1439,13 @@ function script() {
                 masteryXp: masteryXp,
                 targetMasteryReached: masteryXp >= targetMasteryXp,
                 targetMasteryTime: 0,
-                targetMasteryResources: 0,
+                targetMasteryResources: {},
                 // estimated number of actions taken so far
                 actions: 0,
             }
         }
 
-        function currentVariables(initial, resources) {
+        function currentVariables(initial) {
             let current = {
                 actionCount: 0,
                 activeTotalTime: 0,
@@ -1373,12 +1454,12 @@ function script() {
                 skillXp: initial.skillXp,
                 targetSkillReached: initial.skillXp >= initial.targetXp,
                 targetSkillTime: 0,
-                targetSkillResources: 0,
+                targetSkillResources: {},
                 // pool
                 poolXp: initial.poolXp,
                 targetPoolReached: initial.poolXp >= initial.targetPoolXp,
                 targetPoolTime: 0,
-                targetPoolResources: 0,
+                targetPoolResources: {},
                 totalMasteryLevel: initial.totalMasteryLevel,
                 // items
                 chargeUses: 0, // estimated remaining charge uses
@@ -1386,8 +1467,13 @@ function script() {
                 // stats per action
                 actions: initial.actions.map(x => perAction(x.masteryXp, x.targetMasteryXp)),
                 // available resources
-                resources: resources,
+                itemQty: {...initial.itemQty},
+                skillReqMap: {...initial.skillReqMap},
+                used: {},
             };
+            for (let id in current.itemQty) {
+                current.used[id] = 0;
+            }
             // Check for Crown of Rhaelyx
             if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx) && initial.hasMastery && !initial.isGathering) {
                 let rhaelyxCharge = getQtyOfItem(CONSTANTS.item.Charge_Stone_of_Rhaelyx);
@@ -1468,6 +1554,15 @@ function script() {
             const rawPreservation = masteryPreservation(initial, current.actions[0].masteryXp, current.poolXp) / 100;
             const totalChanceToUse = Math.min(1, 1 - rawPreservation);
             const totalChanceToUseWithCharges = Math.min(1, Math.max(0.2, 1 - rawPreservation - ETA.rhaelyxChargePreservation));
+            // update summoning costs
+            if (initial.skillID === CONSTANTS.skill.Summoning) {
+                const masteryLevel = convertXpToLvl(current.actions[0].masteryXp);
+                initial.skillReq.map((_, i) =>
+                    calcSummoningRecipeQty(initial, current.poolXp, i, masteryLevel)
+                ).forEach(x => {
+                    current.skillReqMap[x.id] = x.qty;
+                })
+            }
             // estimate actions remaining with current resources
             if (!noResources) {
                 if (initial.actions.length > 1) {
@@ -1475,9 +1570,19 @@ function script() {
                 }
                 // estimate amount of actions possible with remaining resources
                 // number of actions with rhaelyx charges
-                let resourceActions = Math.min(current.chargeUses, current.resources / totalChanceToUseWithCharges);
+                let resourceActions = Math.min(
+                    current.chargeUses,
+                    ...Object.getOwnPropertyNames(current.itemQty).map(id =>
+                        current.itemQty[id] / current.skillReqMap[id] / totalChanceToUseWithCharges
+                    )
+                );
                 // remaining resources
-                const resWithoutCharge = Math.max(0, current.resources - current.chargeUses * totalChanceToUseWithCharges);
+                const resWithoutCharge = Math.max(
+                    0,
+                    ...Object.getOwnPropertyNames(current.itemQty).map(id =>
+                        current.itemQty[id] / current.skillReqMap[id] - current.chargeUses * totalChanceToUseWithCharges
+                    )
+                );
                 // add number of actions without rhaelyx charges
                 resourceActions = Math.ceil(resourceActions + resWithoutCharge / totalChanceToUse);
                 resourceSeconds = resourceActions * averageActionTimes[0] / 1000;
@@ -1506,20 +1611,20 @@ function script() {
                     current.chargeUses = 0;
                 }
                 // Update remaining resources
-                if (rawExpectedS === resourceSeconds) {
-                    current.resources = 0; // No more limits
+                let resUsed;
+                if (expectedActions[0] < current.chargeUses) {
+                    // won't run out of charges yet
+                    resUsed = expectedActions[0] * totalChanceToUseWithCharges;
                 } else {
-                    let resUsed = 0;
-                    if (expectedActions[0] < current.chargeUses) {
-                        // won't run out of charges yet
-                        resUsed = expectedActions[0] * totalChanceToUseWithCharges;
-                    } else {
-                        // first use charges
-                        resUsed = current.chargeUses * totalChanceToUseWithCharges;
-                        // remaining actions are without charges
-                        resUsed += (expectedActions[0] - current.chargeUses) * totalChanceToUse;
-                    }
-                    current.resources = Math.round(current.resources - resUsed);
+                    // first use charges
+                    resUsed = current.chargeUses * totalChanceToUseWithCharges;
+                    // remaining actions are without charges
+                    resUsed += (expectedActions[0] - current.chargeUses) * totalChanceToUse;
+                }
+                for (let id in current.itemQty) {
+                    const qty = Math.ceil(resUsed * current.skillReqMap[id]);
+                    current.itemQty[id] -= qty;
+                    current.used[id] += qty;
                 }
             }
 
@@ -1550,19 +1655,19 @@ function script() {
             if (!current.targetSkillReached && initial.targetXp <= current.skillXp) {
                 current.targetSkillTime = current.sumTotalTime;
                 current.targetSkillReached = true;
-                current.targetSkillResources = initial.recordCraft - current.resources;
+                current.targetSkillResources = {...current.used};
             }
             current.actions.forEach((x, i) => {
                 if (!x.targetMasteryReached && initial.actions[i].targetMasteryXp <= x.masteryXp) {
                     x.targetMasteryTime = current.sumTotalTime;
                     x.targetMasteryReached = true;
-                    x.targetMasteryResources = initial.recordCraft - current.resources;
+                    x.targetMasteryResources = {...current.used};
                 }
             });
             if (!current.targetPoolReached && initial.targetPoolXp <= current.poolXp) {
                 current.targetPoolTime = current.sumTotalTime;
                 current.targetPoolReached = true;
-                current.targetPoolResources = initial.recordCraft - current.resources;
+                current.targetPoolResources = {...current.used};
             }
             // Update total mastery level
             current.totalMasteryLevel = initial.totalMasteryLevel;
@@ -1649,10 +1754,19 @@ function script() {
             return rates;
         }
 
+        function resourcesLeft(itemQty, reqMap) {
+            for (let id in itemQty) {
+                if (itemQty[id] <= reqMap[id]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         function getXpRates(initial, current) {
             // compute exp rates, either current or average until resources run out
             let rates = {};
-            if (ETASettings.CURRENT_RATES || initial.recordCraft === 0) {
+            if (ETASettings.CURRENT_RATES || initial.isGathering || !resourcesLeft(initial.itemQty, initial.skillReqMap)) {
                 // compute current rates
                 rates = currentXpRates(initial);
             } else {
@@ -1673,10 +1787,10 @@ function script() {
         // Calculates expected time, taking into account Mastery Level advancements during the craft
         function calcExpectedTime(initial) {
             // initialize the expected time variables
-            let current = currentVariables(initial, initial.recordCraft, initial.actions);
+            let current = currentVariables(initial);
 
             // loop until out of resources
-            while (current.resources > 0) {
+            while (!initial.isGathering && resourcesLeft(current.itemQty, current.skillReqMap)) {
                 current = actionsToBreakpoint(initial, current);
             }
 
@@ -1760,6 +1874,8 @@ function script() {
                 case CONSTANTS.skill.Agility:
                     initial = configureAgility(initial);
                     break;
+                case CONSTANTS.skill.Summoning:
+                    initial = configureSummoning(initial);
             }
             // configure interval reductions
             initial.percentIntervalReduction += getTotalFromModifierArray("decreasedSkillIntervalPercent", initial.skillID);
@@ -1836,16 +1952,11 @@ function script() {
             }
 
             // Get Item Requirements and Current Requirements
+            initial.skillReqMap = {};
             for (let i = 0; i < initial.skillReq.length; i++) {
-                let itemReq = initial.skillReq[i].qty;
-                //Check how many of required resource in Bank
                 let itemQty = getQtyOfItem(initial.skillReq[i].id);
-                // Calculate max items you can craft for each itemReq
-                let itemCraft = Math.floor(itemQty / itemReq);
-                // Calculate limiting factor and set new record
-                if (itemCraft < initial.recordCraft) {
-                    initial.recordCraft = itemCraft;
-                }
+                initial.itemQty[initial.skillReq[i].id] = itemQty;
+                initial.skillReqMap[initial.skillReq[i].id] = initial.skillReq[i].qty;
             }
             return initial;
         }
@@ -1893,7 +2004,7 @@ function script() {
                     if (singleTimeLeftElement !== null) {
                         const aux = {
                             finalMasteryXp: [results.finalMasteryXp[i]],
-                            current: {actions: [{targetMasteryResources: 0}]},
+                            current: {actions: [{targetMasteryResources: {}}]},
                         }
                         generateTooltips(initial, {mastery: results.current.actions[i].targetMasteryTime}, aux, singleTimeLeftElement, now, {
                             noSkill: true,
@@ -2020,7 +2131,7 @@ function script() {
                     'Final Mastery',
                     formatLevel(finalMastery, masteryProgress) + ' / 99',
                     'info',
-                ) + tooltipSection(initial, now, ms.mastery, initial.actions[0].targetMastery, results.current.actions.map(x => x.targetMasteryResources));
+                ) + tooltipSection(initial, now, ms.mastery, initial.actions[0].targetMastery, results.current.actions[0].targetMasteryResources);
             }
             // pool tooltip
             if (!flags.noPool && initial.hasMastery) {
@@ -2089,8 +2200,8 @@ function script() {
             if (ETASettings.HIDE_REQUIRED || initial.isGathering || resources === 0) {
                 return '';
             }
-            let req = initial.skillReq.map(x =>
-                `<span>${formatNumber(x.qty * resources)}</span><img class="skill-icon-xs mr-2" src="${items[x.id].media}">`
+            let req = Object.getOwnPropertyNames(resources).map(id =>
+                `<span>${formatNumber(resources[id])}</span><img class="skill-icon-xs mr-2" src="${items[id].media}">`
             ).join('');
             return `<br/>Requires: ${req}`;
         }
@@ -2162,6 +2273,7 @@ function script() {
             ["Herblore", ["Herblore"]],
             ["Cooking", ["Food"]],
             ["Firemaking", ["Log"], "burnLog"],
+            ["Summoning", ["Summon"], "createSummon"],
             // alt magic
             ["Magic", ["Magic", "ItemForMagic"], "castMagic"],
             // gathering skills go in a the next loop
