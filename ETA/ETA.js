@@ -1156,6 +1156,12 @@ function script() {
                     qty: getSummoningRecipeQty(initial.itemID, initial.recipeID, i),
                 };
             });
+            // add xp of owned tablets to initial xp
+            if (ETASettings.USE_TABLETS) {
+                const qty = getQtyOfItem(initial.itemID);
+                initial.skillXp += qty * initial.useTabletXp;
+                initial.targetSkillReached = initial.skillXp >= initial.targetXp;
+            }
             initial.chanceToDouble = calculateChanceToDouble(CONSTANTS.skill.Summoning, false, 0, 0, items[initial.itemID]);
             return initial;
         }
