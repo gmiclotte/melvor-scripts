@@ -54,6 +54,9 @@ function script() {
                     MonsterRespawnTimer: 0,
                     PlayerAttackSpeed: 0,
                     PlayerAttackSpeedPercent: 0,
+                    EnemyAccuracy: 0,
+                    ChanceToApplyBurn: 0,
+                    GPOnEnemyHit: 0,
                 },
                 // modifiers that relate to healing
                 hitpoints: {
@@ -75,15 +78,16 @@ function script() {
                 },
                 // modifiers that relate to using melee attacks
                 melee: {
-
                     MeleeAccuracyBonus: 0,
                     MeleeStrengthBonus: 0,
+                    EnemyMeleeEvasion: 0,
                 },
                 // modifiers that relate to using ranged attacks
                 ranged: {
                     AmmoPreservation: 0,
                     RangedAccuracyBonus: 0,
                     RangedStrengthBonus: 0,
+                    EnemyRangedEvasion: 0,
                 },
                 // modifiers that relate to using magic attacks
                 magic: {
@@ -94,6 +98,7 @@ function script() {
                     MinFireSpellDmg: 0,
                     MinWaterSpellDmg: 0,
                     RunePreservation: 0,
+                    EnemyMagicEvasion: 0,
                 },
                 // modifiers that relate to slayer tasks, areas, or monsters
                 slayer: {
@@ -113,6 +118,7 @@ function script() {
                     ChanceToDoubleItemsSkill: [],
                     SkillInterval: [],
                     SkillIntervalPercent: [],
+                    ChanceAdditionalSkillResource: [],
                 },
                 production: {
                     GlobalPreservationChance: 0,
@@ -144,6 +150,7 @@ function script() {
                 runecrafting: {
                     ChanceForElementalRune: 0,
                     ElementalRuneGain: 0,
+                    AdditionalRunecraftCountRunes: 0,
                 },
                 smithing: {
                     SeeingGoldChance: 0,
@@ -155,6 +162,11 @@ function script() {
                 },
                 woodcutting: {
                     BirdNestDropRate: 0,
+                },
+                summoning: {
+                    SummoningShardCost: 0,
+                    SummoningCreationCharges: 0,
+                    SummoningChargePreservation: 0,
                 },
                 // modifiers that are not actually implemented in the game
                 unimplemented: {
@@ -192,6 +204,105 @@ function script() {
                     golbinRaidStartingWeapon: 0,
                     golbinRaidWaveSkipCostReduction: 0,
                 },
+                // summoning synergy modifiers, should be moved to the appropriate location, IF they are here to stay
+                summoning: {
+                    summoningSynergy_0_1: 0,
+                    summoningSynergy_0_6: 0,
+                    summoningSynergy_0_7: 0,
+                    summoningSynergy_0_8: 0,
+                    summoningSynergy_0_12: 0,
+                    summoningSynergy_0_13: 0,
+                    summoningSynergy_0_14: 0,
+                    summoningSynergy_0_15: 0,
+                    summoningSynergy_1_2: 0,
+                    summoningSynergy_1_8: 0,
+                    summoningSynergy_1_12: 0,
+                    summoningSynergy_1_13: 0,
+                    summoningSynergy_1_14: 0,
+                    summoningSynergy_1_15: 0,
+                    summoningSynergy_2_6: 0,
+                    summoningSynergy_2_7: 0,
+                    summoningSynergy_2_8: 0,
+                    summoningSynergy_2_12: 0,
+                    summoningSynergy_2_13: 0,
+                    summoningSynergy_2_14: 0,
+                    summoningSynergy_2_15: 0,
+                    summoningSynergy_3_4: 0,
+                    summoningSynergy_3_5: 0,
+                    summoningSynergy_3_9: 0,
+                    summoningSynergy_3_10: 0,
+                    summoningSynergy_3_11: 0,
+                    summoningSynergy_3_16: 0,
+                    summoningSynergy_3_17: 0,
+                    summoningSynergy_3_18: 0,
+                    summoningSynergy_3_19: 0,
+                    summoningSynergy_4_5: 0,
+                    summoningSynergy_4_9: 0,
+                    summoningSynergy_4_10: 0,
+                    summoningSynergy_4_11: 0,
+                    summoningSynergy_4_16: 0,
+                    summoningSynergy_4_17: 0,
+                    summoningSynergy_4_18: 0,
+                    summoningSynergy_4_19: 0,
+                    summoningSynergy_5_9: 0,
+                    summoningSynergy_5_10: 0,
+                    summoningSynergy_5_11: 0,
+                    summoningSynergy_5_16: 0,
+                    summoningSynergy_5_17: 0,
+                    summoningSynergy_5_18: 0,
+                    summoningSynergy_6_7: 0,
+                    summoningSynergy_6_8: 0,
+                    summoningSynergy_6_12: 0,
+                    summoningSynergy_6_13: 0,
+                    summoningSynergy_6_14: 0,
+                    summoningSynergy_6_15: 0,
+                    summoningSynergy_7_8: 0,
+                    summoningSynergy_7_12: 0,
+                    summoningSynergy_7_13: 0,
+                    summoningSynergy_7_14: 0,
+                    summoningSynergy_7_15: 0,
+                    summoningSynergy_8_12: 0,
+                    summoningSynergy_8_13: 0,
+                    summoningSynergy_8_14: 0,
+                    summoningSynergy_9_10: 0,
+                    summoningSynergy_9_11: 0,
+                    summoningSynergy_9_16: 0,
+                    summoningSynergy_9_17: 0,
+                    summoningSynergy_9_18: 0,
+                    summoningSynergy_9_19: 0,
+                    summoningSynergy_10_11: 0,
+                    summoningSynergy_10_16: 0,
+                    summoningSynergy_10_18: 0,
+                    summoningSynergy_10_19: 0,
+                    summoningSynergy_11_16: 0,
+                    summoningSynergy_11_17: 0,
+                    summoningSynergy_11_18: 0,
+                    summoningSynergy_11_19: 0,
+                    summoningSynergy_12_13: 0,
+                    summoningSynergy_12_14: 0,
+                    summoningSynergy_12_15: 0,
+                    summoningSynergy_13_14: 0,
+                    summoningSynergy_13_15: 0,
+                    summoningSynergy_14_15: 0,
+                    summoningSynergy_16_17: 0,
+                    summoningSynergy_16_18: 0,
+                    summoningSynergy_16_19: 0,
+                    summoningSynergy_17_18: 0,
+                    summoningSynergy_17_19: 0,
+                    summoningSynergy_18_19: 0,
+                },
+                aprilFools: {
+                    aprilFoolsIncreasedMovementSpeed: 0,
+                    aprilFoolsDecreasedMovementSpeed: 0,
+                    aprilFoolsIncreasedTeleportCost: 0,
+                    aprilFoolsDecreasedTeleportCost: 0,
+                    aprilFoolsIncreasedUpdateDelay: 0,
+                    aprilFoolsDecreasedUpdateDelay: 0,
+                    aprilFoolsIncreasedLemonGang: 0,
+                    aprilFoolsDecreasedLemonGang: 0,
+                    aprilFoolsIncreasedCarrotGang: 0,
+                    aprilFoolsDecreasedCarrotGang: 0,
+                }
             }
 
             this.knownModifiers = {};
@@ -355,7 +466,7 @@ function script() {
             });
 
             // production skills
-            this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore'];
+            this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore', 'Summoning'];
             this.productionSkills.forEach(name => {
                 this.relevantModifiers[name] = {
                     names: [
@@ -414,6 +525,11 @@ function script() {
                 return result;
             }
             let toPrint = '';
+            // summoning synergy modifiers
+            const split = modifier.split('_');
+            if (split.length === 3 && split[0] === 'summoningSynergy') {
+                return [SUMMONING.Synergies[split[1]][split[2]].description, 'text-success'];
+            }
             // positive modifiers
             switch (modifier) {
                 // positive
