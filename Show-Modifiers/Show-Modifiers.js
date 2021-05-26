@@ -658,6 +658,9 @@ function script() {
             const increased = modifiers['increased' + modifier];
             const decreased = modifiers['decreased' + modifier];
             let toPrint = [];
+            if (increased === undefined) {
+                return [];
+            }
             if (increased.length !== undefined) {
                 skillIDs.forEach(skillID => {
                     const increasedEntry = this.arrayModifierToSkill(increased, skillID);
