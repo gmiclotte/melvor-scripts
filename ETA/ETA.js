@@ -2206,8 +2206,19 @@ function script() {
             if (ETASettings.HIDE_REQUIRED || initial.isGathering || resources === 0) {
                 return '';
             }
-            let req = Object.getOwnPropertyNames(resources).map(id =>
-                `<span>${formatNumber(resources[id])}</span><img class="skill-icon-xs mr-2" src="${items[id].media}">`
+            let req = Object.getOwnPropertyNames(resources).map(id => {
+                    let src;
+                    if (id === "-5") {
+                        src = "assets/media/main/slayer_coins.svg"
+                    }
+                    if (id === "-4") {
+                        src = "assets/media/main/coins.svg"
+                    }
+                    if (items[id] !== undefined) {
+                        src = items[id].media;
+                    }
+                    return `<span>${formatNumber(resources[id])}</span><img class="skill-icon-xs mr-2" src="${src}">`
+                }
             ).join('');
             return `<br/>Requires: ${req}`;
         }
