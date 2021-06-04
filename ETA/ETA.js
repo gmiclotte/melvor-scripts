@@ -345,6 +345,8 @@ function script() {
             node = document.getElementById('runecraft-item-have');
             node.parentNode.insertBefore(tempContainer('timeLeftRunecrafting'), node.nextSibling);
             // Crafting
+            node = document.getElementById('craft-item-have');
+            node.parentNode.insertBefore(tempContainer('timeLeftCrafting'), node.nextSibling);
             // Herblore
             node = document.getElementById('herblore-item-have');
             node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
