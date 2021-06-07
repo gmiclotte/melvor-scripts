@@ -363,7 +363,9 @@ function script() {
             node.parentNode.insertBefore(tempContainer('timeLeftMagic'), node.nextSibling);
             // Summoning
             node = document.getElementById('summoning-item-have');
-            node.parentNode.insertBefore(tempContainer('timeLeftSummoning'), node.nextSibling);
+            if (node) {
+                node.parentNode.insertBefore(tempContainer('timeLeftSummoning'), node.nextSibling);
+            }
         }
 
         ETA.makeMiningDisplay = function () {
@@ -1316,7 +1318,7 @@ function script() {
                 qty--;
             }
             // pool shard reduction
-            if (poolReached(initial, poolXp, 1)&& items[initial.itemID].summoningTier <= 2) {
+            if (poolReached(initial, poolXp, 1) && items[initial.itemID].summoningTier <= 2) {
                 qty--;
             } else if (poolReached(initial, poolXp, 3) && items[initial.itemID].summoningTier === 3) {
                 qty--;
@@ -1582,14 +1584,14 @@ function script() {
                     current.chargeUses,
                     ...Object.getOwnPropertyNames(current.itemQty).map(id =>
                         current.itemQty[id] / current.skillReqMap[id] / totalChanceToUseWithCharges
-                    )
+                    ),
                 );
                 // remaining resources
                 const resWithoutCharge = Math.max(
                     0,
-                    ...Object.getOwnPropertyNames(current.itemQty).map(id =>
+                    Math.min(...Object.getOwnPropertyNames(current.itemQty).map(id =>
                         current.itemQty[id] / current.skillReqMap[id] - current.chargeUses * totalChanceToUseWithCharges
-                    )
+                    )),
                 );
                 // add number of actions without rhaelyx charges
                 resourceActions = Math.ceil(resourceActions + resWithoutCharge / totalChanceToUse);
