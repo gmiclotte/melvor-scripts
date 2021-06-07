@@ -1580,7 +1580,7 @@ function script() {
                 }
                 // estimate amount of actions possible with remaining resources
                 // number of actions with rhaelyx charges
-                let resourceActions = Math.min(
+                const actionsWithCharge = Math.min(
                     current.chargeUses,
                     ...Object.getOwnPropertyNames(current.itemQty).map(id =>
                         current.itemQty[id] / current.skillReqMap[id] / totalChanceToUseWithCharges
@@ -1593,8 +1593,9 @@ function script() {
                         current.itemQty[id] / current.skillReqMap[id] - current.chargeUses * totalChanceToUseWithCharges
                     )),
                 );
+                const actionsWithoutCharge = resWithoutCharge / totalChanceToUse
                 // add number of actions without rhaelyx charges
-                resourceActions = Math.ceil(resourceActions + resWithoutCharge / totalChanceToUse);
+                const resourceActions = Math.ceil(actionsWithCharge + actionsWithoutCharge);
                 resourceSeconds = resourceActions * averageActionTimes[0] / 1000;
             }
 
@@ -1766,7 +1767,7 @@ function script() {
 
         function resourcesLeft(itemQty, reqMap) {
             for (let id in itemQty) {
-                if (itemQty[id] <= reqMap[id]) {
+                if (itemQty[id] < reqMap[id]) {
                     return false;
                 }
             }
