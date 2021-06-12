@@ -174,7 +174,6 @@ function script() {
             // log
             ETA.log('added settings menu!')
         }
-        ETA.createSettingsMenu()
 
         ETA.addToggles = () => {
             ETA.togglesCard = new MICSR.Card(ETA.content, '', '150px', true);
