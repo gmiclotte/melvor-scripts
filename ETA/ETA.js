@@ -235,6 +235,7 @@ function script() {
                 CONSTANTS.skill.Runecrafting,
                 CONSTANTS.skill.Herblore,
                 CONSTANTS.skill.Agility,
+                CONSTANTS.skill.Summoning,
                 CONSTANTS.skill.Magic,
             ].forEach(i => {
                 const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px');
