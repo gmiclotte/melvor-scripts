@@ -147,17 +147,13 @@ function script() {
             }
 
             // set names
-            ETA.menuItemID = 'etaButton';
-            ETA.modalID = 'etaModal';
 
             // clean up in case elements already exist
             MICSR.destroyMenu(ETA.menuItemID, ETA.modalID);
 
-            // create wrappers and access point
+            // create wrapper
             ETA.content = document.createElement('div');
             ETA.content.className = 'mcsTabContent';
-            MICSR.addMenuItem('ETA Settings', 'assets/media/main/settings_header.svg', ETA.menuItemID, 'etaModal')
-            MICSR.addModal('ETA Settings', ETA.modalID, [ETA.content])
 
             // add toggles card
             ETA.addToggles();
@@ -168,9 +164,17 @@ function script() {
             // add target card
             ETA.addTargetInputs();
 
+            // create modal and access point
+            ETA.modalID = 'etaModal';
+            ETA.modal = MICSR.addModal('ETA Settings', ETA.modalID, [ETA.content]);
+            ETA.modal.children[0].children[0].style.width = "550px";
+            ETA.menuItemID = 'etaButton';
+            MICSR.addMenuItem('ETA Settings', 'assets/media/main/settings_header.svg', ETA.menuItemID, ETA.modalID);
+
             // log
             ETA.log('added settings menu!')
         }
+        ETA.createSettingsMenu()
 
         ETA.addToggles = () => {
             ETA.togglesCard = new MICSR.Card(ETA.content, '', '150px', true);
@@ -221,7 +225,7 @@ function script() {
         }
 
         ETA.addTargetInputs = () => {
-            ETA.skillTargetCard = new MICSR.TabCard('ETA-target', true, ETA.content, '', '150px', true);
+            ETA.skillTargetCard = new MICSR.TabCard('EtaTarget', true, ETA.content, '', '150px', true);
             [
                 CONSTANTS.skill.Woodcutting,
                 CONSTANTS.skill.Fishing,
@@ -238,7 +242,7 @@ function script() {
                 CONSTANTS.skill.Summoning,
                 CONSTANTS.skill.Magic,
             ].forEach(i => {
-                const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px');
+                const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px', false);
                 card.addSectionTitle(SKILLS[i].name + ' Targets');
                 [
                     {id: 'LEVEL', label: 'Level targets'},
