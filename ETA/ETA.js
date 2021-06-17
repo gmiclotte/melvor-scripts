@@ -1298,17 +1298,24 @@ function script() {
 
         function calcSummoningRecipeQty(initial, poolXp, recipeItemIndex, masteryLevel) {
             const recipe = items[initial.itemID].summoningReq[initial.recipeID][recipeItemIndex];
+            const recipeGPCostReduction = Math.floor(masteryLevel / 10);
+            const recipeGPCost = SUMMONING.Settings.recipeGPCost * (1 - (recipeGPCostReduction * 5) / 100);
 
             // gp cost or sc cost
             if (recipe.id === -4 || recipe.id === -5) {
-                return Math.max(1, SUMMONING.Settings.recipeGPCost);
+                return {
+                    id: recipe.id,
+                    qty: Math.max(1, recipeGPCost),
+                };
             }
 
             // non-shard item cost
             if (items[recipe.id].type !== undefined && items[recipe.id].type !== "Shard") {
-                let recipeGPCostReduction = Math.floor(masteryLevel / 10);
-                const recipeGPCost = SUMMONING.Settings.recipeGPCost * (1 - (recipeGPCostReduction * 5) / 100);
-                return Math.max(1, Math.floor(recipeGPCost / items[recipe.id].sellsFor));
+                const itemCost = Math.max(20, items[recipe.id].sellsFor);
+                return {
+                    id: recipe.id,
+                    qty: Math.max(1, Math.floor(recipeGPCost / itemCost)),
+                };
             }
 
             // shard cost
@@ -1329,7 +1336,10 @@ function script() {
             }
             // modifier shard reduction
             qty -= playerModifiers.decreasedSummoningShardCost - playerModifiers.increasedSummoningShardCost;
-            return Math.max(1, qty);
+            return {
+                id: recipe.id,
+                qty: Math.max(1, qty),
+            };
         }
 
         function calcSummoningTabletQty(initial, poolXp, masteryLevel) {
