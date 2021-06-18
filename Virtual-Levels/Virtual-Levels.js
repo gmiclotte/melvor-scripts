@@ -6,6 +6,7 @@
 // @match        https://*.melvoridle.com/*
 // @exclude      https://wiki.melvoridle.com*
 // @noframes
+// @description Display level and xp numbers for virtual levels, similar to regular levels.
 // ==/UserScript==
 
 function script() {
