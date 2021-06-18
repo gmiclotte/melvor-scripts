@@ -35,6 +35,7 @@ function script() {
                     HiddenSkillLevel: [],
                     PotionChargesFlat: 0,
                     SkillXP: [],
+                    SummoningChargePreservation: 0,
                 },
                 // modifiers that only relate to combat and are not classified in a finer group
                 combat: {
@@ -166,7 +167,6 @@ function script() {
                 summoning: {
                     SummoningShardCost: 0,
                     SummoningCreationCharges: 0,
-                    SummoningChargePreservation: 0,
                 },
                 // modifiers that are not actually implemented in the game
                 unimplemented: {
