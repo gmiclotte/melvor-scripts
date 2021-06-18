@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Virtual Levels
-// @version		 0.0.0
+// @version		 0.0.1
 // @namespace    github.com/gmiclotte
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
