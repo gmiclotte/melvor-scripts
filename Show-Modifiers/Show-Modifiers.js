@@ -379,6 +379,7 @@ function script() {
                     CONSTANTS.skill.Hitpoints,
                     CONSTANTS.skill.Prayer,
                     CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
                 ],
             };
 
@@ -400,6 +401,7 @@ function script() {
                     CONSTANTS.skill.Hitpoints,
                     CONSTANTS.skill.Prayer,
                     CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
                 ],
             };
 
@@ -420,6 +422,7 @@ function script() {
                     CONSTANTS.skill.Hitpoints,
                     CONSTANTS.skill.Prayer,
                     CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
                 ],
             };
 
@@ -440,6 +443,7 @@ function script() {
                     CONSTANTS.skill.Hitpoints,
                     CONSTANTS.skill.Prayer,
                     CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
                 ],
             };
 
