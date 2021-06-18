@@ -447,6 +447,17 @@ function script() {
                 ],
             };
 
+            // slayer
+            this.relevantModifiers.slayer = {
+                names: [
+                    this.creasedModifiers.skilling,
+                    this.creasedModifiers.slayer,
+                ],
+                skillIDs: [
+                    CONSTANTS.skill.Slayer,
+                ],
+            };
+
             // gathering skills
             this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'];
             this.gatheringSkills.forEach(name => {
@@ -723,6 +734,7 @@ function script() {
             passives += this.makeTagButton('melee', 'Melee', 'assets/media/skills/attack/attack.svg');
             passives += this.makeTagButton('ranged', 'Ranged', 'assets/media/skills/ranged/ranged.svg');
             passives += this.makeTagButton('magic', 'Combat Magic', 'assets/media/skills/combat/spellbook.svg');
+            passives += this.makeTagButton('slayer', 'Slayer', 'assets/media/skills/slayer/slayer.svg');
             passives += '<br/>';
             this.gatheringSkills.forEach(skill => passives += this.makeTagButton(skill, skill, `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`));
             passives += '<br/>';
