@@ -673,8 +673,8 @@ function script() {
                 return [this.printPlayerModifier(modifier, modifiers[modifier])];
             }
             // increased-decreased type modifier
-            const increased = modifiers['increased' + modifier] | 0;
-            const decreased = modifiers['decreased' + modifier] | 0;
+            const increased = modifiers['increased' + modifier];
+            const decreased = modifiers['decreased' + modifier];
             let toPrint = [];
             if (increased === undefined) {
                 return [];
