@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Show Modifiers
-// @version      0.0.13
+// @version      0.0.14
 // @description  Adds a button to show all your modifiers
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
