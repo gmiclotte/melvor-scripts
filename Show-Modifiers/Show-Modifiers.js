@@ -676,17 +676,17 @@ function script() {
             const increased = modifiers['increased' + modifier];
             const decreased = modifiers['decreased' + modifier];
             let toPrint = [];
-            if (increased === undefined) {
+            if (increased === undefined && decreased === undefined) {
                 return [];
             }
-            if (increased.length !== undefined) {
+            if ((increased && increased.length !== undefined) || (decreased && decreased.length !== undefined)) {
                 skillIDs.forEach(skillID => {
-                    const increasedEntry = this.arrayModifierToSkill(increased, skillID);
-                    const decreasedEntry = this.arrayModifierToSkill(decreased, skillID);
+                    const increasedEntry = this.arrayModifierToSkill(increased !== undefined ? increased : [], skillID);
+                    const decreasedEntry = this.arrayModifierToSkill(decreased !== undefined ? decreased : [], skillID);
                     toPrint = toPrint.concat(this.printDiffModifier(modifier, increasedEntry, decreasedEntry, skillID));
                 });
             } else {
-                toPrint = toPrint.concat(this.printDiffModifier(modifier, increased, decreased));
+                toPrint = toPrint.concat(this.printDiffModifier(modifier, increased | 0, decreased | 0));
             }
             return toPrint;
         }
