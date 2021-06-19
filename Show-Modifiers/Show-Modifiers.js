@@ -525,13 +525,16 @@ function script() {
         }
 
         arrayModifierToSkill(array, skillID) {
+            if (!array) {
+                return 0;
+            }
             const result = array.filter(x => {
                 return x.id === skillID || x[0] === skillID
             });
             if (result.length === 0) {
                 return 0;
             }
-            return result[0].value | result[0][1];
+            return result[0].value | result[0][1] | 0;
         }
 
         printPlayerModifier(modifier, value) {
@@ -670,8 +673,8 @@ function script() {
                 return [this.printPlayerModifier(modifier, modifiers[modifier])];
             }
             // increased-decreased type modifier
-            const increased = modifiers['increased' + modifier];
-            const decreased = modifiers['decreased' + modifier];
+            const increased = modifiers['increased' + modifier] | 0;
+            const decreased = modifiers['decreased' + modifier] | 0;
             let toPrint = [];
             if (increased === undefined) {
                 return [];
