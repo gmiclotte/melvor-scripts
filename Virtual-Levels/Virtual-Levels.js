@@ -70,6 +70,28 @@ function script() {
 
     addSummoningProgess();
 
+    window.virtualLevels = {
+        navLevelCap: 1000, // represents Infinity, but Infinity is not valid JSON
+        save: () => {
+            window.localStorage['virtualLevels'] = window.JSON.stringify(window.virtualLevels)
+        },
+        update: () => {
+            for (let id in SKILLS) {
+                updateSkillWindow(id);
+            }
+            updateSkillVisuals(16, '-1');
+        }
+    }
+
+    if (window.localStorage['virtualLevels'] !== undefined) {
+        const stored = window.JSON.parse(window.localStorage['virtualLevels']);
+        Object.getOwnPropertyNames(stored).forEach(x => {
+            window.virtualLevels[x] = stored[x];
+        });
+    }
+
+    window.virtualLevels.save();
+
     //////////////////////////////////
     //show exp to next level past 99//
     //////////////////////////////////
@@ -82,7 +104,11 @@ function script() {
         + '$("#skill-progress-xp-" + skill + extraID).text(numberWithCommas(currXp) + " / " + numberWithCommas(nextXp));'
         + '$("#skill-progress-percent-" + skill + extraID).text(`${progress}%`);'
         + '$("#skill-progress-bar-" + skill + extraID).css("width", `${progress}%`);';
-    eval(updateSkillVisuals.toString().replace(match, replacement).replace(/^function (\w+)/, "window.$1 = function"));
+    eval(updateSkillVisuals.toString()
+        .replace(match, replacement)
+        .replace('$("#nav-skill-progress-"+skill+extraID).text(numberWithCommas(exp.xp_to_level(skillXP[skill])-1));', '$("#nav-skill-progress-"+skill+extraID).text(numberWithCommas(Math.min(window.virtualLevels.navLevelCap, exp.xp_to_level(skillXP[skill])-1)));')
+        .replace(/^function (\w+)/, "window.$1 = function")
+    );
 
     match = `let xp=0;if(skillLevel[i]>=99)xp=numberWithCommas(Math.floor(skillXP[i]));else xp=numberWithCommas(Math.floor(skillXP[i]))+" / "+numberWithCommas(exp.level_to_xp(skillLevel[i]+1));const tooltip=tippy("#skill-progress-xp-tooltip-"+i,{content:"<div class='text-center'>"+xp+"</div>",allowHTML:true,placement:"top",interactive:false,animation:false,});tooltipInstances.combatXP=tooltipInstances.combatXP.concat(tooltip);$("#skill-progress-xp-"+i).text(numberWithCommas(Math.floor(skillXP[i]))+" / "+numberWithCommas(exp.level_to_xp(skillLevel[i]+1)));$("#skill-progress-level-"+i).text(skillLevel[i]+" / 99");$("#skill-progress-percent-"+i).text(Math.floor(nextLevelProgress[i])+"%");$("#skill-progress-bar-"+i).css("width",nextLevelProgress[i]+"%");`
     replacement = 'const currXp = Math.floor(skillXP[i]);'
@@ -102,12 +128,7 @@ function script() {
     );
 
     // one-time update of all skill windows after a slight delay
-    setTimeout(() => {
-        for (let id in SKILLS) {
-            updateSkillWindow(id);
-        }
-        updateSkillVisuals(16, '-1');
-    }, 5000);
+    setTimeout(window.virtualLevels.update, 5000);
 
     ///////
     //log//
