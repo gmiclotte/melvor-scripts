@@ -147,6 +147,8 @@ function script() {
             }
 
             // set names
+            ETA.modalID = 'etaModal';
+            ETA.menuItemID = 'etaButton';
 
             // clean up in case elements already exist
             MICSR.destroyMenu(ETA.menuItemID, ETA.modalID);
@@ -165,10 +167,12 @@ function script() {
             ETA.addTargetInputs();
 
             // create modal and access point
-            ETA.modalID = 'etaModal';
             ETA.modal = MICSR.addModal('ETA Settings', ETA.modalID, [ETA.content]);
-            ETA.modal.children[0].children[0].style.width = "550px";
-            ETA.menuItemID = 'etaButton';
+            let style = document.createElement("style");
+            document.head.appendChild(style);
+            let sheet = style.sheet;
+            sheet.insertRule('#etaModal.show { display: flex !important; }')
+            sheet.insertRule('#etaModal .modal-dialog { max-width: 95%; display: inline-block; }')
             MICSR.addMenuItem('ETA Settings', 'assets/media/main/settings_header.svg', ETA.menuItemID, ETA.modalID);
 
             // log
