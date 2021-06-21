@@ -718,8 +718,8 @@ function script() {
             $('#show-modifiers').replaceWith(this.printRelevantModifiersHtml(modifiers, text, tag));
         }
 
-        printRelevantModifiersHtml(modifiers, text, tag) {
-            let passives = '<div id="show-modifiers"><br/>';
+        printRelevantModifiersHtml(modifiers, text, tag, id = 'show-modifiers') {
+            let passives = `<div id="${id}"><br/>`;
             passives += `<h5 class=\"font-w400 font-size-sm mb-1\">${text}</h5><br/>`;
             this.printRelevantModifiers(modifiers, tag).forEach(toPrint => {
                 passives += `<h5 class=\"font-w400 font-size-sm mb-1 ${toPrint[1]}\">${toPrint[0]}</h5>`;
