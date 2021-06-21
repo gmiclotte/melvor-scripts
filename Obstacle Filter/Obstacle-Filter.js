@@ -1,0 +1,269 @@
+// ==UserScript==
+// @name		Melvor Obstacle Filter
+// @namespace	http://tampermonkey.net/
+// @version		0.0.0
+// @description	Agility course planner that allows you to filter agility obstacles based on skill of interest.
+// @author		GMiclotte
+// @match		https://*.melvoridle.com/*
+// @exclude		https://wiki.melvoridle.com*
+// @noframes
+// @grant		none
+// ==/UserScript==
+
+function script() {
+    if (window.obstacleFilter !== undefined) {
+        console.error('Obstacle Filter is already loaded!');
+    } else {
+        createObstacleFilter();
+        // load after 5s to give Melvor Show Modifiers time to load
+        setTimeout(loadObstacleFilter, 200);
+    }
+
+    function createObstacleFilter() {
+        window.obstacleFilter = {};
+
+        obstacleFilter.log = function (...args) {
+            console.log('Melvor Obstacle Filter:', ...args)
+        }
+
+        obstacleFilter.loadTries = 0;
+
+        obstacleFilter.courseData = {
+            course: Array(10).fill(-1),
+            courseMastery: Array(10).fill(false),
+            pillar: -1,
+        }
+
+        obstacleFilter.createMenu = () => {
+            // create show modifiers instance
+            obstacleFilter.showModifiers = new MICSR.ShowModifiers('', 'Melvor Obstacle Filter');
+            // set names
+            obstacleFilter.modalID = 'obstacleFilterModal';
+            obstacleFilter.menuItemID = 'obstacleFilterButton';
+
+            // clean up in case elements already exist
+            MICSR.destroyMenu(obstacleFilter.menuItemID, obstacleFilter.modalID);
+
+            // create wrapper
+            obstacleFilter.content = document.createElement('div');
+            obstacleFilter.content.className = 'mcsTabContent';
+            obstacleFilter.content.style.flexWrap = 'nowrap';
+
+            // create modal and access point
+            obstacleFilter.modal = MICSR.addModal('Obstacle Filter', obstacleFilter.modalID, [obstacleFilter.content]);
+            let style = document.createElement("style");
+            document.head.appendChild(style);
+            let sheet = style.sheet;
+            sheet.insertRule('#obstacleFilterModal.show { display: flex !important; }')
+            sheet.insertRule('#obstacleFilterModal .modal-dialog { max-width: 95%; display: inline-block; }')
+            MICSR.addMenuItem('Obstacle Filter', 'assets/media/main/stamina.svg', obstacleFilter.menuItemID, obstacleFilter.modalID);
+
+            // add filter card
+            obstacleFilter.addFilterCard();
+
+            // log
+            obstacleFilter.log('added settings menu!')
+        }
+
+        obstacleFilter.addFilterCard = () => {
+            obstacleFilter.filterCard = new MICSR.Card(obstacleFilter.content, '', '150px', true);
+            const filterData = [
+                [
+                    {tag: 'all', text: 'All', media: 'assets/media/main/completion_log.svg'},
+                    // {tag: 'golbinRaid', text: 'Golbin Raid', media: 'assets/media/main/raid_coins.svg'},
+                    {tag: 'combat', text: 'Combat', media: 'assets/media/skills/combat/combat.svg'},
+                    {tag: 'melee', text: 'Melee', media: 'assets/media/skills/attack/attack.svg'},
+                    {tag: 'ranged', text: 'Ranged', media: 'assets/media/skills/ranged/ranged.svg'},
+                    {tag: 'magic', text: 'Combat Magic', media: 'assets/media/skills/combat/spellbook.svg'},
+                    {tag: 'slayer', text: 'Slayer', media: 'assets/media/skills/slayer/slayer.svg'},
+                ],
+                obstacleFilter.showModifiers.gatheringSkills.map(skill => {
+                    return {
+                        tag: skill,
+                        text: skill,
+                        media: `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`,
+                    }
+                }),
+                [
+                    ...obstacleFilter.showModifiers.productionSkills.map(skill => {
+                        return {
+                            tag: skill,
+                            text: skill,
+                            media: `assets/media/skills/${skill.toLowerCase()}/${skill.toLowerCase()}.svg`,
+                        }
+                    }),
+                    {tag: 'altMagic', text: 'Alt. Magic', media: 'assets/media/skills/magic/magic.svg'},
+                ],
+            ];
+            filterData.forEach(row => {
+                const container = obstacleFilter.filterCard.createCCContainer();
+                container.style.display = 'block';
+                container.style.flexWrap = 'nowrap';
+                row.forEach(data => {
+                    const id = `Obstacle Filter ${data.tag} Button`
+                    const callback = () => {
+                        const previousButton = document.getElementById(`Obstacle Filter ${obstacleFilter.filter.tag} Button`);
+                        obstacleFilter.unselectButton(previousButton);
+                        obstacleFilter.createCourse({...data});
+                        const button = document.getElementById(`Obstacle Filter ${obstacleFilter.filter.tag} Button`);
+                        obstacleFilter.selectButton(button);
+                    };
+                    const button = obstacleFilter.filterCard.createImageButton(data.media, id, callback, 'Small', data.text);
+                    button.id = id;
+                    container.appendChild(button);
+                });
+                obstacleFilter.filterCard.container.appendChild(container);
+            });
+            const modifierDiv = document.createElement('div');
+            modifierDiv.id = 'show-obstacle-modifiers';
+            obstacleFilter.filterCard.container.appendChild(modifierDiv);
+            // collapse filterData
+            obstacleFilter.filterData = [...filterData[0], ...filterData[1], ...filterData[2]];
+            //create course card
+            obstacleFilter.createCourse(obstacleFilter.filterData[0]);
+            const button = document.getElementById(`Obstacle Filter ${obstacleFilter.filter.tag} Button`);
+            obstacleFilter.selectButton(button);
+        }
+
+        obstacleFilter.createCourse = (filter) => {
+            obstacleFilter.filter = filter;
+            if (!obstacleFilter.courseCard) {
+                obstacleFilter.courseCard = new MICSR.Card(obstacleFilter.content, '', '150px', true);
+                obstacleFilter.agilityCourse = new MICSR.AgilityCourse(
+                    obstacleFilter,
+                    obstacleFilter.courseData,
+                    obstacleFilter.filterData,
+                );
+            } else {
+                obstacleFilter.courseCard.clearContainer();
+            }
+            obstacleFilter.agilityCourse.createAgilityCourseContainer(obstacleFilter.courseCard, filter);
+
+            // finalize tooltips
+            const tippyOptions = {allowHTML: true, animation: false, hideOnClick: false};
+            obstacleFilter.tippyInstances = tippy('#obstacleFilterModal [data-tippy-content]', tippyOptions);
+            obstacleFilter.tippySingleton = tippy.createSingleton(obstacleFilter.tippyInstances, {delay: [0, 200], ...tippyOptions});
+
+            // select current setup
+            const masteryMap = {};
+            obstacleFilter.courseData.courseMastery.forEach((mastery, category) => {
+                if (!mastery) {
+                    return;
+                }
+                masteryMap[obstacleFilter.courseData.course[category]] = obstacleFilter.courseData.course[category] !== -1;
+            });
+            obstacleFilter.agilityCourse.importAgilityCourse([...obstacleFilter.courseData.course], masteryMap, obstacleFilter.courseData.pillar);
+            obstacleFilter.agilityCourseCallback();
+        }
+
+        obstacleFilter.agilityCourseCallback = () => {
+            obstacleFilter.modifiers = MICSR.copyModifierTemplate();
+            const course = obstacleFilter.courseData.course;
+            const courseMastery = obstacleFilter.courseData.courseMastery;
+            const pillar = obstacleFilter.courseData.pillar;
+            // mimic calculateAgilityModifiers
+            const obstacles = [];
+            let fullCourse = true
+            for (let i = 0; i < course.length; i++) {
+                if (course[i] < 0) {
+                    fullCourse = false;
+                    break;
+                }
+                let modifiers = {};
+                if (courseMastery[i]) {
+                    const m = agilityObstacles[course[i]].modifiers;
+                    Object.getOwnPropertyNames(m).forEach(prop => {
+                        let passiveType = printPlayerModifier(prop, m[prop]);
+                        if (passiveType[1] !== "text-danger") {
+                            modifiers[prop] = m[prop];
+                            return;
+                        }
+                        const value = m[prop];
+                        if (value.length === undefined) {
+                            modifiers[prop] = value / 2;
+                            return;
+                        }
+                        modifiers[prop] = value.map(x => [x[0], x[1] / 2]);
+                    });
+                } else {
+                    modifiers = agilityObstacles[course[i]].modifiers;
+                }
+                obstacles.push({modifiers: modifiers});
+            }
+            const agilityModifiers = MICSR.computeModifiers(obstacles);
+            if (fullCourse && pillar > -1) {
+                MICSR.mergeModifiers(agilityPassivePillars[pillar].modifiers, agilityModifiers);
+            }
+            MICSR.mergeModifiers(agilityModifiers, obstacleFilter.modifiers);
+            // print
+            $('#show-obstacle-modifiers').replaceWith(
+                obstacleFilter.showModifiers.printRelevantModifiersHtml(
+                    obstacleFilter.modifiers,
+                    `${obstacleFilter.filter.text} Obstacle Modifiers`,
+                    obstacleFilter.filter.tag,
+                    'show-obstacle-modifiers',
+                ),
+            );
+        };
+
+        obstacleFilter.selectButton = (button) => {
+            button.classList.add('btn-primary');
+            button.classList.remove('btn-outline-dark');
+        }
+
+        obstacleFilter.unselectButton = (button) => {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-outline-dark');
+        }
+    }
+
+    function loadObstacleFilter() {
+        // Loading script
+        obstacleFilter.log('loading...');
+
+        // check requirements
+        if (!checkRequirements(obstacleFilter.loadTries === 10)) {
+            obstacleFilter.loadTries++
+            if (obstacleFilter.loadTries < 10) {
+                setTimeout(loadObstacleFilter, 200);
+            }
+            return;
+        }
+
+        // create menu
+        obstacleFilter.createMenu();
+    }
+
+    function checkRequirements(print = false) {
+        let requirementsMet = true;
+        if (window.MICSR === undefined || MICSR.TabCard === undefined) {
+            if (print) {
+                obstacleFilter.log('Failed to load Melvor Obstacle Filter! '
+                    + 'Melvor Obstacle Filter requires "Melvor Idle Combat Simulator Reloaded" to work.');
+                obstacleFilter.log('Find it here: https://github.com/visua0/Melvor-Idle-Combat-Simulator-Reloaded');
+            }
+            requirementsMet = false;
+        }
+        return requirementsMet;
+    }
+}
+
+// inject the script
+(function () {
+    function injectScript(main) {
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
+        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+    }
+
+    function loadScript() {
+        if ((window.isLoaded && !window.currentlyCatchingUp)
+            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+            // Only load script after game has opened
+            clearInterval(scriptLoader);
+            injectScript(script);
+        }
+    }
+
+    const scriptLoader = setInterval(loadScript, 200);
+})();
