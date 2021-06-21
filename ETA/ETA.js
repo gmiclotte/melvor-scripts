@@ -138,7 +138,9 @@ function script() {
             if (window.MICSR === undefined || MICSR.TabCard === undefined) {
                 ETA.menuCreationAttempts = (ETA.menuCreationAttempts || 0) + 1;
                 if (ETA.menuCreationAttempts > 10) {
-                    ETA.log('Failed to add settings menu!')
+                    ETA.log('Failed to add settings menu! Melvor ETA will work fine without it. '
+                        + 'Install the "Melvor Idle Combat Simulator Reloaded" extension to use the settings interface.');
+                    ETA.log('Find it here: https://github.com/visua0/Melvor-Idle-Combat-Simulator-Reloaded');
                 } else {
                     // try again in 50 ms
                     setTimeout(ETA.createSettingsMenu, 50);
