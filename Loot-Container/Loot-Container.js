@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Melvor Loot Container
 // @namespace   github.com/gmiclotte
-// @version     0.0.1
+// @version     0.0.2
 // @description For monster drops and pickpocketing: shows drop rates, avg drops per kill, and current number owned.
 // @author      GMiclotte
 // @match       https://*.melvoridle.com/*
