@@ -800,6 +800,11 @@ function script() {
                         preservationChance += 5;
                     }
                     break;
+                case CONSTANTS.skill.Summoning:
+                    if (poolReached(initial, poolXp, 2)) {
+                        preservationChance += 10;
+                    }
+                    break;
             }
             // rhaelyx is handled outside of this function
 
@@ -1065,8 +1070,8 @@ function script() {
             initial.staticPreservation = playerModifiers.increasedGlobalPreservationChance;
             initial.staticPreservation -= playerModifiers.decreasedGlobalPreservationChance;
             initial.staticPreservation += getTotalFromModifierArray("increasedSkillPreservationChance", skillID);
-            initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID)
-            if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx) && initial.hasMastery && !initial.isGathering) {
+            initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID);
+            if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx)) {
                 initial.staticPreservation += items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve; // Add base 10% chance
             }
             return initial;
