@@ -11,15 +11,23 @@
 // ==/UserScript==
 
 function script() {
-    let tempContainer = (id) => {
-        return ''
-            + '<div class="col-12 justify-content-center">'
+    let tempContainer = (id, classNames, wrap) => {
+        classNames = 'block block-rounded block-link-pop border-top border-4x ' + classNames;
+        const container = ''
+            + `<div class="${classNames}" style="overflow-x: auto;">`
             + `	<small id ="${id}">`
             + '	</small>'
             + '</div>';
+        if (wrap) {
+            return ''
+                + '<div class="col-12">'
+                + container
+                + '</div>';
+        }
+        return container;
     }
-    $('#combat-pause-container').next().after(tempContainer('cb-lootContainer'))
-    $('#thieving-food-container').parent().parent().parent().next().after(tempContainer('pp-lootContainer'))
+    $('#combat-area-selection').after(tempContainer('cb-lootContainer', 'border-combat', false))
+    $('#thieving-food-container').parent().parent().parent().next().after(tempContainer('pp-lootContainer', 'border-thieving', true))
 
     // Function to get unformatted number for Qty
     function getQtyOfItem(itemID) {
