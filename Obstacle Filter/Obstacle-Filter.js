@@ -219,11 +219,13 @@ function script() {
 
     function loadObstacleFilter() {
         // Loading script
-        obstacleFilter.log('loading...');
+        if (obstacleFilter.loadTries === 0) {
+            obstacleFilter.log('loading...');
+        }
 
         // check requirements
+        obstacleFilter.loadTries++
         if (!checkRequirements(obstacleFilter.loadTries === 10)) {
-            obstacleFilter.loadTries++
             if (obstacleFilter.loadTries < 10) {
                 setTimeout(loadObstacleFilter, 200);
             }
@@ -236,11 +238,22 @@ function script() {
 
     function checkRequirements(print = false) {
         let requirementsMet = true;
-        if (window.MICSR === undefined || MICSR.TabCard === undefined) {
+
+        const reqMicsrMajorVersion = 1;
+        const reqMicsrMinorVersion = 4;
+        const reqMicsrPatchVersion = 0;
+        const reqMicsrPreReleaseVersion = 3;
+
+        let reqMicsrversion = `v${reqMicsrMajorVersion}.${reqMicsrMinorVersion}.${reqMicsrPatchVersion}`;
+        if(reqMicsrPreReleaseVersion !== undefined) {
+            reqMicsrversion = `${reqMicsrversion}-${reqMicsrPreReleaseVersion}`;
+        }
+
+        if (window.MICSR === undefined || !MICSR.versionCheck(false, reqMicsrMajorVersion, reqMicsrMinorVersion, reqMicsrPatchVersion, reqMicsrPreReleaseVersion)) {
             if (print) {
                 obstacleFilter.log('Failed to load Melvor Obstacle Filter! '
-                    + 'Melvor Obstacle Filter requires "Melvor Idle Combat Simulator Reloaded" to work.');
-                obstacleFilter.log('Find it here: https://github.com/visua0/Melvor-Idle-Combat-Simulator-Reloaded');
+                    + `\nMelvor Obstacle Filter requires "Melvor Idle Combat Simulator Reloaded" ${reqMicsrversion} or later.`
+                    + '\nFind it here: https://github.com/visua0/Melvor-Idle-Combat-Simulator-Reloaded');
             }
             requirementsMet = false;
         }
