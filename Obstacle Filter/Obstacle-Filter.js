@@ -162,44 +162,12 @@ function script() {
         }
 
         obstacleFilter.agilityCourseCallback = () => {
-            obstacleFilter.modifiers = MICSR.copyModifierTemplate();
+            obstacleFilter.modifiers = new PlayerModifiers();
             const course = obstacleFilter.courseData.course;
             const courseMastery = obstacleFilter.courseData.courseMastery;
             const pillar = obstacleFilter.courseData.pillar;
-            // mimic calculateAgilityModifiers
-            const obstacles = [];
-            let fullCourse = true
-            for (let i = 0; i < course.length; i++) {
-                if (course[i] < 0) {
-                    fullCourse = false;
-                    break;
-                }
-                let modifiers = {};
-                if (courseMastery[i]) {
-                    const m = agilityObstacles[course[i]].modifiers;
-                    Object.getOwnPropertyNames(m).forEach(prop => {
-                        let passiveType = printPlayerModifier(prop, m[prop]);
-                        if (passiveType[1] !== "text-danger") {
-                            modifiers[prop] = m[prop];
-                            return;
-                        }
-                        const value = m[prop];
-                        if (value.length === undefined) {
-                            modifiers[prop] = value / 2;
-                            return;
-                        }
-                        modifiers[prop] = value.map(x => [x[0], x[1] / 2]);
-                    });
-                } else {
-                    modifiers = agilityObstacles[course[i]].modifiers;
-                }
-                obstacles.push({modifiers: modifiers});
-            }
-            const agilityModifiers = MICSR.computeModifiers(obstacles);
-            if (fullCourse && pillar > -1) {
-                MICSR.mergeModifiers(agilityPassivePillars[pillar].modifiers, agilityModifiers);
-            }
-            MICSR.mergeModifiers(agilityModifiers, obstacleFilter.modifiers);
+            // compute agility modifiers
+            MICSR.addAgilityModifiers(course, courseMastery, pillar, obstacleFilter.modifiers)
             // print
             $('#show-obstacle-modifiers').replaceWith(
                 obstacleFilter.showModifiers.printRelevantModifiersHtml(
@@ -245,12 +213,12 @@ function script() {
         let requirementsMet = true;
 
         const reqMicsrMajorVersion = 1;
-        const reqMicsrMinorVersion = 4;
+        const reqMicsrMinorVersion = 5;
         const reqMicsrPatchVersion = 0;
-        const reqMicsrPreReleaseVersion = 3;
+        const reqMicsrPreReleaseVersion = 1;
 
         let reqMicsrversion = `v${reqMicsrMajorVersion}.${reqMicsrMinorVersion}.${reqMicsrPatchVersion}`;
-        if(reqMicsrPreReleaseVersion !== undefined) {
+        if (reqMicsrPreReleaseVersion !== undefined) {
             reqMicsrversion = `${reqMicsrversion}-${reqMicsrPreReleaseVersion}`;
         }
 
