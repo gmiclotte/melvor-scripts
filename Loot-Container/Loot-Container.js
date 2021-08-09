@@ -11,7 +11,9 @@
 // ==/UserScript==
 
 function script() {
-    let tempContainer = (id, classNames, wrap) => {
+    window.mlc = {};
+
+    mlc.tempContainer = (id, classNames, wrap) => {
         classNames = 'block block-rounded block-link-pop border-top border-4x ' + classNames;
         const container = ''
             + `<div class="${classNames}" style="overflow-x: auto;">`
@@ -26,29 +28,19 @@ function script() {
         }
         return container;
     }
-    $('#combat-area-selection').after(tempContainer('cb-lootContainer', 'border-combat', false))
-    $('#thieving-food-container').parent().parent().parent().next().after(tempContainer('pp-lootContainer', 'border-thieving', true))
+    $('#combat-area-selection').after(mlc.tempContainer('cb-lootContainer', 'border-combat', false))
+    $('#thieving-food-container').parent().parent().parent().next().after(mlc.tempContainer('pp-lootContainer', 'border-thieving', true))
 
-    // Function to get unformatted number for Qty
-    function getQtyOfItem(itemID) {
-        for (let i = 0; i < bank.length; i++) {
-            if (bank[i].id === itemID) {
-                return bank[i].qty;
-            }
-        }
-        return 0;
-    }
+    mlc.sortedLoot = {};
 
-    let sortedLoot = {};
-
-    function drawEmptyLootTable(container) {
+    mlc.drawEmptyLootTable = (container) => {
         $(`#${container}`).replaceWith(''
             + `<small id=${container}>`
             + '</small>'
         );
     }
 
-    function drawLootTable() {
+    mlc.drawLootTable = () => {
         let name;
         let container;
         let loot;
@@ -56,33 +48,39 @@ function script() {
         let hasBones = false;
         let bones = undefined;
         let lootChance = 1;
+        const isDungeon = combatManager.areaType === 'Dungeon';
+        const monster = MONSTERS[combatManager.selectedMonster];
+        let chanceToDouble = player.modifiers.combatLootDoubleChance / 100;
         if (npcID !== null) {
             container = 'pp-lootContainer';
-            if (isGolbinRaid || isDungeon || thievingNPC[npcID] === undefined) {
+            if (isDungeon || thievingNPC[npcID] === undefined) {
                 drawEmptyLootTable(container);
                 return;
             }
             name = thievingNPC[npcID].name;
             loot = thievingNPC[npcID].lootTable;
             id = `pp-${npcID}`;
-        } else {
+            chanceToDouble = calculateChanceToDouble(CONSTANTS.skill.Thieving, false, 0, 0, 0, false) / 100;
+        } else if (combatManager.isInCombat) {
             container = 'cb-lootContainer';
-            if (isDungeon || MONSTERS[combatData.enemy.id] === undefined) {
-                drawEmptyLootTable(container);
+            if (isDungeon || monster === undefined) {
+                mlc.drawEmptyLootTable(container);
                 return;
             }
-            name = MONSTERS[combatData.enemy.id].name;
-            loot = MONSTERS[combatData.enemy.id].lootTable;
-            id = `cb-${combatData.enemy.id}`;
-            bones = MONSTERS[combatData.enemy.id].bones;
+            name = monster.name;
+            loot = monster.lootTable;
+            id = `cb-${combatManager.selectedMonster}`;
+            bones = monster.bones;
             hasBones = bones !== undefined && bones !== null;
-            if (MONSTERS[combatData.enemy.id].lootChance !== undefined) {
-                lootChance = MONSTERS[combatData.enemy.id].lootChance / 100;
+            if (monster.lootChance !== undefined) {
+                lootChance = monster.lootChance / 100;
             }
+        } else {
+            return;
         }
 
         // sort the loot if it is not cached
-        if (sortedLoot[id] === undefined) {
+        if (mlc.sortedLoot[id] === undefined) {
             console.log(`sorting ${name} loot`)
             let tmp = [];
             for (let i = 0; i < loot.length; i++) {
@@ -108,20 +106,20 @@ function script() {
             tmp.sort(function (a, b) {
                 return b.w - a.w;
             });
-            sortedLoot[id] = tmp;
+            mlc.sortedLoot[id] = tmp;
         }
 
         // compute values
-        const lootTable = sortedLoot[id];
+        const lootTable = mlc.sortedLoot[id];
         if (lootTable.length === 0 && !hasBones) {
             // no loot to insert, so insert an empty placeholder and return
-            drawEmptyLootTable(container);
+            mlc.drawEmptyLootTable(container);
             return;
         }
         const lootSize = lootTable.map(x => x.w).reduce((acc, x) => acc + x, 0) / lootChance;
         const rate = lootTable.map(x => x.w / lootSize * 100);
-        const avg = lootTable.map(x => x.w / lootSize * (1 + x.qty) / 2);
-        const owned = lootTable.map(x => getQtyOfItem(x.itemID));
+        const avg = lootTable.map(x => x.w / lootSize * (1 + x.qty) / 2 * (1 + chanceToDouble));
+        const owned = lootTable.map(x => getBankQty(x.itemID));
         const media = lootTable.map(x => items[x.itemID].media);
 
         // make table
@@ -159,7 +157,7 @@ function script() {
         let bodyOwned = '<tr>';
         bodyOwned += '<th scope="col">owned</th>';
         if (hasBones) {
-            bodyOwned += `<td>${getQtyOfItem(bones)}</td>`;
+            bodyOwned += `<td>${getBankQty(bones)}</td>`;
         }
         owned.forEach(x => {
             bodyOwned += `<td>${formatNumber(x)}</td>`;
@@ -183,23 +181,14 @@ function script() {
         );
     }
 
-    const loadNewEnemyRef = loadNewEnemy;
-    loadNewEnemy = (...args) => {
-        if (forcedEnemy !== null) {
-            combatData.enemy.id = forcedEnemy;
-        }
-        drawLootTable();
-        loadNewEnemyRef(...args);
+    mlc.updateInterval = (interval) => {
+        mlc.interval = interval;
+        clearInterval(mlc.looper);
+        mlc.looper = setInterval(mlc.drawLootTable, mlc.interval);
+        console.log(`Started Melvor Loot Container with interval ${mlc.interval}`);
     }
 
-    const pickpocketRef = pickpocket;
-    pickpocket = (...args) => {
-        if (npcID === null) {
-            npcID = args[0];
-        }
-        drawLootTable();
-        pickpocketRef(...args);
-    }
+    mlc.updateInterval(500);
 
     ///////
     //log//
