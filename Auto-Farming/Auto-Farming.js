@@ -12,6 +12,9 @@
 
 function script() {
     window.maf = {}
+    maf.log = (...x) => {
+        console.log('Melvor Auto Farming:', ...x);
+    }
     maf.allotmentSeedOrder = [
         // CONSTANTS.item.Potato_Seed,
         // CONSTANTS.item.Onion_Seed,
@@ -56,7 +59,7 @@ function script() {
     if (completionStats >= 100) {
         maf.farmGear.Cape.push(CONSTANTS.item.Cape_of_Completion);
     }
-    if (checkMaxCapeRequirements()) {
+    if (checkRequirements(items[CONSTANTS.item.Max_Skillcape].equipRequirements, false, '')) {
         maf.farmGear.Cape.push(CONSTANTS.item.Max_Skillcape);
     }
     maf.farmGear.Cape.push(CONSTANTS.item.Farming_Skillcape);
@@ -101,8 +104,30 @@ function script() {
         }
     }
 
+    // helper methods
+    maf.checkEquipped = (valid, slot) => {
+        for (let i = 0; i < valid.length; i++) {
+            if (combatManager.player.equipment.slots[slot].item.id === valid[i]) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    maf.swapEquipped = (valid, slot) => {
+        if (!maf.checkEquipped(valid, slot)) {
+            for (let i = 0; i < valid.length; i++) {
+                if (checkBankForItem(valid[i])) {
+                    combatManager.player.equipItem(valid[i], 0, slot, 1);
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
     maf.harvestWithGear = function () {
-        if (isInCombat) {
+        if (combatManager.isInCombat) {
             maf.harvest();
             return;
         }
@@ -110,52 +135,31 @@ function script() {
         // variables
         let swapped = {};
         let current = {};
-        // helper methods
-        const checkEquipped = (valid, slot) => {
-            for (let i = 0; i < valid.length; i++) {
-                if (equippedItems[slot] === valid[i]) {
-                    return true;
-                }
-            }
-            return false;
-        };
-        const swapEquipped = (valid, slot) => {
-            if (!checkEquipped(valid, slot)) {
-                for (let i = 0; i < valid.length; i++) {
-                    if (checkBankForItem(valid[i])) {
-                        equipItem(valid[i], 1, selectedEquipmentSet);
-                        console.log("MAF swapped:", items[valid[i]].name);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        };
 
         // save Shield since it might be unequipped when equipping weapon
-        current.Shield = equippedItems[CONSTANTS.equipmentSlot.Shield];
+        current.Shield = combatManager.player.equipment.slots.Shield.occupiedBy === 'None' ? combatManager.player.equipment.slots.Shield.item.id : -1;
 
         // swap gear
-        Object.getOwnPropertyNames(maf.farmGear).forEach(x => {
-            if (swapped[x]) {
+        Object.getOwnPropertyNames(maf.farmGear).forEach(slot => {
+            if (swapped[slot]) {
                 // already swapped higher priority item
                 return;
             }
-            current[x] = equippedItems[CONSTANTS.equipmentSlot[x]];
-            swapped[x] = swapEquipped(maf.farmGear[x], CONSTANTS.equipmentSlot[x]);
+            current[slot] = combatManager.player.equipment.slots[slot].item.id;
+            swapped[slot] = maf.swapEquipped(maf.farmGear[slot], slot);
         });
 
         // harvest
         maf.harvest()
 
         // swap back gear
-        Object.getOwnPropertyNames(maf.farmGear).forEach(x => {
-            if (swapped[x] && current[x] !== 0) {
-                equipItem(current[x], 1, selectedEquipmentSet);
+        Object.getOwnPropertyNames(maf.farmGear).forEach(slot => {
+            if (swapped[slot] && current[slot] !== -1) {
+                combatManager.player.equipItem(current[slot], 0, slot, 1);
             }
         });
-        if (swapped.Weapon && current.Shield !== 0) {
-            equipItem(current.Shield, 1, selectedEquipmentSet);
+        if (swapped.Weapon && current.Shield !== -1) {
+            combatManager.player.equipItem(current.Shield, 0, 'Shield', 1);
         }
     }
 
@@ -227,7 +231,7 @@ function script() {
             // catch and ignore newFarmingAreas is not defined
             // everything seems to work fine, but it still throws this error...
             if (e.message !== "newFarmingAreas is not defined") {
-                console.log(e);
+                maf.log(e);
             }
         }
     }, 5000);
@@ -235,7 +239,7 @@ function script() {
     ///////
     //log//
     ///////
-    console.log("Melvor Auto Farming Loaded");
+    maf.log("Melvor Auto Farming Loaded");
 }
 
 (function () {
