@@ -102,5 +102,5 @@ function script() {
         }
     }
 
-    const scriptLoader = setInterval(loadScript, 200);
+    const scriptLoader = setInterval(loadScript, 2000);
 })();
