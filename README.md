@@ -1,6 +1,8 @@
 # melvor-scripts
 Various scripts for Melvor Idle
 
+Additive Skilling Anti-Lag (v0.2.0, Not released on Greasy Fork yet.) Note: based on [Melvor anti-lag](https://greasyfork.org/scripts/421556-melvor-anti-lag)
+
 [![Melvor Auto Farming](https://img.shields.io/badge/dynamic/json?label=Melvor%20Auto%20Farming&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F419699.json)](https://greasyfork.org/en/scripts/419699-melvor-auto-farming)
 Note: configure by editing the file.
 
