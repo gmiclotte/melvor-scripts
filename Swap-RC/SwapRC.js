@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Swap RC
-// @version      0.0.1
+// @version      0.0.2
 // @description  Automatically changes RC runes.
 // @author		 GMiclotte
 // @match        https://*.melvoridle.com/*
