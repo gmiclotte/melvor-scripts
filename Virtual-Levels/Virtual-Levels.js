@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Virtual Levels
-// @version		 0.0.4
+// @version		 0.1.0
 // @namespace    github.com/gmiclotte
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
