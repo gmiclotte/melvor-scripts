@@ -11,9 +11,6 @@
 
 function script() {
 
-    // lemon
-    const lemon = getItemMedia(CONSTANTS.item.Lemon);
-
     // hats
     const hats = [
         getItemMedia(CONSTANTS.item.Green_Party_Hat),
@@ -22,7 +19,11 @@ function script() {
         getItemMedia(CONSTANTS.item.Yellow_Party_Hat),
     ];
 
+    const mediaBackup = items.map((_, i) => getItemMedia(i))
+
     window.lemvor = {
+        lemon: undefined,
+        replaceLemon: undefined,
         partyInterval: undefined,
         partyMode(probability, hatProbability) {
             document.getElementsByTagName('img').forEach(img => {
@@ -30,7 +31,7 @@ function script() {
                     return;
                 }
                 if (Math.random() > hatProbability) {
-                    img.src = lemon;
+                    img.src = lemvor.lemon;
                     return;
                 }
                 const hat = hats[Math.floor(Math.random() * hats.length)];
@@ -56,7 +57,7 @@ function script() {
     // convert object to array
     const unpack = object => Object.getOwnPropertyNames(object).map(prop => object[prop]);
     // when life gives you media, make some lemons
-    [
+    lemvor.makeLemon = () => [
         // arrays of objects that have media
         ANCIENT,
         AURORAS,
@@ -78,8 +79,38 @@ function script() {
         ...unpack(MILESTONES),
         ...unpack(SHOP),
     ].forEach(list => {
-        list.forEach(entry => entry.media = lemon);
+        list.forEach(entry => entry.media = lemvor.lemon);
     });
+
+    // update some lemons
+    lemvor.updateLemon = () => {
+        loadBank();
+        updateNav();
+        updateShop("gloves");
+        updateVisualSuccess();
+        updateSpellbook();
+        updateEquipTooltips();
+        updateWCRates();
+        updateMiningRates();
+        updateEquipmentHeader();
+        updateSlayerAreaRequirements();
+        updateEquipmentSetTooltips();
+        updatePlayerStats();
+        updateCombatInfoIcons();
+        updateAgilityBreakdown();
+        Object.getOwnPropertyNames(SKILLS).forEach(skillID => {
+            updateSkillWindow(skillID);
+            if (SKILLS[skillID].hasMastery) {
+                updateMasteryPoolProgress(skillID);
+            }
+        });
+        updateStats();
+
+        // update lemons
+        document.getElementsByTagName('img').forEach(img => {
+            img.src = lemvor.lemon;
+        });
+    }
 
     // add party button
     const partyButton = () => {
@@ -90,51 +121,38 @@ function script() {
             + `onclick="window.lemvor.toggleParty();" `
             + 'aria-haspopup="true" '
             + 'aria-expanded="true">'
-            + `<img class="skill-icon-xxs" src="${lemon}">`
+            + `<img class="skill-icon-xxs" src="${lemvor.lemon}">`
             + '</button>'
             + '</div>';
     }
     let node = document.getElementById('page-header-potions-dropdown').parentNode;
     node.parentNode.insertBefore($(partyButton().trim())[0], node);
 
-    // update lemons
-    document.getElementsByTagName('img').forEach(img => {
-        img.src = lemon;
-    });
-
     // make 0's lemons too
     numberWithCommas = (x) => {
         if (x === null || x === undefined) {
             return x;
         }
-        if (!showCommas) {
-            return x.toString().replace('0', '🍋');
+        const replaceLemon = (x) => {
+            if (lemvor.replaceLemon === true) {
+                return x.replace(/0/g, '🍋');
+            }
+            return x;
         }
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/0/g, '🍋');
+        if (!showCommas) {
+            return replaceLemon(x.toString());
+        }
+        return replaceLemon(x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     }
 
-    // update some lemons
-    loadBank();
-    updateNav();
-    updateShop("gloves");
-    updateVisualSuccess();
-    updateSpellbook();
-    updateEquipTooltips();
-    updateWCRates();
-    updateMiningRates();
-    updateEquipmentHeader();
-    updateSlayerAreaRequirements();
-    updateEquipmentSetTooltips();
-    updatePlayerStats();
-    updateCombatInfoIcons();
-    updateAgilityBreakdown();
-    Object.getOwnPropertyNames(SKILLS).forEach(skillID => {
-        updateSkillWindow(skillID);
-        if (SKILLS[skillID].hasMastery) {
-            updateMasteryPoolProgress(skillID);
-        }
-    });
-    updateStats();
+    lemvor.setLemon = id => {
+        lemvor.lemon = mediaBackup[id];
+        lemvor.replaceLemon = id === CONSTANTS.item.Lemon;
+        lemvor.makeLemon();
+        lemvor.updateLemon();
+    }
+
+    lemvor.setLemon(CONSTANTS.item.Lemon);
 }
 
 (function () {
