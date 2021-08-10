@@ -909,8 +909,9 @@ function script() {
                     if (successRate > npc.maxSuccess && convertXpToLvl(masteryXp) < 99) {
                         successRate = npc.maxSuccess;
                     }
-                    if (glovesTracker[CONSTANTS.shop.gloves.Thieving_Gloves].isActive
-                        && glovesTracker[CONSTANTS.shop.gloves.Thieving_Gloves].remainingActions > 0 // TODO: handle charge use
+                    const thievingGloves = glovesTracker[items[CONSTANTS.item.Thieving_Gloves].gloveID];
+                    if (thievingGloves.isActive
+                        && thievingGloves.remainingActions > 0 // TODO: handle charge use
                         && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Thieving_Gloves) {
                         successRate += 10;
                     }
@@ -962,8 +963,9 @@ function script() {
                 }
 
                 case CONSTANTS.skill.Smithing: {
-                    if (glovesTracker[CONSTANTS.shop.gloves.Smithing_Gloves].isActive
-                        && glovesTracker[CONSTANTS.shop.gloves.Smithing_Gloves].remainingActions > 0 // TODO: handle charge use
+                    const smithingGloves = glovesTracker[items[CONSTANTS.item.Smithing_Gloves].gloveID];
+                    if (smithingGloves.isActive
+                        && smithingGloves.remainingActions > 0 // TODO: handle charge use
                         && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Smithing_Gloves) {
                         xpMultiplier += 0.5;
                     }
