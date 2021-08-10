@@ -911,7 +911,7 @@ function script() {
                     }
                     if (glovesTracker[CONSTANTS.shop.gloves.Thieving_Gloves].isActive
                         && glovesTracker[CONSTANTS.shop.gloves.Thieving_Gloves].remainingActions > 0 // TODO: handle charge use
-                        && equippedItems[CONSTANTS.equipmentSlot.Gloves] === CONSTANTS.item.Thieving_Gloves) {
+                        && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Thieving_Gloves) {
                         successRate += 10;
                     }
                     successRate = Math.min(100, successRate) / 100;
@@ -964,7 +964,7 @@ function script() {
                 case CONSTANTS.skill.Smithing: {
                     if (glovesTracker[CONSTANTS.shop.gloves.Smithing_Gloves].isActive
                         && glovesTracker[CONSTANTS.shop.gloves.Smithing_Gloves].remainingActions > 0 // TODO: handle charge use
-                        && equippedItems[CONSTANTS.equipmentSlot.Gloves] === CONSTANTS.item.Smithing_Gloves) {
+                        && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Smithing_Gloves) {
                         xpMultiplier += 0.5;
                     }
                     break;
@@ -994,7 +994,7 @@ function script() {
         // compute average actions per mastery token
         function actionsPerToken(skillID, skillXp, masteryXp) {
             let actions = 20000 / calcTotalUnlockedItems(skillID, skillXp);
-            if (equippedItems.includes(CONSTANTS.item.Clue_Chasers_Insignia)) {
+            if (player.equipment.slots.Amulet.item.id === CONSTANTS.item.Clue_Chasers_Insignia) {
                 actions *= ETA.insigniaModifier;
             }
             if (skillID === CONSTANTS.skill.Cooking) {
@@ -1024,7 +1024,7 @@ function script() {
                 itemQty: {}, // Initial amount of resources
                 hasMastery: skillID !== CONSTANTS.skill.Magic, // magic has no mastery, so we often check this
                 multiple: ETA.SINGLE,
-                completionCape: equippedItems.includes(CONSTANTS.item.Cape_of_Completion),
+                completionCape: player.equipment.slots.Cape.item.id === CONSTANTS.item.Cape_of_Completion,
                 // gathering skills are treated differently, so we often check this
                 isGathering: isGathering(skillID),
                 // Generate default values for script
@@ -1071,16 +1071,18 @@ function script() {
             initial.staticPreservation -= playerModifiers.decreasedGlobalPreservationChance;
             initial.staticPreservation += getTotalFromModifierArray("increasedSkillPreservationChance", skillID);
             initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID);
-            if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx)) {
+            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx) {
                 initial.staticPreservation += items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve; // Add base 10% chance
             }
             return initial;
         }
 
         function skillCapeEquipped(capeID) {
-            return equippedItems.includes(capeID)
-                || equippedItems.includes(CONSTANTS.item.Max_Skillcape)
-                || equippedItems.includes(CONSTANTS.item.Cape_of_Completion);
+            return [
+                capeID,
+                CONSTANTS.item.Max_Skillcape,
+                CONSTANTS.item.Cape_of_Completion,
+            ].includes(player.equipment.slots.Cape.item.id);
         }
 
         function configureSmithing(initial) {
@@ -1204,10 +1206,9 @@ function script() {
                 capeMultiplier = 2;
             }
             for (let i = 0; i < initial.skillReq.length; i++) {
-                if (items[equippedItems[CONSTANTS.equipmentSlot.Weapon]].providesRune !== undefined) {
-                    if (items[equippedItems[CONSTANTS.equipmentSlot.Weapon]].providesRune.includes(initial.skillReq[i].id)) {
-                        initial.skillReq[i].qty -= items[equippedItems[CONSTANTS.equipmentSlot.Weapon]].providesRuneQty * capeMultiplier;
-                    }
+                const weapon = player.equipment.slots.Weapon.item;
+                if (weapon.providesRune !== undefined && weapon.providesRune.includes(initial.skillReq[i].id)) {
+                    initial.skillReq[i].qty -= weapon.providesRuneQty * capeMultiplier;
                 }
             }
             initial.skillReq = initial.skillReq.filter(item => item.qty > 0); // Remove all runes with 0 cost
@@ -1438,7 +1439,7 @@ function script() {
             if (skillCapeEquipped(CONSTANTS.item.Cooking_Skillcape)) {
                 return burnChance;
             }
-            if (equippedItems.includes(CONSTANTS.item.Cooking_Gloves)) {
+            if (player.equipment.slots.Gloves.item.id === CONSTANTS.item.Cooking_Gloves) {
                 return burnChance;
             }
             let primaryBurnChance = (30 - convertXpToLvl(masteryXp) * 0.6) / 100;
@@ -1510,7 +1511,7 @@ function script() {
                 current.used[id] = 0;
             }
             // Check for Crown of Rhaelyx
-            if (equippedItems.includes(CONSTANTS.item.Crown_of_Rhaelyx) && initial.hasMastery && !initial.isGathering) {
+            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx && initial.hasMastery && !initial.isGathering) {
                 let rhaelyxCharge = getQtyOfItem(CONSTANTS.item.Charge_Stone_of_Rhaelyx);
                 current.chargeUses = rhaelyxCharge * 1000; // average crafts per Rhaelyx Charge Stone
             }
@@ -2195,11 +2196,11 @@ function script() {
             if (ms > 0) {
                 return wrapTimeLeft(
                     prepend + timeLeftToHTML(
-                    initial,
-                    target,
-                    msToHms(ms),
-                    dateFormat(now, addMSToDate(now, ms)),
-                    resources,
+                        initial,
+                        target,
+                        msToHms(ms),
+                        dateFormat(now, addMSToDate(now, ms)),
+                        resources,
                     ),
                 );
             } else if (prepend !== '') {
