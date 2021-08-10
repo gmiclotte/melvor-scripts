@@ -1073,8 +1073,9 @@ function script() {
             initial.staticPreservation -= playerModifiers.decreasedGlobalPreservationChance;
             initial.staticPreservation += getTotalFromModifierArray("increasedSkillPreservationChance", skillID);
             initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID);
-            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx) {
-                initial.staticPreservation += items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve; // Add base 10% chance
+            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx
+                && getBankQty(CONSTANTS.item.Charge_Stone_of_Rhaelyx) > 0) {
+                initial.staticPreservation -= ETA.rhaelyxChargePreservation; // Remove stone 15% chance from base
             }
             return initial;
         }
@@ -1591,7 +1592,7 @@ function script() {
             let resourceSeconds = Infinity;
             const rawPreservation = masteryPreservation(initial, current.actions[0].masteryXp, current.poolXp) / 100;
             const totalChanceToUse = Math.min(1, 1 - rawPreservation);
-            const totalChanceToUseWithCharges = Math.min(1, Math.max(0.2, 1 - rawPreservation - ETA.rhaelyxChargePreservation));
+            const totalChanceToUseWithCharges = Math.min(1, Math.max(0.2, 1 - rawPreservation - ETA.rhaelyxChargePreservation / 100));
             // update summoning costs
             if (initial.skillID === CONSTANTS.skill.Summoning) {
                 const masteryLevel = convertXpToLvl(current.actions[0].masteryXp);
@@ -2304,8 +2305,10 @@ function script() {
 
         // data
         ETA.insigniaModifier = 1 - items[CONSTANTS.item.Clue_Chasers_Insignia].increasedItemChance / 100;
-        // (25 - 10) / 100 = 0.15
-        ETA.rhaelyxChargePreservation = (items[CONSTANTS.item.Crown_of_Rhaelyx].chanceToPreserve - items[CONSTANTS.item.Crown_of_Rhaelyx].baseChanceToPreserve) / 100;
+        // rhaelyx goes from 10% to 25% with charge stones
+        ETA.rhaelyxChargePreservation = conditionalModifierData.filter(
+            x => x.bankItemID === CONSTANTS.item.Charge_Stone_of_Rhaelyx
+        )[0].modifiers.increasedGlobalPreservationChance;
 
         // lvlToXp cache
         ETA.lvlToXp = Array.from({length: 200}, (_, i) => exp.level_to_xp(i));
