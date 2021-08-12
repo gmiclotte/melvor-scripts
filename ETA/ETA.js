@@ -1110,8 +1110,14 @@ function script() {
             initial.skillInterval = 2000;
             for (let i of items[initial.itemID].smithReq) {
                 const req = {...i};
-                if (req.id === CONSTANTS.item.Coal_Ore && skillCapeEquipped(CONSTANTS.item.Smithing_Skillcape)) {
-                    req.qty /= 2;
+                if (req.id === CONSTANTS.item.Coal_Ore) {
+                    if (skillCapeEquipped(CONSTANTS.item.Smithing_Skillcape)) {
+                        req.qty /= 2;
+                    }
+                    req.qty -= player.modifiers.summoningSynergy_17_19;
+                    if (req.qty < 0) {
+                        req.qty = 0;
+                    }
                 }
                 initial.skillReq.push(req);
             }
