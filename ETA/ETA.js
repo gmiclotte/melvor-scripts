@@ -1439,20 +1439,23 @@ function script() {
 
         // Calculate burn chance based on mastery level
         function calcBurnChance(masteryXp) {
-            let burnChance = 0;
-            if (skillCapeEquipped(CONSTANTS.item.Cooking_Skillcape)) {
-                return burnChance;
+            // primary burn chance
+            let primaryBurnChance = 30;
+            primaryBurnChance += playerModifiers.summoningSynergy_4_9;
+            primaryBurnChance -= convertXpToLvl(masteryXp) * 0.6;
+            primaryBurnChance -= playerModifiers.decreasedFoodBurnChance;
+            if (primaryBurnChance < 0) {
+                primaryBurnChance = 0;
             }
-            if (player.equipment.slots.Gloves.item.id === CONSTANTS.item.Cooking_Gloves) {
-                return burnChance;
+            primaryBurnChance /= 100;
+            // secondary burn chance
+            let secondaryBurnChance = 1 - playerModifiers.decreasedSecondaryFoodBurnChance;
+            if (secondaryBurnChance < 0) {
+                secondaryBurnChance = 0;
             }
-            let primaryBurnChance = (30 - convertXpToLvl(masteryXp) * 0.6) / 100;
-            let secondaryBurnChance = 0.01;
-            if (primaryBurnChance <= 0) {
-                return secondaryBurnChance;
-            }
-            burnChance = 1 - (1 - primaryBurnChance) * (1 - secondaryBurnChance);
-            return burnChance;
+            secondaryBurnChance /= 100;
+            // total burn chance
+            return 1 - (1 - primaryBurnChance) * (1 - secondaryBurnChance);
         }
 
         // calculate junk chance
