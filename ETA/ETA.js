@@ -966,16 +966,6 @@ function script() {
                     break;
                 }
 
-                case CONSTANTS.skill.Smithing: {
-                    const smithingGloves = glovesTracker[items[CONSTANTS.item.Smithing_Gloves].gloveID];
-                    if (smithingGloves.isActive
-                        && smithingGloves.remainingActions > 0 // TODO: handle charge use
-                        && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Smithing_Gloves) {
-                        xpMultiplier += 0.5;
-                    }
-                    break;
-                }
-
                 case CONSTANTS.skill.Summoning: {
                     if (ETASettings.USE_TABLETS) {
                         const qty = calcSummoningTabletQty(initial, poolXp, convertXpToLvl(masteryXp));
