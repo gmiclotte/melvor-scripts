@@ -750,6 +750,7 @@ function script() {
             // skill specific bonuses
             switch (initial.skillID) {
                 case CONSTANTS.skill.Cooking:
+                    preservationChance += player.modifiers.summoningSynergy_9_10;
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
@@ -789,6 +790,9 @@ function script() {
                     }
                     break;
                 case CONSTANTS.skill.Runecrafting:
+                    if (items[initial.actions[0].itemID].type === "Rune") {
+                        preservationChance += player.modifiers.summoningSynergy_9_10;
+                    }
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
@@ -808,10 +812,11 @@ function script() {
             }
             // rhaelyx is handled outside of this function
 
-            // cap preservation to 80%
+            // cap preservation to ub 80%
             if (preservationChance > 80) {
                 preservationChance = 80;
             }
+            // don't cap preservation to lb 0% at this point, still need to add charge stones
             return preservationChance;
         }
 
