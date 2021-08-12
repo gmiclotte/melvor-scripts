@@ -793,6 +793,9 @@ function script() {
                     if (items[initial.actions[0].itemID].type === "Rune") {
                         preservationChance += player.modifiers.summoningSynergy_9_10;
                     }
+                    if (items[initial.actions[0].itemID].type === "Magic Staff") {
+                        preservationChance += player.modifiers.summoningSynergy_3_10;
+                    }
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
