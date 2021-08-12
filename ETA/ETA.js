@@ -2043,6 +2043,14 @@ function script() {
             if (skill === CONSTANTS.skill.Magic) {
                 xpMultiplier += (playerModifiers.increasedAltMagicSkillXP - playerModifiers.decreasedAltMagicSkillXP) / 100;
             }
+            // TODO: does not match the test-v0.21?980 implementation
+            if (skill === CONSTANTS.skill.Firemaking
+                && player.modifiers.summoningSynergy_18_19
+                && bonfireBonus > 0
+                && herbloreBonuses[8].bonus[0] === 0
+                && herbloreBonuses[8].bonus[1] > 0) {
+                xpMultiplier += 5 / 100;
+            }
             return xpMultiplier;
         }
 
