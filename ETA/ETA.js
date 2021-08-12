@@ -2040,6 +2040,9 @@ function script() {
             xpMultiplier += getTotalFromModifierArray("increasedSkillXP", skill) / 100;
             xpMultiplier -= getTotalFromModifierArray("decreasedSkillXP", skill) / 100;
             xpMultiplier += (playerModifiers.increasedGlobalSkillXP - playerModifiers.decreasedGlobalSkillXP) / 100;
+            if (skill === CONSTANTS.skill.Magic) {
+                xpMultiplier += (playerModifiers.increasedAltMagicSkillXP - playerModifiers.decreasedAltMagicSkillXP) / 100;
+            }
             return xpMultiplier;
         }
 
