@@ -868,7 +868,7 @@ function script() {
 
         // Adjust interval based on down time
         // This only applies to Mining, Thieving and Agility
-        function intervalRespawnAdjustment(initial, currentInterval, poolXp, masteryXp, agiLapTime) {
+        function intervalRespawnAdjustment(initial, currentInterval, skillXp, poolXp, masteryXp, agiLapTime) {
             let adjustedInterval = currentInterval;
             switch (initial.skillID) {
                 case CONSTANTS.skill.Mining:
@@ -893,29 +893,7 @@ function script() {
                     break;
 
                 case CONSTANTS.skill.Thieving:
-                    let successRate = 0;
-                    let npc = thievingNPC[initial.currentAction];
-                    if (convertXpToLvl(masteryXp) >= 99) {
-                        successRate = 100;
-                    } else {
-                        let increasedSuccess = 0;
-                        if (poolReached(initial, poolXp, 1)) {
-                            increasedSuccess = 10;
-                        }
-                        successRate = Math.floor((skillLevel[CONSTANTS.skill.Thieving] - npc.level) * 0.7
-                            + convertXpToLvl(masteryXp) * 0.25
-                            + npc.baseSuccess) + increasedSuccess;
-                    }
-                    if (successRate > npc.maxSuccess && convertXpToLvl(masteryXp) < 99) {
-                        successRate = npc.maxSuccess;
-                    }
-                    const thievingGloves = glovesTracker[items[CONSTANTS.item.Thieving_Gloves].gloveID];
-                    if (thievingGloves.isActive
-                        && thievingGloves.remainingActions > 0 // TODO: handle charge use
-                        && player.equipment.slots.Gloves.item.id === CONSTANTS.item.Thieving_Gloves) {
-                        successRate += 10;
-                    }
-                    successRate = Math.min(100, successRate) / 100;
+                    const successRate = getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp);
                     // stunTime = 3s + time of the failed action, since failure gives no xp or mxp
                     let stunTime = 3000 + adjustedInterval;
                     // compute average time per action
@@ -926,6 +904,27 @@ function script() {
                     adjustedInterval = agiLapTime;
             }
             return Math.ceil(adjustedInterval);
+        }
+
+        function getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp) {
+            const npc = thievingNPC[initial.currentAction];
+            const masteryLevel = convertXpToLvl(masteryXp);
+            let successRate = Math.floor(
+                (convertXpToLvl(skillXp) - npc.level) * 0.7
+                + getMasteryLevel(CONSTANTS.skill.Thieving, npcID) * 0.25
+                + npc.baseSuccess
+            );
+            if (poolReached(initial, poolXp, 1)) {
+                successRate += 10;
+            }
+            successRate += playerModifiers.increasedThievingSuccessRate;
+            let successCap = npc.maxSuccess;
+            successCap += playerModifiers.increasedThievingSuccessCap;
+            if (masteryLevel >= 99) {
+                successRate += 100;
+                successCap += 5;
+            }
+            return Math.min(successRate, successCap, 100) / 100;
         }
 
         // Adjust skill Xp based on unlocked bonuses
@@ -1556,7 +1555,7 @@ function script() {
             if (initial.skillID === CONSTANTS.skill.Agility) {
                 current.agiLapTime = currentIntervals.reduce((a, b) => a + b, 0);
             }
-            const averageActionTimes = current.actions.map((x, i) => intervalRespawnAdjustment(initial, currentIntervals[i], current.poolXp, x.masteryXp, current.agiLapTime));
+            const averageActionTimes = current.actions.map((x, i) => intervalRespawnAdjustment(initial, currentIntervals[i], current.skillXp, current.poolXp, x.masteryXp, current.agiLapTime));
             // Current Xp
             let gains = gainPerAction(initial, current, currentIntervals);
 
@@ -1768,7 +1767,7 @@ function script() {
             };
             initial.actions.forEach((x, i) => {
                 const initialInterval = intervalAdjustment(initial, initial.poolXp, x.masteryXp, x.skillInterval);
-                const initialAverageActionTime = intervalRespawnAdjustment(initial, initialInterval, initial.poolXp, x.masteryXp, initial.agiLapTime);
+                const initialAverageActionTime = intervalRespawnAdjustment(initial, initialInterval, initial.skillXp, initial.poolXp, x.masteryXp, initial.agiLapTime);
                 rates.xpH += skillXpAdjustment(initial, x.itemXp, x.itemID, initial.poolXp, x.masteryXp) / initialAverageActionTime * 1000 * 3600;
                 if (initial.hasMastery) {
                     // compute current mastery xp / h using the getMasteryXpToAdd from the game or the method from this script
