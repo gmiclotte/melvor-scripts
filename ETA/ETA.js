@@ -1142,7 +1142,16 @@ function script() {
             initial.itemID = craftingItems[initial.currentAction].itemID;
             initial.itemXp = items[initial.itemID].craftingXP;
             initial.skillInterval = 3000;
-            items[initial.itemID].craftReq.forEach(i => initial.skillReq.push(i));
+            items[initial.itemID].craftReq.forEach(i => {
+                let qty = i.qty;
+                if (items[initial.itemID].category === "Combat" && items[initial.itemID].tier === "Dragonhide" && qty > 1) {
+                    qty -= playerModifiers.summoningSynergy_9_16;
+                }
+                initial.skillReq.push({
+                    ...i,
+                    qty: qty,
+                });
+            });
             return initial;
         }
 
