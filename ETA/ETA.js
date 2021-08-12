@@ -858,6 +858,11 @@ function script() {
                 case CONSTANTS.skill.Agility:
                     percentReduction += 3 * Math.floor(convertXpToLvl(masteryXp) / 10);
                     break;
+                case CONSTANTS.skill.Thieving:
+                    if (initial.currentAction === 4) {
+                        percentReduction -= player.modifiers.summoningSynergy_5_11;
+                    }
+                    break;
             }
             // apply modifiers
             adjustedInterval *= 1 - percentReduction / 100;
