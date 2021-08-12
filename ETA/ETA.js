@@ -883,6 +883,8 @@ function script() {
                         rockHP += 10;
                     }
                     rockHP += playerModifiers.increasedMiningNodeHP - playerModifiers.decreasedMiningNodeHP;
+                    // synergy 4 18
+                    rockHP += player.modifiers.summoningSynergy_4_18;
                     // potions can preserve rock HP
                     let noDamageChance = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
                     if (noDamageChance >= 100) {
