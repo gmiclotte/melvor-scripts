@@ -902,11 +902,11 @@ function script() {
                     if (poolReached(initial, poolXp, 3)) {
                         rockHP += 10;
                     }
-                    rockHP += playerModifiers.increasedMiningNodeHP - playerModifiers.decreasedMiningNodeHP;
+                    rockHP += player.modifiers.increasedMiningNodeHP - player.modifiers.decreasedMiningNodeHP;
                     // synergy 4 18
                     rockHP += player.modifiers.summoningSynergy_4_18;
                     // potions can preserve rock HP
-                    let noDamageChance = playerModifiers.increasedChanceNoDamageMining - playerModifiers.decreasedChanceNoDamageMining;
+                    let noDamageChance = player.modifiers.increasedChanceNoDamageMining - player.modifiers.decreasedChanceNoDamageMining;
                     if (noDamageChance >= 100) {
                         break;
                     }
@@ -944,9 +944,9 @@ function script() {
             if (poolReached(initial, poolXp, 1)) {
                 successRate += 10;
             }
-            successRate += playerModifiers.increasedThievingSuccessRate;
+            successRate += player.modifiers.increasedThievingSuccessRate;
             let successCap = npc.maxSuccess;
-            successCap += playerModifiers.increasedThievingSuccessCap;
+            successCap += player.modifiers.increasedThievingSuccessCap;
             if (masteryLevel >= 99) {
                 successRate += 100;
                 successCap += 5;
@@ -1085,8 +1085,8 @@ function script() {
             }
             initial.masteryLimLevel.push(Infinity);
             // static preservation
-            initial.staticPreservation = playerModifiers.increasedGlobalPreservationChance;
-            initial.staticPreservation -= playerModifiers.decreasedGlobalPreservationChance;
+            initial.staticPreservation = player.modifiers.increasedGlobalPreservationChance;
+            initial.staticPreservation -= player.modifiers.decreasedGlobalPreservationChance;
             initial.staticPreservation += getTotalFromModifierArray("increasedSkillPreservationChance", skillID);
             initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID);
             if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx
@@ -1160,7 +1160,7 @@ function script() {
             items[initial.itemID].craftReq.forEach(i => {
                 let qty = i.qty;
                 if (items[initial.itemID].category === "Combat" && items[initial.itemID].tier === "Dragonhide" && qty > 1) {
-                    qty -= playerModifiers.summoningSynergy_9_16;
+                    qty -= player.modifiers.summoningSynergy_9_16;
                 }
                 initial.skillReq.push({
                     ...i,
@@ -1381,7 +1381,7 @@ function script() {
                 qty--;
             }
             // modifier shard reduction
-            qty -= playerModifiers.decreasedSummoningShardCost - playerModifiers.increasedSummoningShardCost;
+            qty -= player.modifiers.decreasedSummoningShardCost - player.modifiers.increasedSummoningShardCost;
             return {
                 id: recipe.id,
                 qty: Math.max(1, qty),
@@ -1471,15 +1471,15 @@ function script() {
         function calcBurnChance(masteryXp) {
             // primary burn chance
             let primaryBurnChance = 30;
-            primaryBurnChance += playerModifiers.summoningSynergy_4_9;
+            primaryBurnChance += player.modifiers.summoningSynergy_4_9;
             primaryBurnChance -= convertXpToLvl(masteryXp) * 0.6;
-            primaryBurnChance -= playerModifiers.decreasedFoodBurnChance;
+            primaryBurnChance -= player.modifiers.decreasedFoodBurnChance;
             if (primaryBurnChance < 0) {
                 primaryBurnChance = 0;
             }
             primaryBurnChance /= 100;
             // secondary burn chance
-            let secondaryBurnChance = 1 - playerModifiers.decreasedSecondaryFoodBurnChance;
+            let secondaryBurnChance = 1 - player.modifiers.decreasedSecondaryFoodBurnChance;
             if (secondaryBurnChance < 0) {
                 secondaryBurnChance = 0;
             }
@@ -2039,9 +2039,9 @@ function script() {
             let xpMultiplier = 1;
             xpMultiplier += getTotalFromModifierArray("increasedSkillXP", skill) / 100;
             xpMultiplier -= getTotalFromModifierArray("decreasedSkillXP", skill) / 100;
-            xpMultiplier += (playerModifiers.increasedGlobalSkillXP - playerModifiers.decreasedGlobalSkillXP) / 100;
+            xpMultiplier += (player.modifiers.increasedGlobalSkillXP - player.modifiers.decreasedGlobalSkillXP) / 100;
             if (skill === CONSTANTS.skill.Magic) {
-                xpMultiplier += (playerModifiers.increasedAltMagicSkillXP - playerModifiers.decreasedAltMagicSkillXP) / 100;
+                xpMultiplier += (player.modifiers.increasedAltMagicSkillXP - player.modifiers.decreasedAltMagicSkillXP) / 100;
             }
             // TODO: does not match the test-v0.21?980 implementation
             if (skill === CONSTANTS.skill.Firemaking
@@ -2058,7 +2058,7 @@ function script() {
             let xpMultiplier = 1;
             xpMultiplier += getTotalFromModifierArray("increasedMasteryXP", skill) / 100;
             xpMultiplier -= getTotalFromModifierArray("decreasedMasteryXP", skill) / 100;
-            xpMultiplier += (playerModifiers.increasedGlobalMasteryXP - playerModifiers.decreasedGlobalMasteryXP) / 100;
+            xpMultiplier += (player.modifiers.increasedGlobalMasteryXP - player.modifiers.decreasedGlobalMasteryXP) / 100;
             return xpMultiplier;
         }
 
