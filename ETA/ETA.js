@@ -874,6 +874,12 @@ function script() {
                         percentReduction -= player.modifiers.summoningSynergy_5_11;
                     }
                     break;
+                case CONSTANTS.skill.Smithing:
+                    flatReduction += player.modifiers.summoningSynergy_9_17;
+                    break;
+                case CONSTANTS.skill.Cooking:
+                    flatReduction += player.modifiers.summoningSynergy_9_17;
+                    break;
             }
             // apply modifiers
             adjustedInterval *= 1 - percentReduction / 100;
