@@ -744,7 +744,7 @@ function script() {
                 return 0;
             }
             const masteryLevel = convertXpToLvl(masteryXp);
-
+            const itemID = initial.actions[0].itemID;
             // modifiers and base rhaelyx
             let preservationChance = initial.staticPreservation;
             // skill specific bonuses
@@ -773,7 +773,7 @@ function script() {
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 5;
                     }
-                    if (items[initial.actions[0].itemID].tier === "dragon") {
+                    if (items[itemID].tier === "dragon") {
                         preservationChance += player.modifiers.summoningSynergy_5_17;
                     }
                     break;
@@ -791,12 +791,15 @@ function script() {
                     if (poolReached(initial, poolXp, 1)) {
                         preservationChance += 5;
                     }
+                    if (craftingJewelleryIDs.includes(itemID)) {
+                        preservationChance += player.modifiers.summoningSynergy_16_17;
+                    }
                     break;
                 case CONSTANTS.skill.Runecrafting:
-                    if (items[initial.actions[0].itemID].type === "Rune") {
+                    if (items[itemID].type === "Rune") {
                         preservationChance += player.modifiers.summoningSynergy_9_10;
                     }
-                    if (items[initial.actions[0].itemID].type === "Magic Staff") {
+                    if (items[itemID].type === "Magic Staff") {
                         preservationChance += player.modifiers.summoningSynergy_3_10;
                     }
                     if (poolReached(initial, poolXp, 2)) {
