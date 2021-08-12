@@ -773,6 +773,9 @@ function script() {
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 5;
                     }
+                    if (items[initial.actions[0].itemID].tier === "dragon") {
+                        preservationChance += player.modifiers.summoningSynergy_5_17;
+                    }
                     break;
                 case CONSTANTS.skill.Fletching:
                     preservationChance += 0.2 * masteryLevel - 0.2;
