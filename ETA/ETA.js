@@ -580,7 +580,7 @@ function script() {
                 return gp;
             }
             if (itemID === -5) {
-                return slayerCoins;
+                return player.slayercoins;
             }
             const bankID = getBankId(itemID);
             if (bankID === -1) {
