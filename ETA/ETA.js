@@ -924,7 +924,7 @@ function script() {
                     // stunTime = 3s + time of the failed action, since failure gives no xp or mxp
                     let stunTime = 3000 + adjustedInterval;
                     // compute average time per action
-                    adjustedInterval = adjustedInterval * successRate + stunTime * (1 - successRate);
+                    adjustedInterval = adjustedInterval + stunTime / successRate - stunTime;
                     break;
 
                 case CONSTANTS.skill.Agility:
@@ -936,9 +936,10 @@ function script() {
         function getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp) {
             const npc = thievingNPC[initial.currentAction];
             const masteryLevel = convertXpToLvl(masteryXp);
+            const levelDiff = convertXpToLvl(skillXp) - npc.level;
             let successRate = Math.floor(
-                (convertXpToLvl(skillXp) - npc.level) * 0.7
-                + getMasteryLevel(CONSTANTS.skill.Thieving, npcID) * 0.25
+                levelDiff * 0.7
+                + masteryLevel * 0.25
                 + npc.baseSuccess
             );
             if (poolReached(initial, poolXp, 1)) {
