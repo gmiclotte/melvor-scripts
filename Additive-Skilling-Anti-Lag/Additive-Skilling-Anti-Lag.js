@@ -38,26 +38,31 @@ function script() {
         }
 
         log(...args) {
-            console.log('Melvor Additive Skilling Anti-Lag', ...args)
+            console.log('ASAL:', ...args)
         }
 
         patchCode(code, match, replacement) {
-            return code
-                .toString()
-                .replace(match, replacement)
-                .replace(/^function (\w+)/, "window.$1 = function");
+            code = code.toString();
+            if (match !== undefined && replacement !== undefined) {
+                code = code.replace(match, replacement);
+            }
+            return code.replace(/^function (\w+)/, 'window.$1 = function');
         }
 
         editInterval(code, skip = []) {
+            // get name and add startThread
+            code = this.patchCode(code);
             const name = code.match(/(?<=^window\.)[^ =]+/)[0];
-            const arr = code.split("setTimeout");
+            code = code.replace(/{/, `{let KEY = ${this.name}.startThread('${name}');`);
+            // split around timeouts
+            const arr = code.split('setTimeout');
             //loop through array backwards to avoid problems with nested setTimeouts
             for (let i = arr.length - 1; i > 0; i--) {
                 let b = 0;
                 let index = 0;
                 let found = -1;
                 arr[i].replace(/./gs, (char) => {
-                    char === "(" ? b++ : char === ")" ? b-- : 0;
+                    char === '(' ? b++ : char === ')' ? b-- : 0;
                     if (found < 0 && b === 0) {
                         found = index;
                     }
@@ -66,59 +71,64 @@ function script() {
                 });
                 //insert interval recording
                 let part = arr[i].slice(0, found);
-                const close = `${this.name}.recordInterval(KEY, false, null, "${name}"),`;
-                if (part.includes(name)) {
-                    part = part.replace(
-                        new RegExp(`(?<!${close.replace(/([()])/g, (m, $1) => `\\${$1}`)})(${name}\\()`, "g"),
-                        (m, $1) => `${close}${$1}`
-                    );
-                } else if (!skip.includes(i)) {
-                    part = part.replace(
-                        /(}[^}]*$)/s,
-                        (m, $1) => `${this.name}.recordInterval(KEY, false, null, "${name}");${$1}`
-                    );
-                }
                 let edited = 'setTimeout';
                 if (!skip.includes(i)) {
-                    edited += part.replace(
-                        /,([^,]*$)/s,
-                        (m, $1) => `,${this.name}.recordInterval(KEY, true, (${$1}), "${name}")`
-                    );
-                } else {
-                    edited += part;
+                    if (part.toString().match(/(};}[()a-zA-Z]*),([^,^)]*)/) !== null) {
+                        // burnLog, mineRock, startCooking
+                        part = part.replace(
+                            /(};}[()a-zA-Z]*),([^,^)]*)/s,
+                            (m, $1, $2) => `${this.name}.recordCloseInterval(KEY, '${name}');${$1},${this.name}.recordTimeout(KEY, (${$2}), '${name}')`
+                        );
+                    } else {
+                        // default
+                        part = part.replace(
+                            /},([^,]*$)/s,
+                            (m, $1, $2) => `${this.name}.recordCloseInterval(KEY, '${name}');},${this.name}.recordTimeout(KEY, (${$1}), '${name}')`
+                        );
+                    }
                 }
+                edited += part;
                 edited += arr[i].slice(found);
                 arr[i - 1] += edited;
             }
-            return arr[0].replace("(KEY, true)", `(KEY, true, null, "${name}")`);
+            return arr[0];
         }
 
-        recordInterval(KEY, open, baseInterval = null, thread) {
-            if (open && baseInterval != null) {
-                try {
-                    this.intervalLog[thread].timestamps[KEY].I = baseInterval;
-                    return baseInterval - this.lagDifference[thread];
-                } catch {
-                    return baseInterval;
-                }
-            } else if (open) {
-                try {
-                    this.intervalLog[thread].timestamps[KEY] = {T: new Date()};
-                } catch {
-                    this.intervalLog[thread] = {timestamps: [], results: []};
-                    this.intervalLog[thread].timestamps[KEY] = {T: new Date()};
-                    this.lagDifference[thread] = 0;
-                }
-            } else if (this.intervalLog[thread] !== undefined && this.intervalLog[thread].timestamps[KEY] !== undefined) {
-                this.intervalLog[thread].results.push({
-                    T: new Date() - this.intervalLog[thread].timestamps[KEY].T,
-                    I: this.intervalLog[thread].timestamps[KEY].I,
-                });
-                delete this.intervalLog[thread].timestamps[KEY];
+        startThread(thread) {
+            const KEY = this.lagKeyIncrement++;
+            // this.log(`start function ${KEY} ${thread}`);
+            if (this.intervalLog[thread] === undefined) {
+                this.intervalLog[thread] = {timestamps: [], results: []};
+                this.lagDifference[thread] = 0;
             }
+            this.intervalLog[thread].timestamps[KEY] = {T: new Date()};
+            return KEY;
+        }
+
+        recordTimeout(KEY, baseInterval, thread) {
+            if (this.intervalLog[thread].timestamps[KEY] !== undefined) {
+                this.intervalLog[thread].timestamps[KEY].I = baseInterval;
+            }
+            const interval = baseInterval - this.lagDifference[thread];
+            // this.log(`start time out ${interval} ${KEY} ${thread}`);
+            return interval;
+        }
+
+        recordCloseInterval(KEY, thread) {
+            if (this.intervalLog[thread] === undefined || this.intervalLog[thread].timestamps[KEY] === undefined) {
+                // log has been cleared, don't record this one
+                return;
+            }
+            // this.log(`close ${KEY} ${thread}`);
+            this.intervalLog[thread].results.push({
+                T: new Date() - this.intervalLog[thread].timestamps[KEY].T,
+                I: this.intervalLog[thread].timestamps[KEY].I,
+            });
+            delete this.intervalLog[thread].timestamps[KEY];
         }
 
         calcLag() {
+            // this.log('calculate lag')
             for (let thread in this.intervalLog) {
                 // sum measured and expected times
                 const sum = this.intervalLog[thread].results.reduce(
@@ -144,11 +154,9 @@ function script() {
         window[name] = new ASAL(name);
         const asal = window[name];
         asal.log('loading...');
-        let codeStrings = skillFunctions
-            .map(a => asal.patchCode(a, /{/, `{let KEY = ${asal.name}.lagKeyIncrement++;${asal.name}.recordInterval(KEY, true);`))
-            .map((a, i) => asal.editInterval(a, i === 0 ? [1] : []));
+        let codeStrings = skillFunctions.map((a, i) => asal.editInterval(a, i === 0 ? [1] : []));
         codeStrings.forEach(a => eval(a));
-        setInterval(() => asal.calcLag(), 120000);
+        setInterval(() => asal.calcLag(), 2 * 60 * 1000);
         asal.log('Loaded');
     }
 
