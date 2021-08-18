@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Additive Skilling Anti-Lag
-// @version      0.2.2
+// @version      0.2.3
 // @description  Adjusts game speed to compensate for lag so that the original intervals match realtime. Based on anti-lag by 8992
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
