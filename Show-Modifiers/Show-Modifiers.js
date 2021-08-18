@@ -21,395 +21,586 @@ function script() {
             // increased - decreased
             this.creasedModifiers = {
                 // modifiers that do not directly relate to skilling
-                misc: {
-                    BankSpace: 0,
-                    BankSpaceShop: 0,
-                },
+                misc: [
+                    'BankSpace',
+                    'BankSpaceShop',
+                ],
                 // modifiers that relate to both combat and non-combat skilling
-                skilling: {
-                    ChanceToPreservePotionCharge: 0,
-                    ChanceToDoubleItemsGlobal: 0,
-                    GPFromSales: 0,
-                    GPGlobal: 0,
-                    GlobalSkillXP: 0,
-                    HiddenSkillLevel: [],
-                    PotionChargesFlat: 0,
-                    SkillXP: [],
-                    SummoningChargePreservation: 0,
-                },
+                skilling: [
+                    'ChanceToPreservePotionCharge',
+                    'ChanceToDoubleItemsGlobal',
+                    'GPFromSales',
+                    'GPGlobal',
+                    'GlobalSkillXP',
+                    'HiddenSkillLevel',
+                    'PotionChargesFlat',
+                    'SkillXP',
+                    'SummoningChargePreservation',
+                ],
                 // modifiers that only relate to combat and are not classified in a finer group
-                combat: {
-                    AttackRolls: 0,
-                    ChanceToDoubleLootCombat: 0,
-                    DamageToAllMonsters: 0,
-                    DamageToBosses: 0,
-                    DamageToCombatAreaMonsters: 0,
-                    DamageToDungeonMonsters: 0,
-                    GPFromMonsters: 0,
-                    GPFromMonstersFlat: 0,
-                    GlobalAccuracy: 0,
-                    MaxHitFlat: 0,
-                    MaxHitPercent: 0,
-                    MaxHitpoints: 0,
-                    MinHitBasedOnMaxHit: 0,
-                    MonsterRespawnTimer: 0,
-                    AttackInterval: 0,
-                    AttackIntervalPercent: 0,
-                    ChanceToApplyBurn: 0,
-                    GPOnEnemyHit: 0,
-                    BleedLifesteal: 0,
-                    BurnLifesteal: 0,
-                    PoisonLifesteal: 0,
-                    FlatMinHit: 0,
-                    DamageTaken: 0,
-                    GlobalEvasion: 0,
-                },
+                combat: [
+                    'AttackRolls',
+                    'ChanceToDoubleLootCombat',
+                    'DamageToAllMonsters',
+                    'DamageToBosses',
+                    'DamageToCombatAreaMonsters',
+                    'DamageToDungeonMonsters',
+                    'GPFromMonsters',
+                    'GPFromMonstersFlat',
+                    'GlobalAccuracy',
+                    'MaxHitFlat',
+                    'MaxHitPercent',
+                    'MaxHitpoints',
+                    'MinHitBasedOnMaxHit',
+                    'MonsterRespawnTimer',
+                    'AttackInterval',
+                    'AttackIntervalPercent',
+                    'ChanceToApplyBurn',
+                    'GPOnEnemyHit',
+                    'BleedLifesteal',
+                    'BurnLifesteal',
+                    'PoisonLifesteal',
+                    'FlatMinHit',
+                    'DamageTaken',
+                    'GlobalEvasion',
+                ],
                 // modifiers that relate to healing
-                hitpoints: {
-                    AutoEatEfficiency: 0,
-                    AutoEatHPLimit: 0,
-                    AutoEatThreshold: 0,
-                    FoodHealingValue: 0,
-                    HPRegenFlat: 0,
-                    HitpointRegeneration: 0,
-                    Lifesteal: 0,
-                    FlatMaxHitpoints: 0,
-                },
+                hitpoints: [
+                    'AutoEatEfficiency',
+                    'AutoEatHPLimit',
+                    'AutoEatThreshold',
+                    'FoodHealingValue',
+                    'HPRegenFlat',
+                    'HitpointRegeneration',
+                    'Lifesteal',
+                    'FlatMaxHitpoints',
+                ],
                 // modifiers that relate to defence
-                defence: {
-                    DamageReduction: 0,
-                    MagicEvasion: 0,
-                    MeleeEvasion: 0,
-                    RangedEvasion: 0,
-                    ReflectDamage: 0,
-                    FlatReflectDamage: 0,
-                    RolledReflectDamage: 0,
-                    DamageReductionPercent: 0,
-                },
+                defence: [
+                    'DamageReduction',
+                    'MagicEvasion',
+                    'MeleeEvasion',
+                    'RangedEvasion',
+                    'ReflectDamage',
+                    'FlatReflectDamage',
+                    'RolledReflectDamage',
+                    'DamageReductionPercent',
+                ],
                 // modifiers that relate to using melee attacks
-                melee: {
-                    MeleeAccuracyBonus: 0,
-                    MeleeStrengthBonus: 0,
-                    MeleeMaxHit: 0,
-                    MeleeLifesteal: 0,
-                    MeleeCritChance: 0,
-                    MeleeCritMult: 0,
-                },
+                attack: [],
+                strength: [],
+                melee: [
+                    'MeleeAccuracyBonus',
+                    'MeleeStrengthBonus',
+                    'MeleeMaxHit',
+                    'MeleeLifesteal',
+                    'MeleeCritChance',
+                    'MeleeCritMult',
+                ],
                 // modifiers that relate to using ranged attacks
-                ranged: {
-                    AmmoPreservation: 0,
-                    RangedAccuracyBonus: 0,
-                    RangedStrengthBonus: 0,
-                    RangedMaxHit: 0,
-                    RangedLifesteal: 0,
-                    RangedCritChance: 0,
-                    RangedCritMult: 0,
-                },
+                ranged: [
+                    'AmmoPreservation',
+                    'RangedAccuracyBonus',
+                    'RangedStrengthBonus',
+                    'RangedMaxHit',
+                    'RangedLifesteal',
+                    'RangedCritChance',
+                    'RangedCritMult',
+                ],
                 // modifiers that relate to using magic attacks
-                magic: {
-                    MagicAccuracyBonus: 0,
-                    MagicDamageBonus: 0,
-                    MinAirSpellDmg: 0,
-                    MaxAirSpellDmg: 0,
-                    MinEarthSpellDmg: 0,
-                    MaxEarthSpellDmg: 0,
-                    MinFireSpellDmg: 0,
-                    MaxFireSpellDmg: 0,
-                    MinWaterSpellDmg: 0,
-                    MaxWaterSpellDmg: 0,
-                    RunePreservation: 0,
-                    MagicMaxHit: 0,
-                    MagicLifesteal: 0,
-                    MagicCritChance: 0,
-                    MagicCritMult: 0,
-                    Confusion: 0,
-                    Decay: 0,
-                },
+                magic: [
+                    'MagicAccuracyBonus',
+                    'MagicDamageBonus',
+                    'MinAirSpellDmg',
+                    'MaxAirSpellDmg',
+                    'MinEarthSpellDmg',
+                    'MaxEarthSpellDmg',
+                    'MinFireSpellDmg',
+                    'MaxFireSpellDmg',
+                    'MinWaterSpellDmg',
+                    'MaxWaterSpellDmg',
+                    'RunePreservation',
+                    'MagicMaxHit',
+                    'MagicLifesteal',
+                    'MagicCritChance',
+                    'MagicCritMult',
+                ],
                 // modifiers that relate to slayer tasks, areas, or monsters
-                slayer: {
-                    DamageToSlayerAreaMonsters: 0,
-                    DamageToSlayerTasks: 0,
-                    SlayerAreaEffectNegationFlat: 0,
-                    SlayerCoins: 0,
-                    SlayerTaskLength: 0,
-                },
+                slayer: [
+                    'DamageToSlayerAreaMonsters',
+                    'DamageToSlayerTasks',
+                    'SlayerAreaEffectNegationFlat',
+                    'SlayerCoins',
+                    'SlayerTaskLength',
+                ],
                 // modifiers that relate to prayer
-                prayer: {
-                    ChanceToPreservePrayerPoints: 0,
-                    FlatPrayerCostReduction: 0,
-                    PrayerCost: 0,
-                },
+                prayer: [
+                    'ChanceToPreservePrayerPoints',
+                    'FlatPrayerCostReduction',
+                    'PrayerCost',
+                ],
                 // modifiers that apply to general non-combat skilling
-                nonCombat: {
-                    ChanceToDoubleItemsSkill: [],
-                    SkillInterval: [],
-                    SkillIntervalPercent: [],
-                    ChanceAdditionalSkillResource: [],
-                },
-                production: {
-                    GlobalPreservationChance: 0,
-                    SkillPreservationChance: [],
-                },
-                mastery: {
-                    GlobalMasteryXP: 0,
-                    MasteryXP: [],
-                },
+                nonCombat: [
+                    'ChanceToDoubleItemsSkill',
+                    'SkillInterval',
+                    'SkillIntervalPercent',
+                    'ChanceAdditionalSkillResource',
+                ],
+                production: [
+                    'GlobalPreservationChance',
+                    'SkillPreservationChance',
+                ],
+                mastery: [
+                    'GlobalMasteryXP',
+                    'MasteryXP',
+                ],
                 // specific skills
-                agility: {
-                    GPFromAgility: 0,
-                    AgilityObstacleCost: 0,
-                },
-                altMagic: {
-                    AltMagicSkillXP: 0,
-                },
-                farming: {
-                    ChanceDoubleHarvest: 0,
-                    FarmingYield: 0,
-                },
-                herblore: {
-                    ChanceRandomPotionHerblore: 0,
-                },
-                mining: {
-                    ChanceNoDamageMining: 0,
-                    ChanceToDoubleOres: 0,
-                    MiningNodeHP: 0,
-                },
-                runecrafting: {
-                    ChanceForElementalRune: 0,
-                    ElementalRuneGain: 0,
-                    AdditionalRunecraftCountRunes: 0,
-                },
-                smithing: {
-                    SeeingGoldChance: 0,
-                },
-                thieving: {
-                    ChanceToDoubleLootThieving: 0,
-                    GPFromThieving: 0,
-                    GPFromThievingFlat: 0,
-                },
-                woodcutting: {
-                    BirdNestDropRate: 0,
-                },
-                summoning: {
-                    SummoningShardCost: 0,
-                    SummoningCreationCharges: 0,
-                },
+                agility: [
+                    'GPFromAgility',
+                    'AgilityObstacleCost',
+                ],
+                altMagic: [
+                    'AltMagicSkillXP',
+                ],
+                cooking: [],
+                crafting: [],
+                farming: [
+                    'ChanceDoubleHarvest',
+                    'FarmingYield',
+                ],
+                firemaking: [],
+                fishing: [],
+                fletching: [],
+                herblore: [
+                    'ChanceRandomPotionHerblore',
+                ],
+                mining: [
+                    'ChanceNoDamageMining',
+                    'ChanceToDoubleOres',
+                    'MiningNodeHP',
+                ],
+                runecrafting: [
+                    'ChanceForElementalRune',
+                    'ElementalRuneGain',
+                    'AdditionalRunecraftCountRunes',
+                ],
+                smithing: [
+                    'SeeingGoldChance',
+                ],
+                summoning: [
+                    'SummoningShardCost',
+                    'SummoningCreationCharges',
+                ],
+                thieving: [
+                    'ChanceToDoubleLootThieving',
+                    'GPFromThieving',
+                    'GPFromThievingFlat',
+                ],
+                woodcutting: [
+                    'BirdNestDropRate',
+                ],
+                // golbin raid
+                golbinRaid: [],
+                // aprilFools
+                aprilFools: [],
                 // modifiers that are not actually implemented in the game
-                unimplemented: {
-                    MaxStamina: 0,
-                    StaminaCost: 0,
-                    StaminaPerObstacle: 0,
-                    StaminaPreservationChance: 0,
-                },
+                unimplemented: [
+                    'MaxStamina',
+                    'StaminaCost',
+                    'StaminaPerObstacle',
+                    'StaminaPreservationChance',
+                ],
             }
 
+            // unique modifiers, i.e. not in+de creased
             this.singletonModifiers = {
-                misc: {
-                    autoSlayerUnlocked: 0,
-                    dungeonEquipmentSwapping: 0,
-                    increasedEquipmentSets: 0,
-                },
-                skilling: {
-                    allowSignetDrops: 0,
-                    increasedMasteryPoolProgress: 0,
-                },
-                combat: {
-                    meleeProtection: 0,
-                    rangedProtection: 0,
-                    magicProtection: 0,
-                    curseImmunity: 0,
-                    stunImmunity: 0,
-                    sleepImmunity: 0,
-                    burnImmunity: 0,
-                    poisonImmunity: 0,
-                    bleedImmunity: 0,
-                    debuffImmunity: 0,
-                    increasedRebirthChance: 0,
-                    decreasedDragonBreathDamage: 0,
-                    increasedMeleeStunThreshold: 0,
-                    increasedRuneProvision: 0,
-                    increasedChanceToConvertSeedDrops: 0,
-                    bonusCoalOnDungeonCompletion: 0,
-                    bypassSlayerItems: 0,
-                    itemProtection: 0,
-                    autoLooting: 0,
-                    autoBurying: 0,
-                    increasedCombatStoppingThreshold: 0,
-                    increasedGPMultiplierPer1MGP: 0,
-                    increasedGPMultiplierCap: 0,
-                    increasedGPMultiplierMin: 0,
-                    allowAttackAugmentingMagic: 0,
-                },
-                prayer: {
-                    increasedRedemptionPercent: 0,
-                    increasedRedemptionThreshold: 0,
-                },
-                nonCombat: {
-                    increasedOffItemChance: 0,
-                },
+                misc: [
+                    'autoSlayerUnlocked',
+                    'dungeonEquipmentSwapping',
+                    'increasedEquipmentSets',
+                ],
+                skilling: [
+                    'allowSignetDrops',
+                    'increasedMasteryPoolProgress',
+                ],
+                combat: [
+                    'meleeProtection',
+                    'rangedProtection',
+                    'magicProtection',
+                    'curseImmunity',
+                    'stunImmunity',
+                    'sleepImmunity',
+                    'burnImmunity',
+                    'poisonImmunity',
+                    'bleedImmunity',
+                    'debuffImmunity',
+                    'increasedRebirthChance',
+                    'decreasedDragonBreathDamage',
+                    'increasedMeleeStunThreshold',
+                    'increasedRuneProvision',
+                    'increasedChanceToConvertSeedDrops',
+                    'bonusCoalOnDungeonCompletion',
+                    'bypassSlayerItems',
+                    'itemProtection',
+                    'autoLooting',
+                    'autoBurying',
+                    'increasedCombatStoppingThreshold',
+                    'increasedGPMultiplierPer1MGP',
+                    'increasedGPMultiplierCap',
+                    'increasedGPMultiplierMin',
+                    'allowAttackAugmentingMagic',
+                    'summoningSynergy_0_1',
+                    'summoningSynergy_0_6',
+                    'summoningSynergy_0_7',
+                    'summoningSynergy_0_8',
+                    'summoningSynergy_0_12',
+                    'summoningSynergy_0_13',
+                    'summoningSynergy_0_14',
+                    'summoningSynergy_0_15',
+                    'summoningSynergy_1_2',
+                    'summoningSynergy_1_8',
+                    'summoningSynergy_1_12',
+                    'summoningSynergy_1_13',
+                    'summoningSynergy_1_14',
+                    'summoningSynergy_1_15',
+                    'summoningSynergy_2_13',
+                    'summoningSynergy_2_15',
+                    'summoningSynergy_6_13',
+                    'summoningSynergy_7_13',
+                    'summoningSynergy_8_13',
+                    'summoningSynergy_12_13',
+                    'summoningSynergy_12_14',
+                    'summoningSynergy_13_14',
+                ],
+                hitpoints: [],
+                defence: [],
+                attack: [],
+                strength: [],
+                melee: [
+                    'summoningSynergy_6_7',
+                    'summoningSynergy_6_12',
+                    'summoningSynergy_6_14',
+                    'summoningSynergy_6_15',
+                ],
+                ranged: [
+                    'summoningSynergy_7_8',
+                    'summoningSynergy_7_12',
+                    'summoningSynergy_7_14',
+                    'summoningSynergy_7_15',
+                ],
+                magic: [
+                    'increasedConfusion',
+                    'increasedDecay',
+                    'summoningSynergy_6_8',
+                    'summoningSynergy_8_14',
+                ],
+                slayer: [
+                    'summoningSynergy_2_12',
+                    'summoningSynergy_8_12',
+                ],
+                prayer: [
+                    'increasedRedemptionPercent',
+                    'increasedRedemptionThreshold',
+                ],
+                nonCombat: [
+                    'increasedOffItemChance',
+                    'doubleItemsSkill',
+                ],
+                production: [],
+                mastery: [],
                 // specific skills
-                cooking: {
-                    decreasedFoodBurnChance: 0,
-                    decreasedSecondaryFoodBurnChance: 0,
-                },
-                farming: {
-                    freeCompost: 0,
-                    increasedCompostPreservationChance: 0,
-                },
-                firemaking: {
-                    freeBonfires: 0,
-                    increasedFiremakingCoalChance: 0,
-                },
-                mining: {
-                    increasedMiningGemChance: 0,
-                    doubleOresMining: 0,
-                    increasedBonusCoalMining: 0,
-                },
-                smithing: {
-                    decreasedSmithingCoalCost: 0,
-                },
-                thieving: {
-                    increasedThievingSuccessRate: 0,
-                    increasedThievingSuccessCap: 0,
-                },
-                woodcutting: {
-                    increasedTreeCutLimit: 0,
-                },
+                agility: [],
+                altMagic: [],
+                cooking: [
+                    'decreasedFoodBurnChance',
+                    'decreasedSecondaryFoodBurnChance',
+                    'summoningSynergy_3_9',
+                    'summoningSynergy_4_9',
+                    'summoningSynergy_9_17',
+                    'summoningSynergy_9_18',
+                    'summoningSynergy_9_19',
+                ],
+                crafting: [
+                    'summoningSynergy_5_16',
+                    'summoningSynergy_9_16',
+                    'summoningSynergy_10_16',
+                    'summoningSynergy_16_17',
+                    'summoningSynergy_16_18',],
+                farming: [
+                    'freeCompost',
+                    'increasedCompostPreservationChance',
+                ],
+                firemaking: [
+                    'freeBonfires',
+                    'increasedFiremakingCoalChance',
+                    'summoningSynergy_3_19',
+                    'summoningSynergy_4_19',
+                    'summoningSynergy_9_19',
+                    'summoningSynergy_16_19',
+                    'summoningSynergy_18_19',
+                ],
+                fishing: [
+                    'summoningSynergy_3_5',
+                    'summoningSynergy_4_5',
+                    'summoningSynergy_5_9',
+                    'summoningSynergy_5_18',],
+                fletching: [],
+                herblore: [],
+                mining: [
+                    'increasedMiningGemChance',
+                    'doubleOresMining',
+                    'increasedBonusCoalMining',
+                    'summoningSynergy_4_5',
+                    'summoningSynergy_4_10',
+                    'summoningSynergy_4_16',
+                    'summoningSynergy_4_17',
+                    'summoningSynergy_4_18',
+                ],
+                runecrafting: [
+                    'summoningSynergy_3_10',
+                    'summoningSynergy_5_10',
+                    'summoningSynergy_9_10',
+                    'summoningSynergy_10_17',
+                    'summoningSynergy_10_18',
+                    'summoningSynergy_10_19',],
+                smithing: [
+                    'decreasedSmithingCoalCost',
+                    'summoningSynergy_5_17',
+                    'summoningSynergy_9_17',
+                    'summoningSynergy_10_17',
+                    'summoningSynergy_17_18',
+                    'summoningSynergy_17_19',
+                ],
+                summoning: [],
+                thieving: [
+                    'increasedThievingSuccessRate',
+                    'increasedThievingSuccessCap',
+                    'summoningSynergy_3_11',
+                    'summoningSynergy_4_11',
+                    'summoningSynergy_5_11',
+                    'summoningSynergy_9_11',
+                    'summoningSynergy_10_11',
+                    'summoningSynergy_11_16',
+                    'summoningSynergy_11_17',
+                    'summoningSynergy_11_18',
+                    'summoningSynergy_11_19',
+                ],
+                woodcutting: [
+                    'increasedTreeCutLimit',
+                    'summoningSynergy_3_4',
+                    'summoningSynergy_3_16',
+                    'summoningSynergy_3_17',
+                    'summoningSynergy_3_18',
+                    'summoningSynergy_3_19',
+                ],
                 // golbin raid modifiers
-                golbinRaid: {
-                    golbinRaidIncreasedMaximumAmmo: 0,
-                    golbinRaidIncreasedMaximumRunes: 0,
-                    golbinRaidIncreasedMinimumFood: 0,
-                    golbinRaidIncreasedPrayerLevel: 0,
-                    golbinRaidIncreasedPrayerPointsStart: 0,
-                    golbinRaidIncreasedPrayerPointsWave: 0,
-                    golbinRaidIncreasedStartingRuneCount: 0,
-                    golbinRaidPassiveSlotUnlocked: 0,
-                    golbinRaidPrayerUnlocked: 0,
-                    golbinRaidStartingWeapon: 0,
-                    golbinRaidWaveSkipCostReduction: 0,
-                },
-                // summoning synergy modifiers, should be moved to the appropriate location, IF they are here to stay
-                summoning: {
-                    summoningSynergy_0_1: 0,
-                    summoningSynergy_0_6: 0,
-                    summoningSynergy_0_7: 0,
-                    summoningSynergy_0_8: 0,
-                    summoningSynergy_0_12: 0,
-                    summoningSynergy_0_13: 0,
-                    summoningSynergy_0_14: 0,
-                    summoningSynergy_0_15: 0,
-                    summoningSynergy_1_2: 0,
-                    summoningSynergy_1_8: 0,
-                    summoningSynergy_1_12: 0,
-                    summoningSynergy_1_13: 0,
-                    summoningSynergy_1_14: 0,
-                    summoningSynergy_1_15: 0,
-                    summoningSynergy_2_6: 0,
-                    summoningSynergy_2_7: 0,
-                    summoningSynergy_2_8: 0,
-                    summoningSynergy_2_12: 0,
-                    summoningSynergy_2_13: 0,
-                    summoningSynergy_2_14: 0,
-                    summoningSynergy_2_15: 0,
-                    summoningSynergy_3_4: 0,
-                    summoningSynergy_3_5: 0,
-                    summoningSynergy_3_9: 0,
-                    summoningSynergy_3_10: 0,
-                    summoningSynergy_3_11: 0,
-                    summoningSynergy_3_16: 0,
-                    summoningSynergy_3_17: 0,
-                    summoningSynergy_3_18: 0,
-                    summoningSynergy_3_19: 0,
-                    summoningSynergy_4_5: 0,
-                    summoningSynergy_4_9: 0,
-                    summoningSynergy_4_10: 0,
-                    summoningSynergy_4_11: 0,
-                    summoningSynergy_4_16: 0,
-                    summoningSynergy_4_17: 0,
-                    summoningSynergy_4_18: 0,
-                    summoningSynergy_4_19: 0,
-                    summoningSynergy_5_9: 0,
-                    summoningSynergy_5_10: 0,
-                    summoningSynergy_5_11: 0,
-                    summoningSynergy_5_16: 0,
-                    summoningSynergy_5_17: 0,
-                    summoningSynergy_5_18: 0,
-                    summoningSynergy_6_7: 0,
-                    summoningSynergy_6_8: 0,
-                    summoningSynergy_6_12: 0,
-                    summoningSynergy_6_13: 0,
-                    summoningSynergy_6_14: 0,
-                    summoningSynergy_6_15: 0,
-                    summoningSynergy_7_8: 0,
-                    summoningSynergy_7_12: 0,
-                    summoningSynergy_7_13: 0,
-                    summoningSynergy_7_14: 0,
-                    summoningSynergy_7_15: 0,
-                    summoningSynergy_8_12: 0,
-                    summoningSynergy_8_13: 0,
-                    summoningSynergy_8_14: 0,
-                    summoningSynergy_9_10: 0,
-                    summoningSynergy_9_11: 0,
-                    summoningSynergy_9_16: 0,
-                    summoningSynergy_9_17: 0,
-                    summoningSynergy_9_18: 0,
-                    summoningSynergy_9_19: 0,
-                    summoningSynergy_10_11: 0,
-                    summoningSynergy_10_16: 0,
-                    summoningSynergy_10_17: 0,
-                    summoningSynergy_10_18: 0,
-                    summoningSynergy_10_19: 0,
-                    summoningSynergy_11_16: 0,
-                    summoningSynergy_11_17: 0,
-                    summoningSynergy_11_18: 0,
-                    summoningSynergy_11_19: 0,
-                    summoningSynergy_12_13: 0,
-                    summoningSynergy_12_14: 0,
-                    summoningSynergy_12_15: 0,
-                    summoningSynergy_13_14: 0,
-                    summoningSynergy_13_15: 0,
-                    summoningSynergy_14_15: 0,
-                    summoningSynergy_16_17: 0,
-                    summoningSynergy_16_18: 0,
-                    summoningSynergy_16_19: 0,
-                    summoningSynergy_17_18: 0,
-                    summoningSynergy_17_19: 0,
-                    summoningSynergy_18_19: 0,
-                },
-                aprilFools: {
-                    aprilFoolsIncreasedMovementSpeed: 0,
-                    aprilFoolsDecreasedMovementSpeed: 0,
-                    aprilFoolsIncreasedTeleportCost: 0,
-                    aprilFoolsDecreasedTeleportCost: 0,
-                    aprilFoolsIncreasedUpdateDelay: 0,
-                    aprilFoolsDecreasedUpdateDelay: 0,
-                    aprilFoolsIncreasedLemonGang: 0,
-                    aprilFoolsDecreasedLemonGang: 0,
-                    aprilFoolsIncreasedCarrotGang: 0,
-                    aprilFoolsDecreasedCarrotGang: 0,
-                }
+                golbinRaid: [
+                    'golbinRaidIncreasedMaximumAmmo',
+                    'golbinRaidIncreasedMaximumRunes',
+                    'golbinRaidIncreasedMinimumFood',
+                    'golbinRaidIncreasedPrayerLevel',
+                    'golbinRaidIncreasedPrayerPointsStart',
+                    'golbinRaidIncreasedPrayerPointsWave',
+                    'golbinRaidIncreasedStartingRuneCount',
+                    'golbinRaidPassiveSlotUnlocked',
+                    'golbinRaidPrayerUnlocked',
+                    'golbinRaidStartingWeapon',
+                    'golbinRaidWaveSkipCostReduction',
+                ],
+                // chaos mode modifiers
+                aprilFools: [
+                    'aprilFoolsIncreasedMovementSpeed',
+                    'aprilFoolsDecreasedMovementSpeed',
+                    'aprilFoolsIncreasedTeleportCost',
+                    'aprilFoolsDecreasedTeleportCost',
+                    'aprilFoolsIncreasedUpdateDelay',
+                    'aprilFoolsDecreasedUpdateDelay',
+                    'aprilFoolsIncreasedLemonGang',
+                    'aprilFoolsDecreasedLemonGang',
+                    'aprilFoolsIncreasedCarrotGang',
+                    'aprilFoolsDecreasedCarrotGang',
+                ],
+                unimplemented: [],
             }
 
+            this.checkUnknownModifiers();
+
+            // map of relevant modifiers per tag
+            this.relevantModifiers = {};
+
+            // all
+            this.relevantModifiers.all = this.getModifierNames(
+                Object.getOwnPropertyNames(this.creasedModifiers),
+                Object.getOwnPropertyNames(SKILLS).map(x => Number(x)),
+            );
+
+            // misc
+            this.relevantModifiers.misc = this.getModifierNames(['misc'], []);
+
+            // golbin raid
+            this.relevantModifiers.golbin = this.getModifierNames(['golbinRaid'], []);
+
+            // all combat
+            this.relevantModifiers.combat = this.getModifierNames(
+                [
+                    'skilling',
+                    'combat',
+                ],
+                [
+                    CONSTANTS.skill.Attack,
+                    CONSTANTS.skill.Strength,
+                    CONSTANTS.skill.Ranged,
+                    CONSTANTS.skill.Magic,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
+                ],
+            );
+
+            // melee combat
+            this.relevantModifiers.melee = this.getModifierNames(
+                [
+                    'skilling',
+                    'combat',
+                ],
+                [
+                    CONSTANTS.skill.Attack,
+                    CONSTANTS.skill.Strength,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
+                ],
+            );
+
+            // ranged combat
+            this.relevantModifiers.ranged = this.getModifierNames(
+                [
+                    'skilling',
+                    'combat',
+                ],
+                [
+                    CONSTANTS.skill.Ranged,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
+                ],
+            );
+
+            // magic combat
+            this.relevantModifiers.magic = this.getModifierNames(
+                [
+                    'skilling',
+                    'combat',
+                    'hitpoints',
+                ],
+                [
+                    CONSTANTS.skill.Magic,
+                    CONSTANTS.skill.Defence,
+                    CONSTANTS.skill.Hitpoints,
+                    CONSTANTS.skill.Prayer,
+                    CONSTANTS.skill.Slayer,
+                    CONSTANTS.skill.Summoning,
+                ],
+            );
+
+            // slayer
+            this.relevantModifiers.slayer = this.getModifierNames(
+                [
+                    'skilling',
+                ],
+                [
+                    CONSTANTS.skill.Slayer,
+                ],
+            );
+
+            // gathering skills
+            this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'];
+            this.gatheringSkills.forEach(name => {
+                this.relevantModifiers[name] = this.getModifierNames(
+                    [
+                        'skilling',
+                        'nonCombat',
+                        'mastery',
+                    ],
+                    [
+                        CONSTANTS.skill[name]
+                    ],
+                );
+                const lname = name.toLowerCase();
+                if (this.creasedModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.creasedModifiers[lname]);
+                }
+                if (this.singletonModifiers[lname] !== undefined) {
+                    this.relevantModifiers[name].names.push(this.singletonModifiers[lname]);
+                }
+            });
+
+            // production skills
+            this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore', 'Summoning'];
+            this.productionSkills.forEach(name => {
+                this.relevantModifiers[name] = this.getModifierNames(
+                    [
+                        'skilling',
+                        'nonCombat',
+                        'production',
+                        'mastery',
+                    ],
+                    [
+                        CONSTANTS.skill[name]
+                    ],
+                );
+            });
+
+            // whatever alt magic is
+            this.relevantModifiers.altMagic = this.getModifierNames(
+                [
+                    'skilling',
+                    'nonCombat',
+                    'altMagic',
+                ],
+                [],
+            );
+
+            // golbin raid
+            this.relevantModifiers.golbinRaid = this.getModifierNames(
+                ['golbinRaid'],
+                [],
+            );
+        }
+
+        log(...args) {
+            console.log(`${this.logName}:`, ...args);
+        }
+
+        checkUnknownModifiers() {
+            // list of known modifiers
             this.knownModifiers = {};
-            Object.getOwnPropertyNames(this.creasedModifiers).forEach(subset => {
-                Object.getOwnPropertyNames(this.creasedModifiers[subset]).forEach(modifier => {
+            for (const subset in this.creasedModifiers) {
+                this.creasedModifiers[subset].forEach(modifier => {
                     this.knownModifiers[`increased${modifier}`] = true;
                     this.knownModifiers[`decreased${modifier}`] = true;
                 });
-            });
-            Object.getOwnPropertyNames(this.singletonModifiers).forEach(subset => {
-                Object.getOwnPropertyNames(this.singletonModifiers[subset]).forEach(modifier => {
+            }
+            for (const subset in this.singletonModifiers) {
+                this.singletonModifiers[subset].forEach(modifier => {
                     this.knownModifiers[modifier] = true;
                 });
-            });
+            }
 
             // check for unknown modifiers
-            let hasUnknownModifiers = false;
-            [
+            const modifierNames = [
                 ...Object.getOwnPropertyNames(player.modifiers),
-                ...player.modifiers.skillModifiers.keys()
-            ].forEach(modifier => {
+                // player.modifiers.skillModifiers
+                ...Object.getOwnPropertyNames(modifierData).filter(x => modifierData[x].isSkill),
+            ];
+            let hasUnknownModifiers = false;
+            modifierNames.forEach(modifier => {
                 if (modifier === 'skillModifiers') {
                     return;
                 }
@@ -423,204 +614,50 @@ function script() {
                 this.log('no unknown modifiers detected!')
             }
 
-            this.relevantModifiers = {};
-
-            // all
-            this.relevantModifiers.all = {
-                names: [
-                    ...Object.getOwnPropertyNames(this.creasedModifiers).map(tag => this.creasedModifiers[tag]),
-                    ...Object.getOwnPropertyNames(this.singletonModifiers).map(tag => this.singletonModifiers[tag]),
-                ],
-                skillIDs: Object.getOwnPropertyNames(SKILLS).map(x => Number(x)),
-            };
-
-            // misc
-            this.relevantModifiers.misc = {
-                names: [
-                    this.creasedModifiers.misc,
-                    this.singletonModifiers.misc,
-                ],
-                skillIDs: [],
-            };
-
-            // golbin raid
-            this.relevantModifiers.golbin = {
-                names: [this.singletonModifiers.golbinRaid],
-                skillIDs: [],
-            };
-
-            // all combat
-            this.relevantModifiers.combat = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.combat,
-                    this.creasedModifiers.hitpoints,
-                    this.creasedModifiers.defence,
-                    this.creasedModifiers.melee,
-                    this.creasedModifiers.ranged,
-                    this.creasedModifiers.magic,
-                    this.creasedModifiers.slayer,
-                    this.creasedModifiers.prayer,
-                ],
-                skillIDs: [
-                    CONSTANTS.skill.Attack,
-                    CONSTANTS.skill.Strength,
-                    CONSTANTS.skill.Ranged,
-                    CONSTANTS.skill.Magic,
-                    CONSTANTS.skill.Defence,
-                    CONSTANTS.skill.Hitpoints,
-                    CONSTANTS.skill.Prayer,
-                    CONSTANTS.skill.Slayer,
-                    CONSTANTS.skill.Summoning,
-                ],
-            };
-
-            // melee combat
-            this.relevantModifiers.melee = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.combat,
-                    this.creasedModifiers.hitpoints,
-                    this.creasedModifiers.defence,
-                    this.creasedModifiers.melee,
-                    this.creasedModifiers.slayer,
-                    this.creasedModifiers.prayer,
-                ],
-                skillIDs: [
-                    CONSTANTS.skill.Attack,
-                    CONSTANTS.skill.Strength,
-                    CONSTANTS.skill.Defence,
-                    CONSTANTS.skill.Hitpoints,
-                    CONSTANTS.skill.Prayer,
-                    CONSTANTS.skill.Slayer,
-                    CONSTANTS.skill.Summoning,
-                ],
-            };
-
-            // ranged combat
-            this.relevantModifiers.ranged = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.combat,
-                    this.creasedModifiers.hitpoints,
-                    this.creasedModifiers.defence,
-                    this.creasedModifiers.ranged,
-                    this.creasedModifiers.slayer,
-                    this.creasedModifiers.prayer,
-                ],
-                skillIDs: [
-                    CONSTANTS.skill.Ranged,
-                    CONSTANTS.skill.Defence,
-                    CONSTANTS.skill.Hitpoints,
-                    CONSTANTS.skill.Prayer,
-                    CONSTANTS.skill.Slayer,
-                    CONSTANTS.skill.Summoning,
-                ],
-            };
-
-            // magic combat
-            this.relevantModifiers.magic = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.combat,
-                    this.creasedModifiers.hitpoints,
-                    this.creasedModifiers.defence,
-                    this.creasedModifiers.magic,
-                    this.creasedModifiers.slayer,
-                    this.creasedModifiers.prayer,
-                ],
-                skillIDs: [
-                    CONSTANTS.skill.Magic,
-                    CONSTANTS.skill.Defence,
-                    CONSTANTS.skill.Hitpoints,
-                    CONSTANTS.skill.Prayer,
-                    CONSTANTS.skill.Slayer,
-                    CONSTANTS.skill.Summoning,
-                ],
-            };
-
-            // slayer
-            this.relevantModifiers.slayer = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.slayer,
-                ],
-                skillIDs: [
-                    CONSTANTS.skill.Slayer,
-                ],
-            };
-
-            // gathering skills
-            this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'];
-            this.gatheringSkills.forEach(name => {
-                this.relevantModifiers[name] = {
-                    names: [
-                        this.creasedModifiers.skilling,
-                        this.creasedModifiers.nonCombat,
-                        this.creasedModifiers.mastery,
-                    ],
-                    skillIDs: [
-                        CONSTANTS.skill[name]
-                    ],
-                };
-                const lname = name.toLowerCase();
-                if (this.creasedModifiers[lname] !== undefined) {
-                    this.relevantModifiers[name].names.push(this.creasedModifiers[lname]);
+            // check for non-existent modifiers
+            let hasNonExistentModifiers = false;
+            for (const modifier in this.knownModifiers) {
+                if (!modifierNames.includes(modifier)) {
+                    hasNonExistentModifiers = true;
+                    this.log(`non-existent modifier ${modifier}`);
                 }
-                if (this.singletonModifiers[lname] !== undefined) {
-                    this.relevantModifiers[name].names.push(this.singletonModifiers[lname]);
+            }
+            if (!hasNonExistentModifiers) {
+                this.log('no non-existent modifiers detected!')
+            }
+        }
+
+        getModifierNames(setNames, skillIDs) {
+            // add skill based on skillID
+            skillIDs.forEach(id => {
+                if (!setNames.includes(skillName[id])) {
+                    setNames.push(skillName[id].toLowerCase());
                 }
             });
-
-            // production skills
-            this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore', 'Summoning'];
-            this.productionSkills.forEach(name => {
-                this.relevantModifiers[name] = {
-                    names: [
-                        this.creasedModifiers.skilling,
-                        this.creasedModifiers.nonCombat,
-                        this.creasedModifiers.production,
-                        this.creasedModifiers.mastery,
-                    ],
-                    skillIDs: [
-                        CONSTANTS.skill[name]
-                    ],
-                };
-                const lname = name.toLowerCase();
-                if (this.creasedModifiers[lname] !== undefined) {
-                    this.relevantModifiers[name].names.push(this.creasedModifiers[lname]);
+            // add melee based on att/str skillID
+            if (skillIDs.includes(CONSTANTS.skill.Attack) || skillIDs.includes(CONSTANTS.skill.Strength)) {
+                if (!setNames.includes('melee')) {
+                    setNames.push('melee');
                 }
-                if (this.singletonModifiers[lname] !== undefined) {
-                    this.relevantModifiers[name].names.push(this.singletonModifiers[lname]);
-                }
-            });
+            }
 
-            // whatever alt magic is
-            this.relevantModifiers.altMagic = {
-                names: [
-                    this.creasedModifiers.skilling,
-                    this.creasedModifiers.nonCombat,
-                    this.creasedModifiers.altMagic,
-                ],
-                skillIDs: [],
-            };
-
-            // golbin raid
-            this.relevantModifiers.golbinRaid = {
-                names: [this.singletonModifiers.golbinRaid],
-                skillIDs: [],
+            // gather modifiers
+            return {
+                names: [...new Set([
+                    ...setNames.map(name => this.creasedModifiers[name]).reduce((a, x) => [...a, ...x], []),
+                    ...setNames.map(name => this.singletonModifiers[name]).reduce((a, x) => [...a, ...x], []),
+                ])],
+                skillIDs: skillIDs,
             };
         }
 
-        log(...args) {
-            console.log(`${this.logName}:`, ...args);
-        }
-
-        printUniqueModifier(modifier, value) {
+        printUniqueModifier(modifier, value, skillID) {
             if (!value) {
                 return [];
             }
-            return [printPlayerModifier(modifier, value)];
+            // convert to array if required
+            const valueToPrint = skillID !== undefined ? [skillID, value] : value;
+            return [printPlayerModifier(modifier, valueToPrint)];
         }
 
         printDiffModifier(modifier, value, skillID = undefined) {
@@ -712,7 +749,7 @@ function script() {
                 const value = this.getSkillModifier(modifiers, modifier, skillID);
                 if (this.isUniqueModifier(modifier)) {
                     // unique
-                    return this.printUniqueModifier(modifier, value | 0);
+                    return this.printUniqueModifier(modifier, value | 0, skillID);
                 }
                 // creased
                 return this.printDiffModifier(modifier, value | 0, skillID);
@@ -739,9 +776,9 @@ function script() {
             const relevantNames = this.relevantModifiers[tag].names;
             const skillIDs = this.relevantModifiers[tag].skillIDs;
             const toPrint = [];
-            relevantNames.forEach(names => Object.getOwnPropertyNames(names).forEach(name => {
+            relevantNames.forEach(name => {
                 this.printModifier(modifiers, name, skillIDs).forEach(result => toPrint.push(result));
-            }));
+            });
             return toPrint;
         }
 
@@ -812,7 +849,6 @@ function script() {
     let node = document.getElementById('page-header-potions-dropdown').parentNode;
     node.parentNode.insertBefore($(modifierButton().trim())[0], node);
 }
-
 
 (function () {
     function injectScript(main) {
