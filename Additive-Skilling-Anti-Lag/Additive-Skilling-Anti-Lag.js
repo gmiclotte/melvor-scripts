@@ -164,6 +164,25 @@ function script() {
 }
 
 (function () {
+    // copy of skillFunctions
+    const skillFunctions = [
+        cutTree,
+        startFishing,
+        burnLog,
+        startCooking,
+        mineRock,
+        rockReset,
+        startSmithing,
+        pickpocket,
+        startFletching,
+        startCrafting,
+        startRunecrafting,
+        startHerblore,
+        startAgility,
+        createSummon,
+        castMagic,
+    ];
+
     function injectScript(main) {
         const scriptElement = document.createElement('script');
         scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
@@ -171,9 +190,8 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
-            // Only load script after game has opened
+        if (skillFunctions.every((a) => a !== undefined)) {
+            // Only load script after all functions have been defined
             clearInterval(scriptLoader);
             injectScript(script);
         }
