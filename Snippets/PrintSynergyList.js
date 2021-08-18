@@ -1,3 +1,7 @@
+
+//////////////////////
+//print synergy list//
+//////////////////////
 printSynergy = (x, y) => console.log('- [ ]',
     x.summoningID,
     parseInt(y),

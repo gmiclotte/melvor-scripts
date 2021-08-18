@@ -1,3 +1,7 @@
+
+///////////////
+//shards used//
+///////////////
 // compute amount of gp spent on summoning shards that have been used (for summoning or agility obstacles)
 items.map((x, i) => [x, i])
     .filter(x => x[0].type === 'Shard' && x[0].category === 'Summoning')

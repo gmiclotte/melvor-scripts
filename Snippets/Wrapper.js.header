@@ -1,0 +1,14 @@
+// ==UserScript==
+// @name		Melvor Snippets
+// @namespace	http://tampermonkey.net/
+// @version		0.0.1
+// @description	Collection of various snippets
+// @author		GMiclotte
+// @match		https://*.melvoridle.com/*
+// @exclude		https://wiki.melvoridle.com*
+// @noframes
+// @grant		none
+// ==/UserScript==
+
+function script() {
+// header end
