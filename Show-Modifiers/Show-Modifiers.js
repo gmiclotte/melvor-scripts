@@ -697,9 +697,15 @@ function script() {
                 return modifiers[modifier];
             }
             // creased
-            const increased = modifiers['increased' + modifier];
-            const decreased = modifiers['decreased' + modifier];
-            return (increased | 0) - (decreased | 0);
+            let increased = modifiers['increased' + modifier];
+            if (!increased) {
+                increased = 0;
+            }
+            let decreased = modifiers['decreased' + modifier];
+            if (!decreased) {
+                decreased = 0;
+            }
+            return increased - decreased;
         }
 
         getSkillModifier(modifiers, modifier, skillID) {
@@ -733,7 +739,11 @@ function script() {
                 return 0;
             }
             if (map.constructor.name === 'Map') {
-                return map.get(skillID) | 0;
+                const value = map.get(skillID);
+                if (!value) {
+                    return 0
+                }
+                return value;
             }
             return map.filter(x => x[0] === skillID)
                 .map(x => x[1])
@@ -745,20 +755,20 @@ function script() {
                 const value = this.getSimpleModifier(modifiers, modifier);
                 if (this.isUniqueModifier(modifier)) {
                     // unique
-                    return this.printUniqueModifier(modifier, value | 0);
+                    return this.printUniqueModifier(modifier, value);
                 }
                 // creased
-                return this.printDiffModifier(modifier, value | 0);
+                return this.printDiffModifier(modifier, value);
             }
             // skillModifiers
             return skillIDs.map(skillID => {
                 const value = this.getSkillModifier(modifiers, modifier, skillID);
                 if (this.isUniqueModifier(modifier)) {
                     // unique
-                    return this.printUniqueModifier(modifier, value | 0, skillID);
+                    return this.printUniqueModifier(modifier, value, skillID);
                 }
                 // creased
-                return this.printDiffModifier(modifier, value | 0, skillID);
+                return this.printDiffModifier(modifier, value, skillID);
             }).reduce((a, b) => a.concat(b), []);
         }
 
