@@ -187,7 +187,8 @@ function script() {
                 smithing: [
                     'SeeingGoldChance',
                 ],
-                summoning: [
+                summoning: [],
+                nonCBSummoning: [
                     'SummoningShardCost',
                     'SummoningCreationCharges',
                 ],
@@ -372,6 +373,7 @@ function script() {
                     'summoningSynergy_17_19',
                 ],
                 summoning: [],
+                nonCBSummoning: [],
                 thieving: [
                     'increasedThievingSuccessRate',
                     'increasedThievingSuccessCap',
@@ -544,13 +546,17 @@ function script() {
             // production skills
             this.productionSkills = ['Firemaking', 'Cooking', 'Smithing', 'Fletching', 'Crafting', 'Runecrafting', 'Herblore', 'Summoning'];
             this.productionSkills.forEach(name => {
+                const setNames = [
+                    'skilling',
+                    'nonCombat',
+                    'production',
+                    'mastery',
+                ];
+                if (name === 'Summoning') {
+                    setNames.push('nonCBSummoning');
+                }
                 this.relevantModifiers[name] = this.getModifierNames(
-                    [
-                        'skilling',
-                        'nonCombat',
-                        'production',
-                        'mastery',
-                    ],
+                    setNames,
                     [
                         CONSTANTS.skill[name]
                     ],
