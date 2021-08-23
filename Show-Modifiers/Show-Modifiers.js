@@ -15,7 +15,7 @@ function script() {
 
     class ShowModifiers {
 
-        constructor(name, logName) {
+        constructor(name, logName, check = true) {
             this.name = name;
             this.logName = logName;
             // increased - decreased
@@ -425,7 +425,9 @@ function script() {
                 unimplemented: [],
             }
 
-            this.checkUnknownModifiers();
+            if (check) {
+                this.checkUnknownModifiers();
+            }
 
             // map of relevant modifiers per tag
             this.relevantModifiers = {};
