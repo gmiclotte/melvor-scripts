@@ -119,10 +119,15 @@ function script() {
                 // log has been cleared, don't record this one
                 return;
             }
-            // this.log(`close ${KEY} ${thread}`);
+            const expected = this.intervalLog[thread].timestamps[KEY].I;
+            // measured time is limited to 1.5x expected time
+            const measured = Math.min(
+                new Date() - this.intervalLog[thread].timestamps[KEY].T,
+                1.5 * expected,
+            );
             this.intervalLog[thread].results.push({
-                T: new Date() - this.intervalLog[thread].timestamps[KEY].T,
-                I: this.intervalLog[thread].timestamps[KEY].I,
+                T: measured,
+                I: expected,
             });
             delete this.intervalLog[thread].timestamps[KEY];
         }
