@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Melvor Completion Log Helper
 // @namespace    http://tampermonkey.net/
-// @version      0.5.5
+// @version      0.6.0
 // @description  Replaces question mark icon in the Item Completion Log, Mastery Progression, Pet Completion and Monster Completion Log with greyed out images of items/pets/monsters that you have yet to get/kill and adds links to the wiki. Also includes toggle for highlighting items in bank.
 // @author       Breindahl#2660
 // @author       GMiclotte
