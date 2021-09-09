@@ -2,7 +2,7 @@
 /////////////////
 //reroll slayer//
 /////////////////
-window.rerollSlayerTask = (monsterIDs, tier) => {
+window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
     if (window.stopRerolling) {
         return;
     }
@@ -15,11 +15,11 @@ window.rerollSlayerTask = (monsterIDs, tier) => {
             // roll task if we don't have one, or if it has the wrong monster
             console.log(`rerolling ${taskName} for tier ${tier} task ${monsterIDs.map(monsterID => MONSTERS[monsterID].name).join(', ')}`);
             combatManager.slayerTask.selectTask(tier, true, true, false);
-        } else if (!task.extended) {
+        } else if (extend && !task.extended) {
             // extend task if it is the right monster
             console.log(`extending ${taskName}`);
             combatManager.slayerTask.extendTask();
         }
     }
-    setTimeout(() => rerollSlayerTask(monsterIDs, tier), 1000);
+    setTimeout(() => rerollSlayerTask(monsterIDs, tier, extend), 1000);
 }
