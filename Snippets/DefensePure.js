@@ -2,7 +2,9 @@
 /////////////////////////////
 //Defense Pure Calculations//
 /////////////////////////////
-const defLvlToHPLvl = def => {
+window.defensePure = {};
+
+defensePure.defLvlToHPLvl = def => {
     const hpXP = exp.level_to_xp(10) + 1;
     const minDefXP = exp.level_to_xp(def) + 1;
     const maxDefXP = exp.level_to_xp(def + 1);
@@ -13,8 +15,8 @@ const defLvlToHPLvl = def => {
     return {min: minHp, max: maxHp};
 }
 
-const defLvlToCbLvl = def => {
-    const hp = defLvlToHPLvl(def);
+defensePure.defLvlToCbLvl = def => {
+    const hp = defensePure.defLvlToHPLvl(def);
     const att = 1, str = 1, ran = 1, mag = 1, pray = 1;
     const minBase = (def + hp.min + Math.floor(pray / 2)) / 4;
     const maxBase = (def + hp.max + Math.floor(pray / 2)) / 4;
@@ -25,13 +27,13 @@ const defLvlToCbLvl = def => {
     return {min: minBase + best, max: maxBase + best};
 }
 
-const lastHitOnly = (skillID, maxLevel = 1) => {
+defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     if (skillXP[skillID] >= exp.level_to_xp(maxLevel + 1) - 1) {
         combatManager.stopCombat();
         return;
     }
     // swap weapon based on hp left
-    let itemID = -1;
+    let itemID;
     if (combatManager.enemy.hitpoints > 1) {
         if (skillID === CONSTANTS.skill.Magic) {
             itemID = CONSTANTS.item.Normal_Shortbow;
@@ -57,5 +59,5 @@ const lastHitOnly = (skillID, maxLevel = 1) => {
         }
     }
     // loop
-    setTimeout(lastHitOnly, 1000);
+    setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
 }
