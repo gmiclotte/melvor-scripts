@@ -15,7 +15,7 @@ cookable.forEach((x, i) => {
 });
 cookable.sort((a, b) => a.msId - b.msId);
 // set to true to show raw foods with 0 amount banked
-let showAllRaws = true;
+window.showAllRaws = true;
 // override updateAvailableFood
 updateAvailableFood = () => {
     $("#cooking-food-dropdown").html("");
