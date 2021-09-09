@@ -11,16 +11,20 @@ printSynergy = (x, y) => console.log('- [ ]',
     SUMMONING.Synergies[x.summoningID][y].modifiers
 );
 
-// get combat synergies
-summoningItems.filter(x => items[x.itemID].summoningMaxHit).map(x => {
-    for (y in SUMMONING.Synergies[x.summoningID]) {
-        printSynergy(x, y);
-    }
-});
+printCombatSynergyList = () => {
+    // get combat synergies
+    summoningItems.filter(x => items[x.itemID].summoningMaxHit).map(x => {
+        for (y in SUMMONING.Synergies[x.summoningID]) {
+            printSynergy(x, y);
+        }
+    });
+}
 
-// get non-combat synergies
-summoningItems.filter(x => !items[x.itemID].summoningMaxHit).map(x => {
-    for (y in SUMMONING.Synergies[x.summoningID]) {
-        printSynergy(x, y);
-    }
-});
+printNonCombatSynergyList = () => {
+    // get non-combat synergies
+    summoningItems.filter(x => !items[x.itemID].summoningMaxHit).map(x => {
+        for (y in SUMMONING.Synergies[x.summoningID]) {
+            printSynergy(x, y);
+        }
+    });
+}
