@@ -214,8 +214,8 @@ function script() {
 
         const reqMicsrMajorVersion = 1;
         const reqMicsrMinorVersion = 5;
-        const reqMicsrPatchVersion = 0;
-        const reqMicsrPreReleaseVersion = 2;
+        const reqMicsrPatchVersion = 8;
+        const reqMicsrPreReleaseVersion = undefined;
 
         let reqMicsrversion = `v${reqMicsrMajorVersion}.${reqMicsrMinorVersion}.${reqMicsrPatchVersion}`;
         if (reqMicsrPreReleaseVersion !== undefined) {
