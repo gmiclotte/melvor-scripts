@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.1
+// @version		0.0.2
 // @description	Collection of various snippets
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -13,6 +13,80 @@
 function script() {
 // header end
 
+////////////////////////
+//obstacle build count//
+////////////////////////
+
+listObstaclesWithFewerThanTenBuilds = () => {
+// show agility obstacles that have been built less than 10 times
+    agilityObstacleBuildCount.map((_, i) => i)
+        .filter(i => agilityObstacleBuildCount[i] < 10)
+        .map(i => agilityObstacles[i])
+        .map(x => [x.category + 1, x.name]);
+}
+
+/////////////////////////////
+//Defense Pure Calculations//
+/////////////////////////////
+window.defensePure = {};
+
+defensePure.defLvlToHPLvl = def => {
+    const hpXP = exp.level_to_xp(10) + 1;
+    const minDefXP = exp.level_to_xp(def) + 1;
+    const maxDefXP = exp.level_to_xp(def + 1);
+    const minHpXP = hpXP + minDefXP / 3;
+    const maxHpXP = hpXP + maxDefXP / 3;
+    const minHp = exp.xp_to_level(minHpXP) - 1;
+    const maxHp = exp.xp_to_level(maxHpXP) - 1;
+    return {min: minHp, max: maxHp};
+}
+
+defensePure.defLvlToCbLvl = def => {
+    const hp = defensePure.defLvlToHPLvl(def);
+    const att = 1, str = 1, ran = 1, mag = 1, pray = 1;
+    const minBase = (def + hp.min + Math.floor(pray / 2)) / 4;
+    const maxBase = (def + hp.max + Math.floor(pray / 2)) / 4;
+    const melee = (att + str) * 1.3 / 8;
+    const ranged = Math.floor(1.5 * ran) * 1.3 / 8;
+    const magic = Math.floor(1.5 * mag) * 1.3 / 8;
+    const best = Math.max(melee, ranged, magic);
+    return {min: minBase + best, max: maxBase + best};
+}
+
+defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
+    if (skillXP[skillID] >= exp.level_to_xp(maxLevel + 1) - 1) {
+        combatManager.stopCombat();
+        return;
+    }
+    // swap weapon based on hp left
+    let itemID;
+    if (combatManager.enemy.hitpoints > 1) {
+        if (skillID === CONSTANTS.skill.Magic) {
+            itemID = CONSTANTS.item.Normal_Shortbow;
+        } else {
+            // melee or ranged
+            itemID = CONSTANTS.item.Staff_of_Air;
+        }
+    } else {
+        if (skillID === CONSTANTS.skill.Ranged) {
+            itemID = CONSTANTS.item.Iron_Throwing_Knife;
+        } else if (skillID === CONSTANTS.skill.Magic) {
+            itemID = CONSTANTS.item.Staff_of_Air;
+        } else {
+            // melee
+            itemID = -1;
+        }
+    }
+    if (player.equipment.slots.Weapon.item.id !== itemID) {
+        if (itemID === -1) {
+            player.unequipItem(0, 'Weapon');
+        } else {
+            player.equipItem(itemID, 0);
+        }
+    }
+    // loop
+    setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
+}
 ////////////////
 //Mastery bars//
 ////////////////
@@ -164,6 +238,36 @@ masteryBuyer.remaining = (skillID, target = 99) => {
     return xp
 }
 
+//////////////////////
+//print synergy list//
+//////////////////////
+printSynergy = (x, y) => console.log('- [ ]',
+    x.summoningID,
+    parseInt(y),
+    items[x.itemID].name,
+    items[summoningItems[y].itemID].name,
+    SUMMONING.Synergies[x.summoningID][y].description,
+    SUMMONING.Synergies[x.summoningID][y].modifiers
+);
+
+printCombatSynergyList = () => {
+    // get combat synergies
+    summoningItems.filter(x => items[x.itemID].summoningMaxHit).map(x => {
+        for (y in SUMMONING.Synergies[x.summoningID]) {
+            printSynergy(x, y);
+        }
+    });
+}
+
+printNonCombatSynergyList = () => {
+    // get non-combat synergies
+    summoningItems.filter(x => !items[x.itemID].summoningMaxHit).map(x => {
+        for (y in SUMMONING.Synergies[x.summoningID]) {
+            printSynergy(x, y);
+        }
+    });
+}
+
 /////////////////////////////
 //Quick Equip Max/Comp Cape//
 /////////////////////////////
@@ -223,7 +327,7 @@ document.getElementById('minibar-max-cape').remove();
 /////////////////
 //reroll slayer//
 /////////////////
-window.rerollSlayerTask = (monsterIDs, tier) => {
+window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
     if (window.stopRerolling) {
         return;
     }
@@ -236,13 +340,13 @@ window.rerollSlayerTask = (monsterIDs, tier) => {
             // roll task if we don't have one, or if it has the wrong monster
             console.log(`rerolling ${taskName} for tier ${tier} task ${monsterIDs.map(monsterID => MONSTERS[monsterID].name).join(', ')}`);
             combatManager.slayerTask.selectTask(tier, true, true, false);
-        } else if (!task.extended) {
+        } else if (extend && !task.extended) {
             // extend task if it is the right monster
             console.log(`extending ${taskName}`);
             combatManager.slayerTask.extendTask();
         }
     }
-    setTimeout(() => rerollSlayerTask(monsterIDs, tier), 1000);
+    setTimeout(() => rerollSlayerTask(monsterIDs, tier, extend), 1000);
 }
 
 //////////////////
@@ -273,12 +377,14 @@ setInterval(() => {
 ///////////////
 //shards used//
 ///////////////
-// compute amount of gp spent on summoning shards that have been used (for summoning or agility obstacles)
-items.map((x, i) => [x, i])
-    .filter(x => x[0].type === 'Shard' && x[0].category === 'Summoning')
-    .map(x => x[1])
-    .map(x => (itemStats[x].stats[0] - getBankQty(x) - itemStats[x].stats[1]) * items[x].buysFor)
-    .reduce((a, b) => a + b, 0);
+shardsUsed = () => {
+    // compute amount of gp spent on summoning shards that have been used (for summoning or agility obstacles)
+    items.map((x, i) => [x, i])
+        .filter(x => x[0].type === 'Shard' && x[0].category === 'Summoning')
+        .map(x => x[1])
+        .map(x => (itemStats[x].stats[0] - getBankQty(x) - itemStats[x].stats[1]) * items[x].buysFor)
+        .reduce((a, b) => a + b, 0);
+}
 
 /////////////////////
 //Show Fish Cooking//
@@ -296,7 +402,7 @@ cookable.forEach((x, i) => {
 });
 cookable.sort((a, b) => a.msId - b.msId);
 // set to true to show raw foods with 0 amount banked
-let showAllRaws = true;
+window.showAllRaws = true;
 // override updateAvailableFood
 updateAvailableFood = () => {
     $("#cooking-food-dropdown").html("");
@@ -355,6 +461,35 @@ updateAvailableFood = () => {
     if (selectedFoodExists < 1) {
         $("#skill-cooking-food-selected-qty").text(0);
     }
+}
+
+/////////////////
+//spawn Ahrenia//
+/////////////////
+window.spawnAhrenia = (phaseToSpawn = 1) => {
+    // run
+    combatManager.runCombat();
+    // set respawn to 0
+    if (!petUnlocked[0]) {
+        unlockPet(0);
+    }
+    PETS[0].modifiers.decreasedMonsterRespawnTimer = 0;
+    player.computeAllStats();
+    PETS[0].modifiers.decreasedMonsterRespawnTimer = 3000 - TICK_INTERVAL - player.modifiers.decreasedMonsterRespawnTimer + player.modifiers.increasedMonsterRespawnTimer;
+    player.computeAllStats();
+    // unlock itm
+    dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon] = Math.max(
+        dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon],
+        1,
+    );
+    skillLevel[CONSTANTS.skill.Slayer] = Math.max(
+        skillLevel[CONSTANTS.skill.Slayer],
+        90,
+    );
+    // skip to desired phase
+    combatManager.selectDungeon(15);
+    combatManager.dungeonProgress = 19 + phaseToSpawn;
+    combatManager.loadNextEnemy();
 }
 
 /////////////////////
