@@ -78,9 +78,9 @@ function script() {
     addSummoningProgess();
 
     window.virtualLevels = {
-        // here `1000` represents `Infinity`, but `Infinity` is not valid JSON
-        navLevelCap: 1000,
-        pageLevelCap: 1000,
+        // here `10000` represents `Infinity`, but `Infinity` is not valid JSON
+        navLevelCap: 10000,
+        pageLevelCap: 10000,
         // method to save data to local storage
         save: () => {
             window.localStorage['virtualLevels'] = window.JSON.stringify(window.virtualLevels)
