@@ -888,8 +888,14 @@ function script() {
                     percentReduction += 3 * Math.floor(convertXpToLvl(masteryXp) / 10);
                     break;
                 case CONSTANTS.skill.Thieving:
-                    if (initial.currentAction === 4) {
+                    if (initial.currentAction === ThievingNPCs.FISHERMAN) {
                         percentReduction -= player.modifiers.summoningSynergy_5_11;
+                    }
+                    if (convertXpToLvl(masteryXp) >= 50) {
+                        flatReduction += 200;
+                    }
+                    if (poolReached(initial, poolXp, 1)) {
+                        flatReduction += 200;
                     }
                     break;
                 case CONSTANTS.skill.Smithing:
