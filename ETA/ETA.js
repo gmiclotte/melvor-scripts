@@ -389,11 +389,17 @@ function script() {
         }
 
         ETA.makeThievingDisplay = function () {
-            /*    thievingNPC.forEach((_, i) => {
-                    const node = document.getElementById(`success-rate-${i}`).parentNode;
-                    node.parentNode.insertBefore(tempContainer(`timeLeftThieving-${i}`), node.nextSibling);
-                });
-            */
+            Thieving.npcs.forEach(npc => {
+                document.getElementById(`mastery-screen-skill-10-${npc.id}`)
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .children[0]
+                    .appendChild(tempContainer(`timeLeftThieving-${npc.id}`));
+            });
         }
 
         ETA.makeWoodcuttingDisplay = function () {
@@ -447,27 +453,22 @@ function script() {
 
         function gatheringWrapper(skillID, checkTaskComplete) {
             let data = [];
-            let current;
             // gathering skills
             switch (skillID) {
                 case CONSTANTS.skill.Mining:
                     data = miningData;
-                    current = currentRock;
                     break;
 
                 case CONSTANTS.skill.Thieving:
-                    data = thievingNPC;
-                    current = npcID;
+                    data = Thieving.npcs;
                     break;
 
                 case CONSTANTS.skill.Woodcutting:
                     data = trees;
-                    current = -1; // never progress bar or ding for single tree
                     break;
 
                 case CONSTANTS.skill.Fishing:
                     data = fishingAreas;
-                    current = currentFishingArea;
                     break;
 
                 case CONSTANTS.skill.Agility:
@@ -480,7 +481,6 @@ function script() {
                             break;
                         }
                     }
-                    current = -1; // never progress bar or ding for single obstacle
                     break
             }
             if (data.length > 0) {
@@ -948,26 +948,28 @@ function script() {
             return Math.ceil(adjustedInterval);
         }
 
+        function getStealthAgainstNPC(initial, npc, skillXp, poolXp, masteryXp) {
+            const mastery = convertXpToLvl(masteryXp);
+            const level = convertXpToLvl(skillXp)
+            let stealth = level + mastery;
+            if (mastery >= 99) {
+                stealth += 75;
+            }
+            if (poolReached(initial, poolXp, 0)) {
+                stealth += 30;
+            }
+            if (poolReached(initial, poolXp, 3)) {
+                stealth += 100;
+            }
+            stealth += player.modifiers.increasedThievingStealth;
+            stealth -= player.modifiers.decreasedThievingStealth;
+            return stealth;
+        }
+
         function getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp) {
-            const npc = thievingNPC[initial.currentAction];
-            const masteryLevel = convertXpToLvl(masteryXp);
-            const levelDiff = convertXpToLvl(skillXp) - npc.level;
-            let successRate = Math.floor(
-                levelDiff * 0.7
-                + masteryLevel * 0.25
-                + npc.baseSuccess
-            );
-            if (poolReached(initial, poolXp, 1)) {
-                successRate += 10;
-            }
-            successRate += player.modifiers.increasedThievingSuccessRate;
-            let successCap = npc.maxSuccess;
-            successCap += player.modifiers.increasedThievingSuccessCap;
-            if (masteryLevel >= 99) {
-                successRate += 100;
-                successCap += 5;
-            }
-            return Math.min(successRate, successCap, 100) / 100;
+            const npc = Thieving.npcs[initial.currentAction];
+            const stealth = getStealthAgainstNPC(initial, npc, skillXp, poolXp, masteryXp);
+            return Math.min(100, (100 * (100 + stealth)) / (100 + npc.perception)) / 100;
         }
 
         // Adjust skill Xp based on unlocked bonuses
@@ -1304,7 +1306,7 @@ function script() {
 
         function configureThieving(initial) {
             initial.itemID = undefined;
-            initial.itemXp = thievingNPC[initial.currentAction].xp;
+            initial.itemXp = Thieving.npcs[initial.currentAction].xp;
             initial.skillInterval = 3000;
             return configureGathering(initial);
         }
