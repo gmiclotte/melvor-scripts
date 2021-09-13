@@ -361,9 +361,12 @@ function script() {
             node = document.getElementById('herblore-item-have');
             node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
             // Cooking
-            node = document.getElementById('skill-cooking-food-selected-qty');
-            node = node.parentNode.parentNode.parentNode;
-            node.parentNode.insertBefore(tempContainer('timeLeftCooking'), node.nextSibling);
+            for (let i = 0; i < 3; i++) {
+                node = document.getElementById(`cooking-item-selected-element-${i}`);
+                const newChild = html2Node(`<div class="col-12"/>`)
+                newChild.appendChild(tempContainer(`timeLeftCooking-${i}`));
+                node.parentNode.appendChild(newChild);
+            }
             // Firemaking
             node = document.getElementById('skill-fm-logs-selected-qty');
             node = node.parentNode.parentNode.parentNode;
@@ -386,10 +389,11 @@ function script() {
         }
 
         ETA.makeThievingDisplay = function () {
-            thievingNPC.forEach((_, i) => {
-                const node = document.getElementById(`success-rate-${i}`).parentNode;
-                node.parentNode.insertBefore(tempContainer(`timeLeftThieving-${i}`), node.nextSibling);
-            });
+            /*    thievingNPC.forEach((_, i) => {
+                    const node = document.getElementById(`success-rate-${i}`).parentNode;
+                    node.parentNode.insertBefore(tempContainer(`timeLeftThieving-${i}`), node.nextSibling);
+                });
+            */
         }
 
         ETA.makeWoodcuttingDisplay = function () {
@@ -545,7 +549,7 @@ function script() {
                     initial.currentAction = selectedHerblore;
                     break;
                 case CONSTANTS.skill.Cooking:
-                    initial.currentAction = selectedFood;
+                    initial.data = selectedCookingRecipe;
                     break;
                 case CONSTANTS.skill.Firemaking:
                     initial.currentAction = selectedLog;
@@ -556,10 +560,22 @@ function script() {
                 case CONSTANTS.skill.Summoning:
                     initial.currentAction = selectedSummon;
             }
-            if (initial.currentAction === undefined || initial.currentAction === null) {
+            if (initial.currentAction === undefined && initial.data === undefined) {
                 return;
             }
-            asyncTimeRemaining(initial);
+            if (initial.data === undefined) {
+                asyncTimeRemaining(initial);
+                return;
+            }
+            initial.data.forEach((x, i) => {
+                if (x === -1) {
+                    return;
+                }
+                let initial = initialVariables(skillID, checkTaskComplete);
+                initial.currentAction = x;
+                initial.cookingCategory = i;
+                asyncTimeRemaining(initial);
+            });
         }
 
         function asyncTimeRemaining(initial) {
@@ -750,7 +766,6 @@ function script() {
             // skill specific bonuses
             switch (initial.skillID) {
                 case CONSTANTS.skill.Cooking:
-                    preservationChance += player.modifiers.summoningSynergy_9_10;
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
@@ -797,7 +812,7 @@ function script() {
                     break;
                 case CONSTANTS.skill.Runecrafting:
                     if (items[itemID].type === "Rune") {
-                        preservationChance += player.modifiers.summoningSynergy_9_10;
+                        preservationChance += player.modifiers.increasedRunecraftingEssencePreservation;
                     }
                     if (items[itemID].type === "Magic Staff") {
                         preservationChance += player.modifiers.summoningSynergy_3_10;
@@ -1016,9 +1031,6 @@ function script() {
             if (player.equipment.slots.Amulet.item.id === CONSTANTS.item.Clue_Chasers_Insignia) {
                 actions *= ETA.insigniaModifier;
             }
-            if (skillID === CONSTANTS.skill.Cooking) {
-                actions /= 1 - calcBurnChance(masteryXp);
-            }
             return actions;
         }
 
@@ -1182,12 +1194,13 @@ function script() {
         }
 
         function configureCooking(initial) {
-            initial.itemID = initial.currentAction;
-            initial.itemXp = items[initial.itemID].cookingXP;
-            initial.skillInterval = 3000;
-            initial.skillReq = [{id: initial.itemID, qty: 1}];
+            const item = items[initial.currentAction];
+            initial.itemID = item.id;
+            initial.masteryID = item.masteryID[1];
+            initial.itemXp = item.cookingXP;
+            initial.skillInterval = item.cookingInterval;
+            initial.skillReq = items[initial.itemID].recipeRequirements[0];
             initial.masteryLimLevel = [99, Infinity]; //Cooking has no Mastery bonus
-            initial.itemID = items[initial.itemID].cookedItemID;
             return initial;
         }
 
@@ -1401,8 +1414,8 @@ function script() {
         }
 
         // Calculate mastery xp based on unlocked bonuses
-        function calcMasteryXpToAdd(initial, totalMasteryLevel, skillXp, masteryXp, poolXp, timePerAction, itemID) {
-            const modifiedTimePerAction = getTimePerActionModifierMastery(initial.skillID, timePerAction, itemID);
+        function calcMasteryXpToAdd(initial, totalMasteryLevel, skillXp, masteryXp, poolXp, timePerAction, masteryID) {
+            const modifiedTimePerAction = getTimePerActionModifierMastery(initial.skillID, timePerAction, masteryID);
             let xpModifier = initial.staticMXpBonus;
             // General Mastery Xp formula
             let xpToAdd = ((calcTotalUnlockedItems(initial.skillID, skillXp) * totalMasteryLevel) / getTotalMasteryLevelForSkill(initial.skillID) + convertXpToLvl(masteryXp) * (getTotalItemsInSkill(initial.skillID) / 10)) * (modifiedTimePerAction / 1000) / 2;
@@ -1473,8 +1486,9 @@ function script() {
             // primary burn chance
             let primaryBurnChance = 30;
             primaryBurnChance += player.modifiers.summoningSynergy_4_9;
-            primaryBurnChance -= convertXpToLvl(masteryXp) * 0.6;
-            primaryBurnChance -= player.modifiers.decreasedFoodBurnChance;
+            primaryBurnChance -= player.modifiers.increasedChanceSuccessfulCook;
+            primaryBurnChance += player.modifiers.decreasedChanceSuccessfulCook;
+            primaryBurnChance -= (convertXpToLvl(masteryXp) - 1) * 0.6;
             if (primaryBurnChance < 0) {
                 primaryBurnChance = 0;
             }
@@ -1567,7 +1581,7 @@ function script() {
                 };
 
                 if (initial.hasMastery) {
-                    gain.masteryXpPerAction = calcMasteryXpToAdd(initial, current.totalMasteryLevel, current.skillXp, x.masteryXp, current.poolXp, averageActionTime[i], initial.actions[i].itemID);
+                    gain.masteryXpPerAction = calcMasteryXpToAdd(initial, current.totalMasteryLevel, current.skillXp, x.masteryXp, current.poolXp, averageActionTime[i], initial.actions[i].masteryID);
                     gain.poolXpPerAction = calcPoolXpToAdd(current.skillXp, gain.masteryXpPerAction);
                     gain.tokensPerAction = 1 / actionsPerToken(initial.skillID, current.skillXp, x.masteryXp);
                     gain.tokenXpPerAction = initial.maxPoolXp / 1000 * gain.tokensPerAction;
@@ -1664,7 +1678,7 @@ function script() {
             }
 
             // Minimum actions based on limits
-            const rawExpectedS = Math.min(skillXpSeconds, masteryXpSeconds, poolXpSeconds, resourceSeconds)
+            const rawExpectedS = Math.min(skillXpSeconds, masteryXpSeconds, poolXpSeconds, resourceSeconds);
             const expectedMS = Math.ceil(1000 * rawExpectedS);
             const expectedS = expectedMS / 1000;
             const expectedActions = averageActionTimes.map(x => expectedMS / x);
@@ -1808,7 +1822,7 @@ function script() {
                 if (initial.hasMastery) {
                     // compute current mastery xp / h using the getMasteryXpToAdd from the game or the method from this script
                     // const masteryXpPerAction = getMasteryXpToAdd(initial.skillID, initial.masteryID, initialInterval);
-                    const masteryXpPerAction = calcMasteryXpToAdd(initial, initial.totalMasteryLevel, initial.skillXp, x.masteryXp, initial.poolXp, initialInterval, x.itemID);
+                    const masteryXpPerAction = calcMasteryXpToAdd(initial, initial.totalMasteryLevel, initial.skillXp, x.masteryXp, initial.poolXp, initialInterval, x.masteryID);
                     const masteryXpH = masteryXpPerAction / initialAverageActionTime * 1000 * 3600
                     rates.masteryXpH += masteryXpH;
                     // pool percentage per hour
@@ -2133,6 +2147,8 @@ function script() {
                 timeLeftElementId += "-Secondary";
             } else if (initial.isGathering) {
                 timeLeftElementId += "-" + initial.currentAction;
+            } else if (initial.cookingCategory !== undefined) {
+                timeLeftElementId += "-" + initial.cookingCategory;
             }
             const timeLeftElement = document.getElementById(timeLeftElementId);
             if (timeLeftElement === null) {
@@ -2176,10 +2192,15 @@ function script() {
                 const itemID = initial.actions[0].itemID;
                 if (itemID !== undefined) {
                     const youHaveElementId = timeLeftElementId + "-YouHave";
+                    const perfectID = items[itemID].perfectItem;
                     $("#" + youHaveElementId).replaceWith(''
                         + `<small id="${youHaveElementId}">`
                         + `<span>You have: ${formatNumber(getQtyOfItem(itemID))}</span>`
                         + `<img class="skill-icon-xs mr-2" src="${items[itemID].media}">`
+                        + (items[itemID].perfectItem === undefined
+                            ? ''
+                            : `<span>${formatNumber(getQtyOfItem(perfectID))}</span>`
+                            + `<img class="skill-icon-xs mr-2" src="${items[perfectID].media}">`)
                         + "</small>"
                     );
                 }
@@ -2370,7 +2391,7 @@ function script() {
             ["Runecrafting", ["Runecraft"]],
             ["Crafting", ["Craft"]],
             ["Herblore", ["Herblore"]],
-            ["Cooking", ["Food"]],
+            ["Cooking", ["CookingRecipe"], "startActiveCookTimer"],
             ["Firemaking", ["Log"], "burnLog"],
             ["Summoning", ["Summon"], "createSummon"],
             // alt magic
@@ -2534,8 +2555,7 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
