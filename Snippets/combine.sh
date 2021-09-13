@@ -9,7 +9,6 @@ cat RemoveElements.js >> ActiveSnippets.js
 cat RerollSlayer.js >> ActiveSnippets.js
 cat RockOrder.js >> ActiveSnippets.js
 cat ShardsUsed.js >> ActiveSnippets.js
-cat ShowCookingFish.js >> ActiveSnippets.js
 cat SpawnAhrenia.js >> ActiveSnippets.js
 cat UnlimitedPool.js >> ActiveSnippets.js
 cat Unsell.js >> ActiveSnippets.js
