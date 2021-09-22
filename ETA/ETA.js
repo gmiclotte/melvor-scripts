@@ -346,19 +346,19 @@ function script() {
 
         ETA.makeProcessingDisplays = function () {
             // smithing
-            let node = document.getElementById('smith-item-have');
+            let node = document.querySelector('[aria-labelledBy=Smithing-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
             node.parentNode.insertBefore(tempContainer('timeLeftSmithing'), node.nextSibling);
             // fletching
-            node = document.getElementById('fletch-item-have');
+            node = document.querySelector('[aria-labelledBy=Fletching-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
             node.parentNode.insertBefore(tempContainer('timeLeftFletching'), node.nextSibling);
             // Runecrafting
-            node = document.getElementById('runecraft-item-have');
+            node = document.querySelector('[aria-labelledBy=Runecrafting-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
             node.parentNode.insertBefore(tempContainer('timeLeftRunecrafting'), node.nextSibling);
             // Crafting
-            node = document.getElementById('craft-item-have');
+            node = document.querySelector('[aria-labelledBy=Crafting-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
             node.parentNode.insertBefore(tempContainer('timeLeftCrafting'), node.nextSibling);
             // Herblore
-            node = document.getElementById('herblore-item-have');
+            node = document.querySelector('[aria-labelledBy=Herblore-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
             node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
             // Cooking
             for (let i = 0; i < 3; i++) {
@@ -375,7 +375,7 @@ function script() {
             node = document.getElementById('magic-item-have-and-div');
             node.parentNode.insertBefore(tempContainer('timeLeftMagic'), node.nextSibling);
             // Summoning
-            node = document.getElementById('summoning-item-have');
+            node = document.querySelector('[aria-labelledBy=Summoning-artisan-menu-recipe-select]').parentElement.parentElement.parentElement
             if (node) {
                 node.parentNode.insertBefore(tempContainer('timeLeftSummoning'), node.nextSibling);
             }
