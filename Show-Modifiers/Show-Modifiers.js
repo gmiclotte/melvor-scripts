@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Show Modifiers
-// @version      0.2.3
+// @version      0.2.4
 // @description  Adds a button to show all your modifiers
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
@@ -876,8 +876,7 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

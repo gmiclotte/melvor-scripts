@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Melvor Virtual Levels
-// @version		 0.1.1
+// @version		 0.1.2
 // @namespace    github.com/gmiclotte
 // @author       GMiclotte
 // @match        https://*.melvoridle.com/*
@@ -156,8 +156,7 @@ function script() {
     }
 
     function loadScript() {
-        if (window.isLoaded
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

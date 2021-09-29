@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Melvor Loot Container
 // @namespace   github.com/gmiclotte
-// @version     0.1.0
+// @version     0.1.1
 // @description For monster drops and pickpocketing: shows drop rates, avg drops per kill, and current number owned.
 // @author      GMiclotte
 // @match       https://*.melvoridle.com/*
@@ -204,8 +204,7 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

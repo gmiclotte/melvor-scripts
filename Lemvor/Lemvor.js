@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Lemvor
-// @version      0.1.0
+// @version      0.1.1
 // @namespace    github.com/gmiclotte
 // @description  lemon
 // @author       GMiclotte
@@ -163,8 +163,7 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

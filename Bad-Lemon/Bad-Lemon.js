@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Bad Lemon
 // @namespace	http://tampermonkey.net/
-// @version		0.0.4
+// @version		0.0.5
 // @description	Bad Apple goes Melvor. This Fan Content is a fan work based on Touhou Project.
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -537,8 +537,7 @@ function script() {
     }
 
     function loadScript() {
-        if ((window.isLoaded && !window.currentlyCatchingUp)
-            || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded && !unsafeWindow.currentlyCatchingUp)) {
+        if (confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
