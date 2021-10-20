@@ -88,7 +88,7 @@ function script() {
                 }
                 return list;
             },
-            getTarget: (current, global, specific, defaultTarget) => {
+            getTarget: (current, global, specific, defaultTarget, maxTarget) => {
                 if (current !== null) {
                     global = ETASettings.getNext(current, global);
                     specific = ETASettings.getNext(current, specific);
@@ -103,16 +103,19 @@ function script() {
                 if (target <= 0) {
                     target = defaultTarget;
                 }
+                if (target >= maxTarget) {
+                    target = maxTarget;
+                }
                 return Math.ceil(target);
             },
             getTargetLevel: (skillID, currentLevel) => {
-                return ETASettings.getTarget(currentLevel, ETASettings.GLOBAL_TARGET_LEVEL, ETASettings.TARGET_LEVEL[skillID], 99);
+                return ETASettings.getTarget(currentLevel, ETASettings.GLOBAL_TARGET_LEVEL, ETASettings.TARGET_LEVEL[skillID], 99, 200);
             },
             getTargetMastery: (skillID, currentMastery) => {
-                return ETASettings.getTarget(currentMastery, ETASettings.GLOBAL_TARGET_MASTERY, ETASettings.TARGET_MASTERY[skillID], 99);
+                return ETASettings.getTarget(currentMastery, ETASettings.GLOBAL_TARGET_MASTERY, ETASettings.TARGET_MASTERY[skillID], 99, 200);
             },
             getTargetPool: (skillID, currentPool) => {
-                return ETASettings.getTarget(currentPool, ETASettings.GLOBAL_TARGET_POOL, ETASettings.TARGET_POOL[skillID], 100);
+                return ETASettings.getTarget(currentPool, ETASettings.GLOBAL_TARGET_POOL, ETASettings.TARGET_POOL[skillID], 100, 100);
             },
 
             /*
