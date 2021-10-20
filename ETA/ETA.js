@@ -9,6 +9,7 @@
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
 // @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.melvoridle.com/index.php
 // @noframes
 // @grant		none
 // ==/UserScript==
