@@ -447,6 +447,49 @@ function script() {
         ////////////////
 
         ETA.timeRemainingWrapper = function (skillID, checkTaskComplete) {
+            // check if valid state
+            switch (skillID) {
+                case CONSTANTS.skill.Firemaking:
+                    if (selectedLog === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Smithing:
+                    if (selectedSmith === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Fletching:
+                    if (selectedFletch === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Crafting:
+                    if (selectedCraft === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Runecrafting:
+                    if (selectedRunecraft === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Magic:
+                    if (selectedAltMagic === -1) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Herblore:
+                    if (selectedHerblore === null) {
+                        return;
+                    }
+                    break;
+                case CONSTANTS.skill.Summoning:
+                    if (selectedSummon === null) {
+                        return;
+                    }
+                    break;
+            }
             // populate the main `time remaining` variables
             if (isGathering(skillID)) {
                 gatheringWrapper(skillID, checkTaskComplete);
@@ -2394,7 +2437,6 @@ function script() {
 
         // select and start craft overrides
         ETA.selectRef = {};
-        ETA.startRef = {};
         [	// skill name, select names, < start name >
             // start name is only required if the start method is not of the form `start${skill name}`
             // production skills
@@ -2403,12 +2445,13 @@ function script() {
             ["Runecrafting", ["Runecraft"]],
             ["Crafting", ["Craft"]],
             ["Herblore", ["Herblore"]],
-            ["Cooking", ["CookingRecipe"], "startActiveCookTimer"],
-            ["Firemaking", ["Log"], "burnLog"],
-            ["Summoning", ["Summon"], "createSummon"],
+            ["Cooking", ["CookingRecipe"]],
+            ["Firemaking", ["Log"]],
+            ["Summoning", ["Summon"]],
             // alt magic
-            ["Magic", ["Magic", "ItemForMagic"], "castMagic"],
-            // gathering skills go in a the next loop
+            ["Magic", ["Magic", "ItemForMagic"]],
+            // gathering skills
+            ["Fishing", ["Fish"]],
         ].forEach(skill => {
             let skillName = skill[0];
             // wrap the select methods
@@ -2426,75 +2469,35 @@ function script() {
                     }
                 };
             });
-            // wrap the start methods
-            let startName = "start" + skillName;
-            if (skill.length > 2) {
-                // override default start name if required
-                startName = skill[2];
-            }
-            // original methods are kept in the startRef object
-            ETA.startRef[skillName] = window[startName];
-            window[startName] = function (...args) {
-                ETA.startRef[skillName](...args);
-                try {
-                    ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], true);
-                } catch (e) {
-                    console.error(e);
-                }
-            };
-        });
-        [	// skill name, start name
-            // gathering skills
-            ["Mining", "mineRock"],
-            ["Thieving", "pickpocket"],
-            ["Woodcutting", "cutTree"],
-            ["Fishing", "startFishing"],
-            ["Fishing", "selectFish"],
-            ["Agility", "startAgility"],
-        ].forEach(skill => {
-            let skillName = skill[0];
-            // wrap the start method
-            let startName = skill[1];
-            // original methods are kept in the startRef object
-            ETA.startRef[startName] = window[startName];
-            window[startName] = function (...args) {
-                ETA.startRef[startName](...args);
-                try {
-                    ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], true);
-                } catch (e) {
-                    console.error(e);
-                }
-            };
         });
 
-        ETA.changePageRef = changePage;
-        changePage = function (...args) {
-            let skillName = undefined;
-            switch (args[0]) {
-                case 0:
-                    skillName = "Woodcutting";
-                    break;
-                case 7:
-                    skillName = "Fishing";
-                    break;
-                case 10:
-                    skillName = "Mining";
-                    break;
-                case 14:
-                    skillName = "Thieving";
-                    break;
-                case 26:
-                    skillName = "Agility";
+        ETA.updateSkillWindowRef = updateSkillWindow;
+        updateSkillWindow = function (skill) {
+            try {
+                ETA.timeRemainingWrapper(skill, false);
+            } catch (e) {
+                console.error(e);
             }
-            if (skillName !== undefined) {
-                try {
-                    ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], false);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-            ETA.changePageRef(...args);
+            ETA.updateSkillWindowRef(skill);
         };
+
+        // update tick-based skills
+        ETA.renderSkillNav = function (skillName, propName) {
+            try {
+                ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], false);
+            } catch (e) {
+                console.error(e);
+            }
+            // mimic Craftingskill.renderSkillNav
+            if (game[propName].renderQueue.skillNav) {
+                skillNav.setAllInactive();
+                if (game[propName].isActive)
+                    skillNav.setActive(game[propName].id);
+            }
+            game[propName].renderQueue.skillNav = false;
+        }
+        // Thieving
+        game.thieving.renderSkillNav = () => ETA.renderSkillNav('Thieving', 'thieving');
 
         // Create timeLeft containers
         ETA.makeProcessingDisplays();
