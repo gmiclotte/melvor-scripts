@@ -2428,9 +2428,7 @@ function script() {
         // data
         ETA.insigniaModifier = 1 - items[CONSTANTS.item.Clue_Chasers_Insignia].increasedItemChance / 100;
         // rhaelyx goes from 10% to 25% with charge stones
-        ETA.rhaelyxChargePreservation = conditionalModifierData.filter(
-            x => x.bankItemID === CONSTANTS.item.Charge_Stone_of_Rhaelyx
-        )[0].modifiers.increasedGlobalPreservationChance;
+        ETA.rhaelyxChargePreservation = conditionalModifiers.get(CONSTANTS.item.Crown_of_Rhaelyx)[0].modifiers.increasedGlobalPreservationChance;
 
         // lvlToXp cache
         ETA.lvlToXp = Array.from({length: 200}, (_, i) => exp.level_to_xp(i));
