@@ -366,7 +366,7 @@ function script() {
             node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
             // Cooking
             for (let i = 0; i < 3; i++) {
-                node = document.getElementById(`cooking-item-selected-element-${i}`);
+                node = document.getElementById(`cooking-menu-container`).children[i].firstChild.firstChild.firstChild.firstChild.children[4];
                 const newChild = html2Node(`<div class="col-12"/>`)
                 newChild.appendChild(tempContainer(`timeLeftCooking-${i}`));
                 node.parentNode.appendChild(newChild);
