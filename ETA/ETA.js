@@ -408,7 +408,7 @@ function script() {
 
         ETA.makeWoodcuttingDisplay = function () {
             trees.forEach((_, i) => {
-                const node = document.getElementById(`tree-rates-${i}`);
+                const node = document.getElementById(`cut-tree-${i}-progress`).parentNode;
                 node.parentNode.insertBefore(tempContainer(`timeLeftWoodcutting-${i}`), node.nextSibling);
             });
             const node = document.getElementById('skill-woodcutting-multitree').parentNode;
