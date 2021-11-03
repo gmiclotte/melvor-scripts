@@ -249,6 +249,7 @@ function script() {
                 CONSTANTS.skill.Herblore,
                 CONSTANTS.skill.Agility,
                 CONSTANTS.skill.Summoning,
+                CONSTANTS.skill.Astrology,
                 CONSTANTS.skill.Magic,
             ].forEach(i => {
                 const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px', false);
@@ -442,6 +443,13 @@ function script() {
             document.getElementById('agility-breakdown-items').appendChild(tempContainer('timeLeftAgility-Secondary'));
         }
 
+        ETA.makeAstrologyDisplay = function () {
+            ASTROLOGY.forEach((_, i) => {
+                const node = document.getElementById(`astrology-buttons-${i}`);
+                node.parentNode.insertBefore(tempContainer(`timeLeftAstrology-${i}`), node);
+            });
+        }
+
         ////////////////
         //main wrapper//
         ////////////////
@@ -528,7 +536,10 @@ function script() {
                             break;
                         }
                     }
-                    break
+                    break;
+                case CONSTANTS.skill.Astrology:
+                    data = ASTROLOGY;
+                    break;
             }
             if (data.length > 0) {
                 if (skillID !== CONSTANTS.skill.Agility) {
@@ -1095,7 +1106,8 @@ function script() {
                 CONSTANTS.skill.Fishing,
                 CONSTANTS.skill.Mining,
                 CONSTANTS.skill.Thieving,
-                CONSTANTS.skill.Agility
+                CONSTANTS.skill.Agility,
+                CONSTANTS.skill.Astrology,
             ].includes(skillID);
         }
 
@@ -1409,6 +1421,13 @@ function script() {
             } else {
                 initial.actions = initial.currentAction.map(x => agiAction(x));
             }
+            return configureGathering(initial);
+        }
+
+        function configureAstrology(initial) {
+            initial.itemID = undefined;
+            initial.itemXp = ASTROLOGY[initial.currentAction].provides.xp;
+            initial.skillInterval = AstrologyDefaults.interval;
             return configureGathering(initial);
         }
 
@@ -2021,6 +2040,10 @@ function script() {
                     break;
                 case CONSTANTS.skill.Summoning:
                     initial = configureSummoning(initial);
+                    break;
+                case CONSTANTS.skill.Astrology:
+                    initial = configureAstrology(initial);
+                    break;
             }
             // configure interval reductions
             initial.percentIntervalReduction += getTotalFromModifierArray("decreasedSkillIntervalPercent", initial.skillID);
@@ -2504,6 +2527,7 @@ function script() {
         ETA.makeWoodcuttingDisplay();
         ETA.makeFishingDisplay();
         ETA.makeAgilityDisplay();
+        ETA.makeAstrologyDisplay();
 
         // remake Agility display after loading the Agility Obstacles
         ETA.loadAgilityRef = loadAgility;
