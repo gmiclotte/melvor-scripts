@@ -450,7 +450,7 @@ function script() {
             // check if valid state
             switch (skillID) {
                 case CONSTANTS.skill.Firemaking:
-                    if (selectedLog === null) {
+                    if (game.firemaking.selectedRecipeID === -1) {
                         return;
                     }
                     break;
@@ -599,7 +599,7 @@ function script() {
                     initial.data = selectedCookingRecipe;
                     break;
                 case CONSTANTS.skill.Firemaking:
-                    initial.currentAction = selectedLog;
+                    initial.currentAction = game.firemaking.selectedRecipeID;
                     break;
                 case CONSTANTS.skill.Magic:
                     initial.currentAction = selectedAltMagic;
@@ -1261,8 +1261,9 @@ function script() {
 
         function configureFiremaking(initial) {
             initial.itemID = initial.currentAction;
-            initial.itemXp = logsData[initial.currentAction].xp * (1 + bonfireBonus / 100);
-            initial.skillInterval = logsData[initial.currentAction].interval;
+            const recipe = Firemaking.recipes[initial.currentAction];
+            initial.itemXp = recipe.baseXP * (1 + recipe.bonfireXPBonus / 100);
+            initial.skillInterval = recipe.baseInterval;
             initial.skillReq = [{id: initial.itemID, qty: 1}];
             return initial;
         }
@@ -2116,7 +2117,6 @@ function script() {
             // TODO: does not match the test-v0.21?980 implementation
             if (skill === CONSTANTS.skill.Firemaking
                 && player.modifiers.summoningSynergy_18_19
-                && bonfireBonus > 0
                 && herbloreBonuses[8].bonus[0] === 0
                 && herbloreBonuses[8].bonus[1] > 0) {
                 xpMultiplier += 5 / 100;
@@ -2446,7 +2446,6 @@ function script() {
             ["Crafting", ["Craft"]],
             ["Herblore", ["Herblore"]],
             ["Cooking", ["CookingRecipe"]],
-            ["Firemaking", ["Log"]],
             ["Summoning", ["Summon"]],
             // alt magic
             ["Magic", ["Magic", "ItemForMagic"]],
@@ -2498,6 +2497,7 @@ function script() {
         }
         // Thieving
         game.thieving.renderSkillNav = () => ETA.renderSkillNav('Thieving', 'thieving');
+        game.firemaking.renderSkillNav = () => ETA.renderSkillNav('Firemaking', 'firemaking');
 
         // Create timeLeft containers
         ETA.makeProcessingDisplays();
