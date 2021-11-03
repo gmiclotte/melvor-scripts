@@ -2592,7 +2592,7 @@ function script() {
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
