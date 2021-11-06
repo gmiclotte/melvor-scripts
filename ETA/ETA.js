@@ -387,9 +387,9 @@ function script() {
         }
 
         ETA.makeMiningDisplay = function () {
-            miningData.forEach((_, i) => {
-                const node = document.getElementById(`mining-ore-img-${i}`);
-                node.parentNode.insertBefore(tempContainer(`timeLeftMining-${i}`), node);
+            Mining.rockData.forEach((_, i) => {
+                const node = document.getElementById(`mining-ores-container`).children[i].childNodes[1].childNodes[1].childNodes[1].children[7];
+                node.parentNode.insertBefore(tempContainer(`timeLeftMining-${(10 + i) % 11}`), node);
             });
         }
 
@@ -511,7 +511,7 @@ function script() {
             // gathering skills
             switch (skillID) {
                 case CONSTANTS.skill.Mining:
-                    data = miningData;
+                    data = Mining.rockData;
                     break;
 
                 case CONSTANTS.skill.Thieving:
@@ -991,7 +991,7 @@ function script() {
                     }
                     rockHP /= (1 - noDamageChance / 100);
                     // compute average time per action
-                    let spawnTime = miningData[initial.currentAction].respawnInterval;
+                    let spawnTime = Mining.rockData[initial.currentAction].baseRespawnInterval;
                     if (poolReached(initial, poolXp, 1)) {
                         spawnTime *= 0.9;
                     }
@@ -1364,7 +1364,7 @@ function script() {
         }
 
         function configureMining(initial) {
-            initial.itemID = miningData[initial.currentAction].ore;
+            initial.itemID = Mining.rockData[initial.currentAction].oreID;
             initial.itemXp = items[initial.itemID].miningXP;
             initial.skillInterval = 3000;
             return configureGathering(initial);
@@ -2519,6 +2519,7 @@ function script() {
         // Thieving
         game.thieving.renderSkillNav = () => ETA.renderSkillNav('Thieving', 'thieving');
         game.firemaking.renderSkillNav = () => ETA.renderSkillNav('Firemaking', 'firemaking');
+        game.mining.renderSkillNav = () => ETA.renderSkillNav('Mining', 'mining');
 
         // Create timeLeft containers
         ETA.makeProcessingDisplays();
