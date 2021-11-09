@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Obstacle Filter
 // @namespace	http://tampermonkey.net/
-// @version		0.1.3
+// @version		0.1.4
 // @description	Agility course planner that allows you to filter agility obstacles based on skill of interest.
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
