@@ -95,7 +95,6 @@ function script() {
                     'MeleeMaxHit',
                     'MeleeLifesteal',
                     'MeleeCritChance',
-                    'MeleeCritMult',
                 ],
                 // modifiers that relate to using ranged attacks
                 ranged: [
@@ -105,7 +104,6 @@ function script() {
                     'RangedMaxHit',
                     'RangedLifesteal',
                     'RangedCritChance',
-                    'RangedCritMult',
                 ],
                 // modifiers that relate to using magic attacks
                 magic: [
@@ -123,7 +121,6 @@ function script() {
                     'MagicMaxHit',
                     'MagicLifesteal',
                     'MagicCritChance',
-                    'MagicCritMult',
                 ],
                 // modifiers that relate to slayer tasks, areas, or monsters
                 slayer: [
@@ -161,15 +158,28 @@ function script() {
                 ],
                 altMagic: [
                     'AltMagicSkillXP',
+                    'AltMagicRunePreservation',
                 ],
-                cooking: [],
+                astrology: [],
+                cooking: [
+                    'ChanceSuccessfulCook',
+                    'ChancePerfectCookGlobal',
+                    'ChancePerfectCookFire',
+                    'ChancePerfectCookFurnace',
+                    'ChancePerfectCookPot',
+                ],
                 crafting: [],
                 farming: [
                     'ChanceDoubleHarvest',
                     'FarmingYield',
+                    'AllotmentSeedCost',
                 ],
-                firemaking: [],
-                fishing: [],
+                firemaking: [
+                    'ChanceForDiamondFiremaking',
+                ],
+                fishing: [
+                    'FishingSpecialChance',
+                ],
                 fletching: [],
                 herblore: [
                     'ChanceRandomPotionHerblore',
@@ -187,7 +197,9 @@ function script() {
                 smithing: [
                     'SeeingGoldChance',
                 ],
-                summoning: [],
+                summoning: [
+                    'SummoningMaxHit',
+                ],
                 nonCBSummoning: [
                     'SummoningShardCost',
                     'SummoningCreationCharges',
@@ -196,6 +208,8 @@ function script() {
                     'ChanceToDoubleLootThieving',
                     'GPFromThieving',
                     'GPFromThievingFlat',
+                    'ThievingStealth',
+                    'MinThievingGP',
                 ],
                 woodcutting: [
                     'BirdNestDropRate',
@@ -228,6 +242,10 @@ function script() {
                     'meleeProtection',
                     'rangedProtection',
                     'magicProtection',
+                    'meleeImmunity',
+                    'rangedImmunity',
+                    'magicImmunity',
+                    'otherStyleImmunity',
                     'curseImmunity',
                     'stunImmunity',
                     'sleepImmunity',
@@ -235,17 +253,37 @@ function script() {
                     'poisonImmunity',
                     'bleedImmunity',
                     'debuffImmunity',
+                    'slowImmunity',
+                    'frostBurnImmunity',
+                    'masteryToken',
+                    'autoEquipFoodUnlocked',
+                    'autoSwapFoodUnlocked',
+                    'masteryToken',
+                    'freeProtectItem',
+                    'globalEvasionHPScaling',
                     'increasedRebirthChance',
                     'decreasedDragonBreathDamage',
                     'increasedMeleeStunThreshold',
+                    'increasedChanceToIncreaseStunDuration',
                     'increasedRuneProvision',
                     'increasedChanceToConvertSeedDrops',
+                    'increasedAfflictionChance',
+                    'increasedChanceToApplyPoison',
+                    'increasedChanceToApplyFrostburn',
+                    'increasedEndOfTurnHealing2',
+                    'increasedEndOfTurnHealing3',
+                    'increasedEndOfTurnHealing5',
+                    'increasedTotalBleedDamage',
+                    'increasedOnHitSlowMagnitude',
+                    'increasedNonMagicPoisonChance',
+                    'increasedFrostburn',
+                    'increasedPoisonReflectChance',
+                    'increasedBleedReflectChance',
                     'bonusCoalOnDungeonCompletion',
                     'bypassSlayerItems',
                     'itemProtection',
                     'autoLooting',
                     'autoBurying',
-                    'increasedCombatStoppingThreshold',
                     'increasedGPMultiplierPer1MGP',
                     'increasedGPMultiplierCap',
                     'increasedGPMultiplierMin',
@@ -272,12 +310,18 @@ function script() {
                     'summoningSynergy_12_13',
                     'summoningSynergy_12_14',
                     'summoningSynergy_13_14',
+                    'increasedChanceToPreserveFood',
+                    'allowLootContainerStacking',
+                    'infiniteLootContainer',
                 ],
-                hitpoints: [],
+                hitpoints: [
+                    'decreasedRegenerationInterval',
+                ],
                 defence: [],
                 attack: [],
                 strength: [],
                 melee: [
+                    'increasedMeleeStunChance',
                     'summoningSynergy_6_7',
                     'summoningSynergy_6_12',
                     'summoningSynergy_6_14',
@@ -294,6 +338,10 @@ function script() {
                     'increasedDecay',
                     'summoningSynergy_6_8',
                     'summoningSynergy_8_14',
+                    'increasedMinNatureSpellDamageBasedOnMaxHit',
+                    'increasedSurgeSpellAccuracy',
+                    'increasedSurgeSpellMaxHit',
+                    'increasedElementalEffectChance',
                 ],
                 slayer: [
                     'summoningSynergy_2_12',
@@ -312,8 +360,10 @@ function script() {
                 // specific skills
                 agility: [],
                 altMagic: [],
+                astrology: [
+                    'increasedBaseStardustDropQty',
+                ],
                 cooking: [
-                    'decreasedFoodBurnChance',
                     'decreasedSecondaryFoodBurnChance',
                     'summoningSynergy_3_9',
                     'summoningSynergy_4_9',
@@ -358,9 +408,9 @@ function script() {
                     'summoningSynergy_4_18',
                 ],
                 runecrafting: [
+                    'increasedRunecraftingEssencePreservation',
                     'summoningSynergy_3_10',
                     'summoningSynergy_5_10',
-                    'summoningSynergy_9_10',
                     'summoningSynergy_10_17',
                     'summoningSynergy_10_18',
                     'summoningSynergy_10_19',],
@@ -876,7 +926,7 @@ function script() {
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (typeof confirmedLoaded !== undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
