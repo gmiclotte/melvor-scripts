@@ -574,7 +574,7 @@ function script() {
             );
 
             // gathering skills
-            this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility'];
+            this.gatheringSkills = ['Woodcutting', 'Fishing', 'Mining', 'Thieving', 'Farming', 'Agility', 'Astrology'];
             this.gatheringSkills.forEach(name => {
                 this.relevantModifiers[name] = this.getModifierNames(
                     [
