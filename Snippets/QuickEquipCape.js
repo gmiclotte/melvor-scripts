@@ -1,7 +1,4 @@
-
-/////////////////////////////
-//Quick Equip Max/Comp Cape//
-/////////////////////////////
+// Quick Equip Max/Comp Cape
 quickEquipSkillcape = (skill) => {
     const capes = [
         CONSTANTS.item.Cape_of_Completion,

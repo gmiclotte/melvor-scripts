@@ -1,17 +1,17 @@
-
-//////////////////////////
-//buy mastery level base//
-//////////////////////////
+// methods to buy base mastery levels
 window.masteryBuyer = {
     poolXpPerItem: 500000,
 };
+
 masteryBuyer.availXp = (skillID, minPercent = 95) => {
     let minPool = MASTERY[skillID].xp.length * masteryBuyer.poolXpPerItem * minPercent / 100;
     return MASTERY[skillID].pool - minPool;
 }
+
 masteryBuyer.currentBase = (skillID) => {
     return Math.min(...MASTERY[skillID].xp.map((_, masteryID) => getMasteryLevel(skillID, masteryID)));
 }
+
 masteryBuyer.maxAffordableBase = (skillID, minPercent = 95) => {
     let xp = masteryBuyer.availXp(skillID, minPercent);
     // make bins with mastery levels
@@ -42,6 +42,7 @@ masteryBuyer.maxAffordableBase = (skillID, minPercent = 95) => {
     maxBase = maxBase > 99 ? 99 : maxBase;
     return maxBase;
 }
+
 masteryBuyer.increaseBase = (skillID, minPercent = 95, levelCap = 99) => {
     // buy until goal
     let goal = masteryBuyer.maxAffordableBase(skillID, minPercent);
@@ -77,6 +78,7 @@ masteryBuyer.increaseBase = (skillID, minPercent = 95, levelCap = 99) => {
     // update total mastery
     updateTotalMastery(skillID);
 }
+
 masteryBuyer.overview = (minPercent = 95) => {
     Object.getOwnPropertyNames(SKILLS).forEach(skillID => {
         const skill = SKILLS[skillID];
@@ -91,6 +93,7 @@ masteryBuyer.overview = (minPercent = 95) => {
         console.log(`${skill.name}: ${currentBase} -> ${maxBase}`);
     });
 }
+
 masteryBuyer.remaining = (skillID, target = 99) => {
     let xp = 0;
     let xpTarget = exp.level_to_xp(target);

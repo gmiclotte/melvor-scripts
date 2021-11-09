@@ -1,7 +1,4 @@
-
-///////////////////
-//remove elements//
-///////////////////
+// remove various elements
 // combat
 document.getElementById('offline-combat-alert').remove();
 
@@ -12,7 +9,7 @@ document.getElementById('summoning-category-0').children[0].children[0].children
 document.getElementById('summoning-category-0').children[0].children[0].children[1].remove();
 
 // summoning tablets
-document.getElementById('summoning-notice').remove();
+document.getElementById('summoning-category-1').children[0].children[0].children[0].remove()
 
 // alt. magic
 document.getElementById('magic-container').children[0].children[1].remove();

@@ -1,7 +1,4 @@
-
-/////////////////
-//reroll slayer//
-/////////////////
+//reroll slayer task until desired task is met
 window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
     if (window.stopRerolling) {
         return;

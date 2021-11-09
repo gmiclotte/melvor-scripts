@@ -1,7 +1,4 @@
-
-////////////////
-//Mastery bars//
-////////////////
+// Add Mastery Bars
 setInterval(() => {
     for (const id in SKILLS) {
         if (SKILLS[id].hasMastery) {

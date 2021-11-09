@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.3
+// @version		0.0.4
 // @description	Collection of various snippets
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -11,4 +11,11 @@
 // ==/UserScript==
 
 function script() {
+snippet = {
+    name: '',
+    log: (...args) => console.log('Snippets:', ...args),
+    start: () => snippet.log(`Loading ${snippet.name}.`),
+    end: () => snippet.log(`Loaded ${snippet.name}.`),
+};
+
 // header end

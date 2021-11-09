@@ -1,7 +1,4 @@
-
-//////////////////
-//mining swapper//
-//////////////////
+// swap between rocks in order of preference
 window.rockOrder = [];
 setInterval(() => {
     if (currentRock === null) {

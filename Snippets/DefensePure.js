@@ -1,7 +1,4 @@
-
-/////////////////////////////
-//Defense Pure Calculations//
-/////////////////////////////
+// Various Defense Pure Calculations
 window.defensePure = {};
 
 defensePure.defLvlToHPLvl = def => {

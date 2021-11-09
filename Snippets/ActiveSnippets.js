@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.3
+// @version		0.0.4
 // @description	Collection of various snippets
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -11,23 +11,35 @@
 // ==/UserScript==
 
 function script() {
+snippet = {
+    name: '',
+    log: (...args) => console.log('Snippets:', ...args),
+    start: () => snippet.log(`Loading ${snippet.name}.`),
+    end: () => snippet.log(`Loaded ${snippet.name}.`),
+};
+
 // header end
 
-////////////////////////
-//obstacle build count//
-////////////////////////
-
-listObstaclesWithFewerThanTenBuilds = () => {
+/////////////////////////////////////
+//AgilityObstacleBuildsRemaining.js//
+/////////////////////////////////////
+snippet.name = 'AgilityObstacleBuildsRemaining.js';
+snippet.start();
 // show agility obstacles that have been built less than 10 times
+listObstaclesWithFewerThanTenBuilds = () => {
     agilityObstacleBuildCount.map((_, i) => i)
         .filter(i => agilityObstacleBuildCount[i] < 10)
         .map(i => agilityObstacles[i])
         .map(x => [x.category + 1, x.name]);
 }
+snippet.end();
 
-/////////////////////////////
-//Defense Pure Calculations//
-/////////////////////////////
+//////////////////
+//DefensePure.js//
+//////////////////
+snippet.name = 'DefensePure.js';
+snippet.start();
+// Various Defense Pure Calculations
 window.defensePure = {};
 
 defensePure.defLvlToHPLvl = def => {
@@ -87,9 +99,14 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     // loop
     setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
 }
-////////////////
-//Mastery bars//
-////////////////
+snippet.end();
+
+//////////////////
+//MasteryBars.js//
+//////////////////
+snippet.name = 'MasteryBars.js';
+snippet.start();
+// Add Mastery Bars
 setInterval(() => {
     for (const id in SKILLS) {
         if (SKILLS[id].hasMastery) {
@@ -134,20 +151,27 @@ setInterval(() => {
         }
     }
 }, 5000);
+snippet.end();
 
-//////////////////////////
-//buy mastery level base//
-//////////////////////////
+///////////////////
+//MasteryBuyer.js//
+///////////////////
+snippet.name = 'MasteryBuyer.js';
+snippet.start();
+// methods to buy base mastery levels
 window.masteryBuyer = {
     poolXpPerItem: 500000,
 };
+
 masteryBuyer.availXp = (skillID, minPercent = 95) => {
     let minPool = MASTERY[skillID].xp.length * masteryBuyer.poolXpPerItem * minPercent / 100;
     return MASTERY[skillID].pool - minPool;
 }
+
 masteryBuyer.currentBase = (skillID) => {
     return Math.min(...MASTERY[skillID].xp.map((_, masteryID) => getMasteryLevel(skillID, masteryID)));
 }
+
 masteryBuyer.maxAffordableBase = (skillID, minPercent = 95) => {
     let xp = masteryBuyer.availXp(skillID, minPercent);
     // make bins with mastery levels
@@ -178,6 +202,7 @@ masteryBuyer.maxAffordableBase = (skillID, minPercent = 95) => {
     maxBase = maxBase > 99 ? 99 : maxBase;
     return maxBase;
 }
+
 masteryBuyer.increaseBase = (skillID, minPercent = 95, levelCap = 99) => {
     // buy until goal
     let goal = masteryBuyer.maxAffordableBase(skillID, minPercent);
@@ -213,6 +238,7 @@ masteryBuyer.increaseBase = (skillID, minPercent = 95, levelCap = 99) => {
     // update total mastery
     updateTotalMastery(skillID);
 }
+
 masteryBuyer.overview = (minPercent = 95) => {
     Object.getOwnPropertyNames(SKILLS).forEach(skillID => {
         const skill = SKILLS[skillID];
@@ -227,6 +253,7 @@ masteryBuyer.overview = (minPercent = 95) => {
         console.log(`${skill.name}: ${currentBase} -> ${maxBase}`);
     });
 }
+
 masteryBuyer.remaining = (skillID, target = 99) => {
     let xp = 0;
     let xpTarget = exp.level_to_xp(target);
@@ -237,10 +264,14 @@ masteryBuyer.remaining = (skillID, target = 99) => {
     console.log(formatNumber(xp))
     return xp
 }
+snippet.end();
 
-//////////////////////
-//print synergy list//
-//////////////////////
+///////////////////////
+//PrintSynergyList.js//
+///////////////////////
+snippet.name = 'PrintSynergyList.js';
+snippet.start();
+// functions to print synergies per category (cb vs non-cb)
 printSynergy = (x, y) => console.log('- [ ]',
     x.summoningID,
     parseInt(y),
@@ -267,10 +298,14 @@ printNonCombatSynergyList = () => {
         }
     });
 }
+snippet.end();
 
-/////////////////////////////
-//Quick Equip Max/Comp Cape//
-/////////////////////////////
+/////////////////////
+//QuickEquipCape.js//
+/////////////////////
+snippet.name = 'QuickEquipCape.js';
+snippet.start();
+// Quick Equip Max/Comp Cape
 quickEquipSkillcape = (skill) => {
     const capes = [
         CONSTANTS.item.Cape_of_Completion,
@@ -298,10 +333,14 @@ quickEquipSkillcape = (skill) => {
     }
     notifyPlayer(skill, "There's no " + setToUppercase(skillName[skill]) + " Skillcape in your bank *shrug*", "danger");
 }
+snippet.end();
 
-///////////////////
-//remove elements//
-///////////////////
+/////////////////////
+//RemoveElements.js//
+/////////////////////
+snippet.name = 'RemoveElements.js';
+snippet.start();
+// remove various elements
 // combat
 document.getElementById('offline-combat-alert').remove();
 
@@ -312,7 +351,7 @@ document.getElementById('summoning-category-0').children[0].children[0].children
 document.getElementById('summoning-category-0').children[0].children[0].children[1].remove();
 
 // summoning tablets
-document.getElementById('summoning-notice').remove();
+document.getElementById('summoning-category-1').children[0].children[0].children[0].remove()
 
 // alt. magic
 document.getElementById('magic-container').children[0].children[1].remove();
@@ -323,10 +362,14 @@ document.getElementById('header-cloud-save-btn-connected').remove();
 
 // minibar-max-cape
 document.getElementById('minibar-max-cape').remove();
+snippet.end();
 
-/////////////////
-//reroll slayer//
-/////////////////
+///////////////////
+//RerollSlayer.js//
+///////////////////
+snippet.name = 'RerollSlayer.js';
+snippet.start();
+//reroll slayer task until desired task is met
 window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
     if (window.stopRerolling) {
         return;
@@ -348,35 +391,14 @@ window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
     }
     setTimeout(() => rerollSlayerTask(monsterIDs, tier, extend), 1000);
 }
+snippet.end();
 
-//////////////////
-//mining swapper//
-//////////////////
-window.rockOrder = [];
-setInterval(() => {
-    if (currentRock === null) {
-        return;
-    }
-    for (let i = 0; i < window.rockOrder.length; i++) {
-        let rock = window.rockOrder[i];
-        if (miningData[rock].level > skillLevel[CONSTANTS.skill.Mining]) {
-            continue;
-        }
-        if (!rockData[rock].depleted) {
-            if (currentRock === rock) {
-                return;
-            } else {
-                console.log("start mining " + rock);
-                mineRock(rock);
-                return;
-            }
-        }
-    }
-}, 1000);
-
-///////////////
-//shards used//
-///////////////
+/////////////////
+//ShardsUsed.js//
+/////////////////
+snippet.name = 'ShardsUsed.js';
+snippet.start();
+// compute total shards used
 shardsUsed = () => {
     // compute amount of gp spent on summoning shards that have been used (for summoning or agility obstacles)
     items.map((x, i) => [x, i])
@@ -385,10 +407,14 @@ shardsUsed = () => {
         .map(x => (itemStats[x].stats[0] - getBankQty(x) - itemStats[x].stats[1]) * items[x].buysFor)
         .reduce((a, b) => a + b, 0);
 }
+snippet.end();
 
-/////////////////
-//spawn Ahrenia//
-/////////////////
+///////////////////
+//SpawnAhrenia.js//
+///////////////////
+snippet.name = 'SpawnAhrenia.js';
+snippet.start();
+// spawn Ahrenia
 window.spawnAhrenia = (phaseToSpawn = 1) => {
     // run
     combatManager.runCombat();
@@ -414,26 +440,32 @@ window.spawnAhrenia = (phaseToSpawn = 1) => {
     combatManager.dungeonProgress = 19 + phaseToSpawn;
     combatManager.loadNextEnemy();
 }
+snippet.end();
 
-/////////////////////
-//don't cap pool xp//
-/////////////////////
+////////////////////
+//UnlimitedPool.js//
+////////////////////
+snippet.name = 'UnlimitedPool.js';
+snippet.start();
+// don't cap pool xp
 eval(addMasteryXPToPool.toString()
     .replace('MASTERY[skill].pool>getMasteryPoolTotalXP(skill)', 'false')
     .replace(/^function (\w+)/, "window.$1 = function")
 );
 
-////////////////////////////
-//don't cap token claiming//
-////////////////////////////
+// don't cap token claiming
 eval(claimToken.toString()
     .replace('qty>=tokensToFillPool', 'false')
     .replace(/^function (\w+)/, "window.$1 = function")
 );
+snippet.end();
 
-/////////////////////
-//unsell sold items//
-/////////////////////
+/////////////
+//Unsell.js//
+/////////////
+snippet.name = 'Unsell.js';
+snippet.start();
+// unsell sold items
 unsell = (id, count = Infinity) => {
     if (count < 0) {
         return;
@@ -467,6 +499,7 @@ unsell = (id, count = Infinity) => {
     // log transaction
     console.log("bought " + times + " for " + cost);
 }
+snippet.end();
 
 // footer start
 }
@@ -480,7 +513,7 @@ unsell = (id, count = Infinity) => {
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

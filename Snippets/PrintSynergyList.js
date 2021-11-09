@@ -1,7 +1,4 @@
-
-//////////////////////
-//print synergy list//
-//////////////////////
+// functions to print synergies per category (cb vs non-cb)
 printSynergy = (x, y) => console.log('- [ ]',
     x.summoningID,
     parseInt(y),

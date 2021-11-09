@@ -1,7 +1,4 @@
-
-///////////////
-//shards used//
-///////////////
+// compute total shards used
 shardsUsed = () => {
     // compute amount of gp spent on summoning shards that have been used (for summoning or agility obstacles)
     items.map((x, i) => [x, i])

@@ -1,7 +1,4 @@
-
-/////////////////
-//spawn Ahrenia//
-/////////////////
+// spawn Ahrenia
 window.spawnAhrenia = (phaseToSpawn = 1) => {
     // run
     combatManager.runCombat();
