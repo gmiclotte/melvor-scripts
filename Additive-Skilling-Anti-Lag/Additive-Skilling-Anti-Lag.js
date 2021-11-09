@@ -14,11 +14,6 @@ function script() {
     const skillFunctions = [
         cutTree,
         startFishing,
-        burnLog,
-        startActiveCookTimer,
-        startPassiveCookTimer,
-        mineRock,
-        rockReset,
         startSmithing,
         startFletching,
         startCrafting,
@@ -41,6 +36,10 @@ function script() {
             console.log('ASAL:', ...args)
         }
 
+        warn(...args) {
+            console.warn('ASAL:', ...args)
+        }
+
         patchCode(code, match, replacement) {
             code = code.toString();
             if (match !== undefined && replacement !== undefined) {
@@ -52,7 +51,12 @@ function script() {
         editInterval(code, skip = []) {
             // get name and add startThread
             code = this.patchCode(code);
-            const name = code.match(/(?<=^window\.)[^ =]+/)[0];
+            const match = code.match(/(?<=^window\.)[^ =]+/);
+            if (match === null) {
+                this.warn('Some skill function could not be patched.');
+                return;
+            }
+            const name = match[0];
             code = code.replace(/{/, `{let KEY = ${this.name}.startThread('${name}');`);
             // split around timeouts
             const arr = code.split('setTimeout');
@@ -73,19 +77,11 @@ function script() {
                 let part = arr[i].slice(0, found);
                 let edited = 'setTimeout';
                 if (!skip.includes(i)) {
-                    if (part.toString().match(/(};}[()a-zA-Z]*),([^,^)]*)/) !== null) {
-                        // burnLog, mineRock, startCooking
-                        part = part.replace(
-                            /(};}[()a-zA-Z]*),([^,^)]*)/s,
-                            (m, $1, $2) => `${this.name}.recordCloseInterval(KEY, '${name}');${$1},${this.name}.recordTimeout(KEY, (${$2}), '${name}')`
-                        );
-                    } else {
-                        // default
-                        part = part.replace(
-                            /},([^,]*$)/s,
-                            (m, $1, $2) => `${this.name}.recordCloseInterval(KEY, '${name}');},${this.name}.recordTimeout(KEY, (${$1}), '${name}')`
-                        );
-                    }
+                    // default
+                    part = part.replace(
+                        /},([^,]*$)/s,
+                        (m, $1, $2) => `${this.name}.recordCloseInterval(KEY, '${name}');},${this.name}.recordTimeout(KEY, (${$1}), '${name}')`
+                    );
                 }
                 edited += part;
                 edited += arr[i].slice(found);
@@ -159,7 +155,9 @@ function script() {
         window[name] = new ASAL(name);
         const asal = window[name];
         asal.log('loading...');
-        let codeStrings = skillFunctions.map((a, i) => asal.editInterval(a, i === 0 ? [1] : []));
+        asal.warn('Cooking is not supported.');
+        asal.warn('Astrology is not supported.');
+        let codeStrings = skillFunctions.map((a, i) => asal.editInterval(a, i === 0 ? [1] : [])).filter(x => x);
         codeStrings.forEach(a => eval(a));
         setInterval(() => asal.calcLag(), 2 * 60 * 1000);
         asal.log('Loaded');
@@ -173,11 +171,6 @@ function script() {
     const skillFunctions = [
         cutTree,
         startFishing,
-        burnLog,
-        startActiveCookTimer,
-        startPassiveCookTimer,
-        mineRock,
-        rockReset,
         startSmithing,
         startFletching,
         startCrafting,
