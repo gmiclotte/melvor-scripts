@@ -71,7 +71,7 @@ function script() {
         combatAreas,
         items,
         slayerAreas,
-        thievingNPC,
+        Thieving.npcs,
         trees,
         // objects of objects that have media
         unpack(SKILLS),
@@ -85,26 +85,17 @@ function script() {
     // update some lemons
     lemvor.updateLemon = () => {
         loadBank();
-        updateNav();
         updateShop("gloves");
-        updateVisualSuccess();
         updateSpellbook();
-        updateEquipTooltips();
         updateWCRates();
-        updateMiningRates();
-        updateEquipmentHeader();
-        updateSlayerAreaRequirements();
-        updateEquipmentSetTooltips();
         updatePlayerStats();
-        updateCombatInfoIcons();
         updateAgilityBreakdown();
-        Object.getOwnPropertyNames(SKILLS).forEach(skillID => {
+        Object.getOwnPropertyNames(SKILLS).forEach((_, skillID) => {
             updateSkillWindow(skillID);
             if (SKILLS[skillID].hasMastery) {
                 updateMasteryPoolProgress(skillID);
             }
         });
-        updateStats();
 
         // update lemons
         document.getElementsByTagName('img').forEach(img => {
@@ -163,7 +154,7 @@ function script() {
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (typeof confirmedLoaded !== undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
