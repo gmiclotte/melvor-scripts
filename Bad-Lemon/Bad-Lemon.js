@@ -454,7 +454,7 @@ function script() {
             ];
         }
 
-        show(text='') {
+        show(text = '') {
             const rows = 30;
             const cols = 40;
             const size = 10;
@@ -467,11 +467,11 @@ function script() {
             <section id="bad-lemon" style="
             line-height: 0;
             -webkit-column-count: ${cols};
-            -webkit-column-gap:   0px;
+            -webkit-column-gap:   0;
             -moz-column-count:    ${cols};
-            -moz-column-gap:      0px;
+            -moz-column-gap:      0;
             column-count:         ${cols};
-            column-gap:           0px;">`;
+            column-gap:           0;">`;
             for (let col = 0; col < cols; col++) {
                 for (let row = 0; row < rows; row++) {
                     view += `<img id="bad-lemon-${row}-${col}" style="opacity:${Math.random()}" src="${lemon}" width="${size}" height="${size}"/>`;
@@ -480,12 +480,12 @@ function script() {
             view += '</section>';
             Swal.fire({
                 html: view,
-                customClass: { content: 'width:850px'},
+                customClass: {content: 'width:850px'},
             });
             const decodeLine = (line, size) => {
                 let bits = Array(size).fill(0);
                 for (let i = 0; i < size; i++) {
-                    if (line % 2 == 1) {
+                    if (line % 2 === 1) {
                         bits[i] = 1;
                     }
                     line = Math.floor(line / 2);
@@ -497,7 +497,10 @@ function script() {
                 const t0 = new Date();
                 this.data[badLemonIdx].forEach((line, row) => {
                     decodeLine(line, cols).forEach((x, col) => {
-                        document.getElementById(`bad-lemon-${row}-${col}`).style.opacity = x;
+                        const el = document.getElementById(`bad-lemon-${row}-${col}`);
+                        if (el) {
+                            el.style.opacity = x;
+                        }
                     });
                 });
                 badLemonIdx++;
@@ -537,7 +540,7 @@ function script() {
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (typeof confirmedLoaded !== undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
