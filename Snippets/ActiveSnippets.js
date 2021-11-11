@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.4
+// @version		0.0.5
 // @description	Collection of various snippets
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -513,7 +513,7 @@ snippet.end();
     }
 
     function loadScript() {
-        if (isLoaded) {
+        if (typeof isLoaded !== typeof undefined && isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);
