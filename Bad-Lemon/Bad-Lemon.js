@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Bad Lemon
 // @namespace	http://tampermonkey.net/
-// @version		0.0.6
+// @version		0.0.7
 // @description	Bad Apple goes Melvor. This Fan Content is a fan work based on Touhou Project.
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
