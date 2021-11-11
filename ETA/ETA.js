@@ -446,7 +446,9 @@ function script() {
         ETA.makeAstrologyDisplay = function () {
             ASTROLOGY.forEach((_, i) => {
                 const node = document.getElementById(`astrology-buttons-${i}`);
-                node.parentNode.insertBefore(tempContainer(`timeLeftAstrology-${i}`), node);
+                const wrapper = html2Node('<div class="col-12"></div>');
+                node.parentNode.insertBefore(wrapper, node);
+                wrapper.appendChild(tempContainer(`timeLeftAstrology-${i}`));
             });
         }
 
