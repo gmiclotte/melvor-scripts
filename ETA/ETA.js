@@ -2595,7 +2595,7 @@ function script() {
     }
 
     function loadScript() {
-        if (isLoaded) {
+        if (typeof isLoaded !== typeof undefined && isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

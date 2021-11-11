@@ -193,7 +193,7 @@
     }
 
     function loadScript() {
-        if (window.isLoaded || (typeof unsafeWindow !== 'undefined' && unsafeWindow.isLoaded)) {
+        if (typeof isLoaded !== typeof undefined && isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

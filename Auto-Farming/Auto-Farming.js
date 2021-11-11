@@ -260,7 +260,7 @@ function script() {
     }
 
     function loadScript() {
-        if (typeof confirmedLoaded !== undefined && confirmedLoaded) {
+        if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
             injectScript(script);

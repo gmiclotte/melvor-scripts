@@ -143,7 +143,7 @@
     }
 
     function loadScript() {
-        if (confirmedLoaded) {
+        if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             clearInterval(scriptLoader);
             injectScript(script);
         }
