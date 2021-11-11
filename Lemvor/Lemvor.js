@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Lemvor
-// @version      0.1.2
+// @version      0.1.3
 // @namespace    github.com/gmiclotte
 // @description  lemon
 // @author       GMiclotte
