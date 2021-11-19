@@ -688,8 +688,8 @@ function script() {
         getModifierNames(setNames, skillIDs) {
             // add skill based on skillID
             skillIDs.forEach(id => {
-                if (!setNames.includes(skillName[id])) {
-                    setNames.push(skillName[id].toLowerCase());
+                if (!setNames.includes(Skills[id])) {
+                    setNames.push(Skills[id].toLowerCase());
                 }
             });
             // add melee based on att/str skillID
