@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.5
+// @version		0.0.6
 // @description	Collection of various snippets
 // @author		GMiclotte
 // @match		https://*.melvoridle.com/*
@@ -331,7 +331,7 @@ quickEquipSkillcape = (skill) => {
         }
         return;
     }
-    notifyPlayer(skill, "There's no " + setToUppercase(skillName[skill]) + " Skillcape in your bank *shrug*", "danger");
+    notifyPlayer(skill, "There's no " + setToUppercase(Skills[skill]) + " Skillcape in your bank *shrug*", "danger");
 }
 snippet.end();
 
@@ -458,47 +458,6 @@ eval(claimToken.toString()
     .replace('qty>=tokensToFillPool', 'false')
     .replace(/^function (\w+)/, "window.$1 = function")
 );
-snippet.end();
-
-/////////////
-//Unsell.js//
-/////////////
-snippet.name = 'Unsell.js';
-snippet.start();
-// unsell sold items
-unsell = (id, count = Infinity) => {
-    if (count < 0) {
-        return;
-    }
-    let stats = itemStats[id].stats;
-    if (stats[Stats.TimesSold] === 0) {
-        console.log("zero times sold");
-        return;
-    }
-    // check if transaction is affordable
-    let times = Math.min(count, stats[Stats.TimesSold]);
-    let cost = Math.ceil(stats[Stats.GpFromSale] / stats[Stats.TimesSold] * times);
-    if (gp < cost) {
-        console.log("can't afford: " + times + " costs " + cost + " have " + gp);
-        return;
-    }
-    // add item
-    if (times > 0) {
-        addItemToBank(id, times);
-    }
-    stats[Stats.TimesFound] -= times;
-    stats[Stats.TimesSold] -= times;
-    // remove cost
-    gp = Math.floor(gp - cost);
-    stats[Stats.GpFromSale] -= cost;
-    updateGP();
-    // fix statistics
-    statsGeneral[0].count -= cost;
-    statsGeneral[1].count -= times;
-    updateStats();
-    // log transaction
-    console.log("bought " + times + " for " + cost);
-}
 snippet.end();
 
 // footer start
