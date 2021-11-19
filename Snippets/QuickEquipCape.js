@@ -24,5 +24,5 @@ quickEquipSkillcape = (skill) => {
         }
         return;
     }
-    notifyPlayer(skill, "There's no " + setToUppercase(skillName[skill]) + " Skillcape in your bank *shrug*", "danger");
+    notifyPlayer(skill, "There's no " + setToUppercase(Skills[skill]) + " Skillcape in your bank *shrug*", "danger");
 }
