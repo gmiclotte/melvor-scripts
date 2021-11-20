@@ -60,7 +60,7 @@ function script() {
             name = thievingNPC[npcID].name;
             loot = thievingNPC[npcID].lootTable;
             id = `pp-${npcID}`;
-            chanceToDouble = calculateChanceToDouble(CONSTANTS.skill.Thieving, false, 0, 0, 0, false) / 100;
+            chanceToDouble = calculateChanceToDouble(Skills.Thieving, false, 0, 0, 0, false) / 100;
         } else if (combatManager.isInCombat) {
             container = 'cb-lootContainer';
             if (isDungeon || monster === undefined) {

@@ -41,15 +41,15 @@ function script() {
     };
 
     const skillVerbs = {
-        //[CONSTANTS.skill.Firemaking]: newVerb('Firemaking', 'Burn', 'selectedLog', 'burnLog'),
-        //[CONSTANTS.skill.Cooking]: newVerb('Cooking', 'Cook', 'selectedFood', 'startCooking'),
-        [CONSTANTS.skill.Smithing]: newVerb('Smithing', 'selectedSmith', 'startSmithing'),
-        [CONSTANTS.skill.Fletching]: newVerb('Fletching', 'selectedFletch', 'startFletching'),
-        [CONSTANTS.skill.Crafting]: newVerb('Crafting', 'selectedCraft', 'startCrafting'),
-        [CONSTANTS.skill.Runecrafting]: newVerb('Runecrafting', 'selectedRunecraft', 'startRunecrafting'),
-        [CONSTANTS.skill.Herblore]: newVerb('Herblore', 'selectedHerblore', 'startHerblore'),
-        [CONSTANTS.skill.Summoning]: newVerb('Summoning', 'selectedSummon', 'createSummon'),
-        [CONSTANTS.skill.Magic]: newVerb('Magic', 'selectedAltMagic', 'castMagic', 'Cast'),
+        //[Skills.Firemaking]: newVerb('Firemaking', 'Burn', 'selectedLog', 'burnLog'),
+        //[Skills.Cooking]: newVerb('Cooking', 'Cook', 'selectedFood', 'startCooking'),
+        [Skills.Smithing]: newVerb('Smithing', 'selectedSmith', 'startSmithing'),
+        [Skills.Fletching]: newVerb('Fletching', 'selectedFletch', 'startFletching'),
+        [Skills.Crafting]: newVerb('Crafting', 'selectedCraft', 'startCrafting'),
+        [Skills.Runecrafting]: newVerb('Runecrafting', 'selectedRunecraft', 'startRunecrafting'),
+        [Skills.Herblore]: newVerb('Herblore', 'selectedHerblore', 'startHerblore'),
+        [Skills.Summoning]: newVerb('Summoning', 'selectedSummon', 'createSummon'),
+        [Skills.Magic]: newVerb('Magic', 'selectedAltMagic', 'castMagic', 'Cast'),
     };
 
 
@@ -57,17 +57,17 @@ function script() {
     const createMakeXContainer = (skillName, actionName = 'Create') => {
         return ''
             + `<div>`
-            + `    <button type="button" class="btn btn-warning m-1 p-2" onClick="setMakeX(CONSTANTS.skill.${skillName});" style="height:48px;" id="${skillName}X">`
+            + `    <button type="button" class="btn btn-warning m-1 p-2" onClick="setMakeX(Skills.${skillName});" style="height:48px;" id="${skillName}X">`
             + `${actionName} X`
             + `    </button>`
             + `</div>`;
     }
-    //$("#skill-fm-logs-selected-qty").after(TempContainerMakeX[0]+"BurnX"+TempContainerMakeX[1]+"CONSTANTS.skill.Firemaking"+TempContainerMakeX[2]+"Burn X"+TempContainerMakeX[3]);
-    //$("#skill-cooking-food-selected-qty").after(TempContainerMakeX[0]+"CookX"+TempContainerMakeX[1]+"CONSTANTS.skill.Cooking"+TempContainerMakeX[2]+"Cook X"+TempContainerMakeX[3]);
+    //$("#skill-fm-logs-selected-qty").after(TempContainerMakeX[0]+"BurnX"+TempContainerMakeX[1]+"Skills.Firemaking"+TempContainerMakeX[2]+"Burn X"+TempContainerMakeX[3]);
+    //$("#skill-cooking-food-selected-qty").after(TempContainerMakeX[0]+"CookX"+TempContainerMakeX[1]+"Skills.Cooking"+TempContainerMakeX[2]+"Cook X"+TempContainerMakeX[3]);
     Object.getOwnPropertyNames(skillVerbs).forEach(skillID => {
         const skill = skillVerbs[skillID].name;
         if (skill === 'Magic') {
-            $("#magic-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "CastX" + TempContainerMakeX[1] + "CONSTANTS.skill.Magic" + TempContainerMakeX[2] + "Cast X" + TempContainerMakeX[3]);
+            $("#magic-item-have").parent().parent().parent().children().last().children().first().children().first().after(TempContainerMakeX[0] + "CastX" + TempContainerMakeX[1] + "Skills.Magic" + TempContainerMakeX[2] + "Cast X" + TempContainerMakeX[3]);
             return;
         }
         $(`#skill-${skill.toLowerCase()}-interval`).parent().parent().before(createMakeXContainer(skill));

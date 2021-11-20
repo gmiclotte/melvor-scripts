@@ -6,7 +6,7 @@ setInterval(() => {
     }
     for (let i = 0; i < window.rockOrder.length; i++) {
         let rock = window.rockOrder[i];
-        if (miningData[rock].level > skillLevel[CONSTANTS.skill.Mining]) {
+        if (miningData[rock].level > skillLevel[Skills.Mining]) {
             continue;
         }
         if (!rockData[rock].depleted) {

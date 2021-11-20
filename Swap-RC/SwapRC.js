@@ -39,7 +39,7 @@ function script() {
     }
 
     const swapRC = () => {
-        if (offline.skill !== CONSTANTS.skill.Runecrafting) {
+        if (offline.skill !== Skills.Runecrafting) {
             return;
         }
         let minRune;

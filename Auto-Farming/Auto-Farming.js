@@ -179,7 +179,7 @@ function script() {
         let minAmt = Infinity;
         for (let h = 0; h < seedOrder.length; h++) {
             let seed = seedOrder[h];
-            if (skillLevel[CONSTANTS.skill.Farming] < items[seed].farmingLevel) {
+            if (skillLevel[Skills.Farming] < items[seed].farmingLevel) {
                 continue;
             }
             if (!checkBankForItem(seed)) {

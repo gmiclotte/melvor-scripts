@@ -14,7 +14,7 @@ function script() {
     function addSummoningProgess() {
         // add summoning to combat skill progress menu
         const table = document.getElementById('combat-skill-progress-menu').children[0];
-        const skillID = CONSTANTS.skill.Summoning + '-1';
+        const skillID = Skills.Summoning + '-1';
         const body = document.createElement('tbody');
         const row = body.insertRow();
         // header
@@ -67,7 +67,7 @@ function script() {
         // add row to table
         table.appendChild(body);
         // add new Summoning elements to `skillProgressDisplay.elems`
-        const elems = skillProgressDisplay.elems.get(CONSTANTS.skill.Summoning)
+        const elems = skillProgressDisplay.elems.get(Skills.Summoning)
         elems.level.push(levelSmall);
         elems.percent.push(percentSmall);
         elems.progress.push(barInnerDiv);

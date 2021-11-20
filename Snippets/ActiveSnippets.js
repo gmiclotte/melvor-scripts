@@ -73,16 +73,16 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     // swap weapon based on hp left
     let itemID;
     if (combatManager.enemy.hitpoints > 1) {
-        if (skillID === CONSTANTS.skill.Magic) {
+        if (skillID === Skills.Magic) {
             itemID = Items.Normal_Shortbow;
         } else {
             // melee or ranged
             itemID = Items.Staff_of_Air;
         }
     } else {
-        if (skillID === CONSTANTS.skill.Ranged) {
+        if (skillID === Skills.Ranged) {
             itemID = Items.Iron_Throwing_Knife;
-        } else if (skillID === CONSTANTS.skill.Magic) {
+        } else if (skillID === Skills.Magic) {
             itemID = Items.Staff_of_Air;
         } else {
             // melee
@@ -431,8 +431,8 @@ window.spawnAhrenia = (phaseToSpawn = 1) => {
         dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon],
         1,
     );
-    skillLevel[CONSTANTS.skill.Slayer] = Math.max(
-        skillLevel[CONSTANTS.skill.Slayer],
+    skillLevel[Skills.Slayer] = Math.max(
+        skillLevel[Skills.Slayer],
         90,
     );
     // skip to desired phase

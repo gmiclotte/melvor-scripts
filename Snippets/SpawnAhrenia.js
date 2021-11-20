@@ -15,8 +15,8 @@ window.spawnAhrenia = (phaseToSpawn = 1) => {
         dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon],
         1,
     );
-    skillLevel[CONSTANTS.skill.Slayer] = Math.max(
-        skillLevel[CONSTANTS.skill.Slayer],
+    skillLevel[Skills.Slayer] = Math.max(
+        skillLevel[Skills.Slayer],
         90,
     );
     // skip to desired phase

@@ -69,7 +69,7 @@ function script() {
             obstacleFilter.filterCard = new MICSR.Card(obstacleFilter.content, '', '150px', true);
             obstacleFilter.filterCard.addButton('Import Agility Course', () => obstacleFilter.agilityCourse.importAgilityCourse(
                 chosenAgilityObstacles,
-                MASTERY[CONSTANTS.skill.Agility].xp.map(x => x > 13034431),
+                MASTERY[Skills.Agility].xp.map(x => x > 13034431),
                 agilityPassivePillarActive,
             ));
             const filterData = [

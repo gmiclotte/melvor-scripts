@@ -66,13 +66,13 @@ function script() {
             GLOBAL_TARGET_POOL: 100,
             // skill specific targets can be defined here, these override the global targets
             TARGET_LEVEL: {
-                // [CONSTANTS.skill.Firemaking]: 120,
+                // [Skills.Firemaking]: 120,
             },
             TARGET_MASTERY: {
-                // [CONSTANTS.skill.Herblore]: 90,
+                // [Skills.Herblore]: 90,
             },
             TARGET_POOL: {
-                // [CONSTANTS.skill.Crafting]: 25,
+                // [Skills.Crafting]: 25,
             },
             // returns the appropriate target
             getNext: (current, list) => {
@@ -236,21 +236,21 @@ function script() {
         ETA.addTargetInputs = () => {
             ETA.skillTargetCard = new MICSR.TabCard('EtaTarget', true, ETA.content, '', '150px', true);
             [
-                CONSTANTS.skill.Woodcutting,
-                CONSTANTS.skill.Fishing,
-                CONSTANTS.skill.Firemaking,
-                CONSTANTS.skill.Cooking,
-                CONSTANTS.skill.Mining,
-                CONSTANTS.skill.Smithing,
-                CONSTANTS.skill.Thieving,
-                CONSTANTS.skill.Fletching,
-                CONSTANTS.skill.Crafting,
-                CONSTANTS.skill.Runecrafting,
-                CONSTANTS.skill.Herblore,
-                CONSTANTS.skill.Agility,
-                CONSTANTS.skill.Summoning,
-                CONSTANTS.skill.Astrology,
-                CONSTANTS.skill.Magic,
+                Skills.Woodcutting,
+                Skills.Fishing,
+                Skills.Firemaking,
+                Skills.Cooking,
+                Skills.Mining,
+                Skills.Smithing,
+                Skills.Thieving,
+                Skills.Fletching,
+                Skills.Crafting,
+                Skills.Runecrafting,
+                Skills.Herblore,
+                Skills.Agility,
+                Skills.Summoning,
+                Skills.Astrology,
+                Skills.Magic,
             ].forEach(i => {
                 const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px', false);
                 card.addSectionTitle(SKILLS[i].name + ' Targets');
@@ -459,42 +459,42 @@ function script() {
         ETA.timeRemainingWrapper = function (skillID, checkTaskComplete) {
             // check if valid state
             switch (skillID) {
-                case CONSTANTS.skill.Firemaking:
+                case Skills.Firemaking:
                     if (game.firemaking.selectedRecipeID === -1) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Smithing:
+                case Skills.Smithing:
                     if (selectedSmith === null) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Fletching:
+                case Skills.Fletching:
                     if (selectedFletch === null) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Crafting:
+                case Skills.Crafting:
                     if (selectedCraft === null) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Runecrafting:
+                case Skills.Runecrafting:
                     if (selectedRunecraft === null) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Magic:
+                case Skills.Magic:
                     if (selectedAltMagic === -1) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Herblore:
+                case Skills.Herblore:
                     if (selectedHerblore === null) {
                         return;
                     }
                     break;
-                case CONSTANTS.skill.Summoning:
+                case Skills.Summoning:
                     if (selectedSummon === null) {
                         return;
                     }
@@ -512,23 +512,23 @@ function script() {
             let data = [];
             // gathering skills
             switch (skillID) {
-                case CONSTANTS.skill.Mining:
+                case Skills.Mining:
                     data = Mining.rockData;
                     break;
 
-                case CONSTANTS.skill.Thieving:
+                case Skills.Thieving:
                     data = Thieving.npcs;
                     break;
 
-                case CONSTANTS.skill.Woodcutting:
+                case Skills.Woodcutting:
                     data = trees;
                     break;
 
-                case CONSTANTS.skill.Fishing:
+                case Skills.Fishing:
                     data = fishingAreas;
                     break;
 
-                case CONSTANTS.skill.Agility:
+                case Skills.Agility:
                     data = [];
                     // only keep active chosen obstacles
                     for (const x of chosenAgilityObstacles) {
@@ -539,32 +539,32 @@ function script() {
                         }
                     }
                     break;
-                case CONSTANTS.skill.Astrology:
+                case Skills.Astrology:
                     data = ASTROLOGY;
                     break;
             }
             if (data.length > 0) {
-                if (skillID !== CONSTANTS.skill.Agility) {
+                if (skillID !== Skills.Agility) {
                     data.forEach((x, i) => {
-                        if (skillID === CONSTANTS.skill.Woodcutting && currentlyCutting === 2 && currentTrees.includes(i)) {
+                        if (skillID === Skills.Woodcutting && currentlyCutting === 2 && currentTrees.includes(i)) {
                             return;
                         }
                         let initial = initialVariables(skillID, checkTaskComplete);
-                        if (initial.skillID === CONSTANTS.skill.Fishing) {
+                        if (initial.skillID === Skills.Fishing) {
                             initial.fishID = selectedFish[i];
                             if (initial.fishID === null) {
                                 return;
                             }
                         }
                         initial.currentAction = i;
-                        if (initial.skillID === CONSTANTS.skill.Agility) {
+                        if (initial.skillID === Skills.Agility) {
                             initial.currentAction = x;
                             initial.agilityObstacles = data;
                         }
                         asyncTimeRemaining(initial);
                     });
                 }
-                if (skillID === CONSTANTS.skill.Woodcutting) {
+                if (skillID === Skills.Woodcutting) {
                     if (currentlyCutting === 2) {
                         // init first tree
                         let initial = initialVariables(skillID, checkTaskComplete);
@@ -577,7 +577,7 @@ function script() {
                         document.getElementById(`timeLeft${Skills[skillID]}-Secondary`).textContent = '';
                     }
                 }
-                if (skillID === CONSTANTS.skill.Agility) {
+                if (skillID === Skills.Agility) {
                     // init first tree
                     let initial = initialVariables(skillID, checkTaskComplete);
                     initial.currentAction = data;
@@ -593,31 +593,31 @@ function script() {
             // production skills
             let initial = initialVariables(skillID, checkTaskComplete);
             switch (initial.skillID) {
-                case CONSTANTS.skill.Smithing:
+                case Skills.Smithing:
                     initial.currentAction = selectedSmith;
                     break;
-                case CONSTANTS.skill.Fletching:
+                case Skills.Fletching:
                     initial.currentAction = selectedFletch;
                     break;
-                case CONSTANTS.skill.Runecrafting:
+                case Skills.Runecrafting:
                     initial.currentAction = selectedRunecraft;
                     break;
-                case CONSTANTS.skill.Crafting:
+                case Skills.Crafting:
                     initial.currentAction = selectedCraft;
                     break;
-                case CONSTANTS.skill.Herblore:
+                case Skills.Herblore:
                     initial.currentAction = selectedHerblore;
                     break;
-                case CONSTANTS.skill.Cooking:
+                case Skills.Cooking:
                     initial.data = selectedCookingRecipe;
                     break;
-                case CONSTANTS.skill.Firemaking:
+                case Skills.Firemaking:
                     initial.currentAction = game.firemaking.selectedRecipeID;
                     break;
-                case CONSTANTS.skill.Magic:
+                case Skills.Magic:
                     initial.currentAction = selectedAltMagic;
                     break;
-                case CONSTANTS.skill.Summoning:
+                case Skills.Summoning:
                     initial.currentAction = selectedSummon;
             }
             if (initial.currentAction === undefined && initial.data === undefined) {
@@ -825,12 +825,12 @@ function script() {
             let preservationChance = initial.staticPreservation;
             // skill specific bonuses
             switch (initial.skillID) {
-                case CONSTANTS.skill.Cooking:
+                case Skills.Cooking:
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
                     break;
-                case CONSTANTS.skill.Smithing:
+                case Skills.Smithing:
                     if (masteryLevel >= 99) {
                         preservationChance += 30;
                     } else if (masteryLevel >= 80) {
@@ -852,13 +852,13 @@ function script() {
                         preservationChance += player.modifiers.summoningSynergy_5_17;
                     }
                     break;
-                case CONSTANTS.skill.Fletching:
+                case Skills.Fletching:
                     preservationChance += 0.2 * masteryLevel - 0.2;
                     if (masteryLevel >= 99) {
                         preservationChance += 5;
                     }
                     break;
-                case CONSTANTS.skill.Crafting:
+                case Skills.Crafting:
                     preservationChance += 0.2 * masteryLevel - 0.2;
                     if (masteryLevel >= 99) {
                         preservationChance += 5;
@@ -870,7 +870,7 @@ function script() {
                         preservationChance += player.modifiers.summoningSynergy_16_17;
                     }
                     break;
-                case CONSTANTS.skill.Runecrafting:
+                case Skills.Runecrafting:
                     if (items[itemID].type === "Rune") {
                         preservationChance += player.modifiers.increasedRunecraftingEssencePreservation;
                     }
@@ -881,14 +881,14 @@ function script() {
                         preservationChance += 10;
                     }
                     break;
-                case CONSTANTS.skill.Herblore:
+                case Skills.Herblore:
                     preservationChance += 0.2 * masteryLevel - 0.2;
                     if (masteryLevel >= 99) preservationChance += 5;
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 5;
                     }
                     break;
-                case CONSTANTS.skill.Summoning:
+                case Skills.Summoning:
                     if (poolReached(initial, poolXp, 2)) {
                         preservationChance += 10;
                     }
@@ -918,36 +918,36 @@ function script() {
             let adjustedInterval = skillInterval;
             // compute mastery or pool dependent modifiers
             switch (initial.skillID) {
-                case CONSTANTS.skill.Woodcutting:
+                case Skills.Woodcutting:
                     if (convertXpToLvl(masteryXp) >= 99) {
                         flatReduction += 200;
                     }
                     break;
-                case CONSTANTS.skill.Firemaking:
+                case Skills.Firemaking:
                     if (poolReached(initial, poolXp, 1)) {
                         percentReduction += 10;
                     }
                     percentReduction += convertXpToLvl(masteryXp) * 0.1;
                     break;
-                case CONSTANTS.skill.Mining:
+                case Skills.Mining:
                     if (poolReached(initial, poolXp, 2)) {
                         flatReduction += 200;
                     }
                     break;
-                case CONSTANTS.skill.Crafting:
+                case Skills.Crafting:
                     if (poolReached(initial, poolXp, 2)) {
                         flatReduction += 200;
                     }
                     break;
-                case CONSTANTS.skill.Fletching:
+                case Skills.Fletching:
                     if (poolReached(initial, poolXp, 3)) {
                         flatReduction += 200;
                     }
                     break;
-                case CONSTANTS.skill.Agility:
+                case Skills.Agility:
                     percentReduction += 3 * Math.floor(convertXpToLvl(masteryXp) / 10);
                     break;
-                case CONSTANTS.skill.Thieving:
+                case Skills.Thieving:
                     if (initial.currentAction === ThievingNPCs.FISHERMAN) {
                         percentReduction -= player.modifiers.summoningSynergy_5_11;
                     }
@@ -958,10 +958,10 @@ function script() {
                         flatReduction += 200;
                     }
                     break;
-                case CONSTANTS.skill.Smithing:
+                case Skills.Smithing:
                     flatReduction += player.modifiers.summoningSynergy_9_17;
                     break;
-                case CONSTANTS.skill.Cooking:
+                case Skills.Cooking:
                     flatReduction += player.modifiers.summoningSynergy_9_17;
                     break;
             }
@@ -977,7 +977,7 @@ function script() {
         function intervalRespawnAdjustment(initial, currentInterval, skillXp, poolXp, masteryXp, agiLapTime) {
             let adjustedInterval = currentInterval;
             switch (initial.skillID) {
-                case CONSTANTS.skill.Mining:
+                case Skills.Mining:
                     // compute max rock HP
                     let rockHP = 5 /*base*/ + convertXpToLvl(masteryXp);
                     if (poolReached(initial, poolXp, 3)) {
@@ -1000,7 +1000,7 @@ function script() {
                     adjustedInterval = (adjustedInterval * rockHP + spawnTime) / rockHP;
                     break;
 
-                case CONSTANTS.skill.Thieving:
+                case Skills.Thieving:
                     const successRate = getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp);
                     // stunTime = 3s + time of the failed action, since failure gives no xp or mxp
                     let stunTime = 3000 + adjustedInterval;
@@ -1008,7 +1008,7 @@ function script() {
                     adjustedInterval = adjustedInterval + stunTime / successRate - stunTime;
                     break;
 
-                case CONSTANTS.skill.Agility:
+                case Skills.Agility:
                     adjustedInterval = agiLapTime;
             }
             return Math.ceil(adjustedInterval);
@@ -1042,7 +1042,7 @@ function script() {
         function skillXpAdjustment(initial, itemXp, itemID, poolXp, masteryXp) {
             let staticXpBonus = initial.staticXpBonus;
             switch (initial.skillID) {
-                case CONSTANTS.skill.Herblore:
+                case Skills.Herblore:
                     if (poolReached(initial, poolXp, 1)) {
                         staticXpBonus += 0.03;
                     }
@@ -1050,13 +1050,13 @@ function script() {
             }
             let xpMultiplier = 1;
             switch (initial.skillID) {
-                case CONSTANTS.skill.Runecrafting:
+                case Skills.Runecrafting:
                     if (poolReached(initial, poolXp, 1) && items[itemID].type === "Rune") {
                         xpMultiplier += 1.5;
                     }
                     break;
 
-                case CONSTANTS.skill.Cooking: {
+                case Skills.Cooking: {
                     const burnChance = calcBurnChance(masteryXp);
                     const cookXp = itemXp * (1 - burnChance);
                     const burnXp = 1 * burnChance;
@@ -1064,7 +1064,7 @@ function script() {
                     break;
                 }
 
-                case CONSTANTS.skill.Fishing: {
+                case Skills.Fishing: {
                     const junkChance = calcJunkChance(initial, masteryXp, poolXp);
                     const fishXp = itemXp * (1 - junkChance);
                     const junkXp = 1 * junkChance;
@@ -1072,7 +1072,7 @@ function script() {
                     break;
                 }
 
-                case CONSTANTS.skill.Summoning: {
+                case Skills.Summoning: {
                     if (ETASettings.USE_TABLETS) {
                         const qty = calcSummoningTabletQty(initial, poolXp, convertXpToLvl(masteryXp));
                         itemXp += qty * initial.useTabletXp;
@@ -1104,12 +1104,12 @@ function script() {
 
         function isGathering(skillID) {
             return [
-                CONSTANTS.skill.Woodcutting,
-                CONSTANTS.skill.Fishing,
-                CONSTANTS.skill.Mining,
-                CONSTANTS.skill.Thieving,
-                CONSTANTS.skill.Agility,
-                CONSTANTS.skill.Astrology,
+                Skills.Woodcutting,
+                Skills.Fishing,
+                Skills.Mining,
+                Skills.Thieving,
+                Skills.Agility,
+                Skills.Astrology,
             ].includes(skillID);
         }
 
@@ -1122,7 +1122,7 @@ function script() {
                 percentIntervalReduction: 0,
                 skillReq: [], // Needed items for craft and their quantities
                 itemQty: {}, // Initial amount of resources
-                hasMastery: skillID !== CONSTANTS.skill.Magic, // magic has no mastery, so we often check this
+                hasMastery: skillID !== Skills.Magic, // magic has no mastery, so we often check this
                 multiple: ETA.SINGLE,
                 completionCape: player.equipment.slots.Cape.item.id === Items.Cape_of_Completion,
                 // gathering skills are treated differently, so we often check this
@@ -1301,7 +1301,7 @@ function script() {
                 initial.skillXp += qty * initial.useTabletXp;
                 initial.targetSkillReached = initial.skillXp >= initial.targetXp;
             }
-            initial.chanceToDouble = calculateChanceToDouble(CONSTANTS.skill.Summoning, false, 0, 0, items[initial.itemID]);
+            initial.chanceToDouble = calculateChanceToDouble(Skills.Summoning, false, 0, 0, items[initial.itemID]);
             return initial;
         }
 
@@ -1501,15 +1501,15 @@ function script() {
                 xpModifier += 0.05;
             }
             // Firemaking pool and log modifiers
-            if (initial.skillID === CONSTANTS.skill.Firemaking) {
+            if (initial.skillID === Skills.Firemaking) {
                 // If current skill is Firemaking, we need to apply mastery progression from actions and use updated poolXp values
                 if (poolReached(initial, poolXp, 3)) {
                     xpModifier += 0.05;
                 }
-                for (let i = 0; i < MASTERY[CONSTANTS.skill.Firemaking].xp.length; i++) {
+                for (let i = 0; i < MASTERY[Skills.Firemaking].xp.length; i++) {
                     // The logs you are not burning
                     if (initial.actions[0].masteryID !== i) {
-                        if (getMasteryLevel(CONSTANTS.skill.Firemaking, i) >= 99) {
+                        if (getMasteryLevel(Skills.Firemaking, i) >= 99) {
                             xpModifier += 0.0025;
                         }
                     }
@@ -1520,11 +1520,11 @@ function script() {
                 }
             } else {
                 // For all other skills, you use the game function to grab your FM mastery progression
-                if (getMasteryPoolProgress(CONSTANTS.skill.Firemaking) >= masteryCheckpoints[3]) {
+                if (getMasteryPoolProgress(Skills.Firemaking) >= masteryCheckpoints[3]) {
                     xpModifier += 0.05;
                 }
-                for (let i = 0; i < MASTERY[CONSTANTS.skill.Firemaking].xp.length; i++) {
-                    if (getMasteryLevel(CONSTANTS.skill.Firemaking, i) >= 99) {
+                for (let i = 0; i < MASTERY[Skills.Firemaking].xp.length; i++) {
+                    if (getMasteryLevel(Skills.Firemaking, i) >= 99) {
                         xpModifier += 0.0025;
                     }
                 }
@@ -1536,12 +1536,12 @@ function script() {
                 xpToAdd = 1;
             }
             // BurnChance affects average mastery Xp
-            if (initial.skillID === CONSTANTS.skill.Cooking) {
+            if (initial.skillID === Skills.Cooking) {
                 let burnChance = calcBurnChance(masteryXp);
                 xpToAdd *= (1 - burnChance);
             }
             // Fishing junk gives no mastery xp
-            if (initial.skillID === CONSTANTS.skill.Fishing) {
+            if (initial.skillID === Skills.Fishing) {
                 let junkChance = calcJunkChance(initial, masteryXp, poolXp);
                 xpToAdd *= (1 - junkChance);
             }
@@ -1679,7 +1679,7 @@ function script() {
         function actionsToBreakpoint(initial, current, noResources = false) {
             // Adjustments
             const currentIntervals = current.actions.map((x, i) => intervalAdjustment(initial, current.poolXp, x.masteryXp, initial.actions[i].skillInterval));
-            if (initial.skillID === CONSTANTS.skill.Agility) {
+            if (initial.skillID === Skills.Agility) {
                 current.agiLapTime = currentIntervals.reduce((a, b) => a + b, 0);
             }
             const averageActionTimes = current.actions.map((x, i) => intervalRespawnAdjustment(initial, currentIntervals[i], current.skillXp, current.poolXp, x.masteryXp, current.agiLapTime));
@@ -1720,7 +1720,7 @@ function script() {
             const totalChanceToUse = Math.min(1, 1 - rawPreservation);
             const totalChanceToUseWithCharges = Math.min(1, Math.max(0.2, 1 - rawPreservation - ETA.rhaelyxChargePreservation / 100));
             // update summoning costs
-            if (initial.skillID === CONSTANTS.skill.Summoning) {
+            if (initial.skillID === Skills.Summoning) {
                 const masteryLevel = convertXpToLvl(current.actions[0].masteryXp);
                 initial.skillReq.map((_, i) =>
                     calcSummoningRecipeQty(initial, current.poolXp, i, masteryLevel)
@@ -1854,7 +1854,7 @@ function script() {
         }
 
         function halveAgilityMasteryDebuffs(initial, id) {
-            if (initial.skillID !== CONSTANTS.skill.Agility) {
+            if (initial.skillID !== Skills.Agility) {
                 return;
             }
             // check if we need to halve one of the debuffs
@@ -1875,7 +1875,7 @@ function script() {
             }
             if (specific && modifier[specific]) {
                 modifier[specific].forEach(x => {
-                    if (x[0] === CONSTANTS.skill.Agility) {
+                    if (x[0] === Skills.Agility) {
                         change += x[1];
                     }
                 });
@@ -2001,49 +2001,49 @@ function script() {
         function setupTimeRemaining(initial) {
             // Set current skill and pull matching variables from game with script
             switch (initial.skillID) {
-                case CONSTANTS.skill.Smithing:
+                case Skills.Smithing:
                     initial = configureSmithing(initial);
                     break;
-                case CONSTANTS.skill.Fletching:
+                case Skills.Fletching:
                     initial = configureFletching(initial);
                     break;
-                case CONSTANTS.skill.Runecrafting:
+                case Skills.Runecrafting:
                     initial = configureRunecrafting(initial);
                     break;
-                case CONSTANTS.skill.Crafting:
+                case Skills.Crafting:
                     initial = configureCrafting(initial);
                     break;
-                case CONSTANTS.skill.Herblore:
+                case Skills.Herblore:
                     initial = configureHerblore(initial);
                     break;
-                case CONSTANTS.skill.Cooking:
+                case Skills.Cooking:
                     initial = configureCooking(initial);
                     break;
-                case CONSTANTS.skill.Firemaking:
+                case Skills.Firemaking:
                     initial = configureFiremaking(initial);
                     break;
-                case CONSTANTS.skill.Magic:
+                case Skills.Magic:
                     initial = configureMagic(initial);
                     break;
-                case CONSTANTS.skill.Mining:
+                case Skills.Mining:
                     initial = configureMining(initial);
                     break;
-                case CONSTANTS.skill.Thieving:
+                case Skills.Thieving:
                     initial = configureThieving(initial);
                     break;
-                case CONSTANTS.skill.Woodcutting:
+                case Skills.Woodcutting:
                     initial = configureWoodcutting(initial);
                     break;
-                case CONSTANTS.skill.Fishing:
+                case Skills.Fishing:
                     initial = configureFishing(initial);
                     break;
-                case CONSTANTS.skill.Agility:
+                case Skills.Agility:
                     initial = configureAgility(initial);
                     break;
-                case CONSTANTS.skill.Summoning:
+                case Skills.Summoning:
                     initial = configureSummoning(initial);
                     break;
-                case CONSTANTS.skill.Astrology:
+                case Skills.Astrology:
                     initial = configureAstrology(initial);
                     break;
             }
@@ -2052,10 +2052,10 @@ function script() {
             initial.percentIntervalReduction -= getTotalFromModifierArray("increasedSkillIntervalPercent", initial.skillID);
             initial.flatIntervalReduction += getTotalFromModifierArray("decreasedSkillInterval", initial.skillID);
             initial.flatIntervalReduction -= getTotalFromModifierArray("increasedSkillInterval", initial.skillID);
-            if (initial.skillID === CONSTANTS.skill.Agility) {
+            if (initial.skillID === Skills.Agility) {
                 // set initial lap time
                 initial.agiLapTime = 0;
-                if (initial.skillID === CONSTANTS.skill.Agility) {
+                if (initial.skillID === Skills.Agility) {
                     const poolXp = MASTERY[initial.skillID].pool;
                     initial.agilityObstacles.forEach(x => {
                         const masteryXp = MASTERY[initial.skillID].xp[x];
@@ -2136,11 +2136,11 @@ function script() {
             xpMultiplier += getTotalFromModifierArray("increasedSkillXP", skill) / 100;
             xpMultiplier -= getTotalFromModifierArray("decreasedSkillXP", skill) / 100;
             xpMultiplier += (player.modifiers.increasedGlobalSkillXP - player.modifiers.decreasedGlobalSkillXP) / 100;
-            if (skill === CONSTANTS.skill.Magic) {
+            if (skill === Skills.Magic) {
                 xpMultiplier += (player.modifiers.increasedAltMagicSkillXP - player.modifiers.decreasedAltMagicSkillXP) / 100;
             }
             // TODO: does not match the test-v0.21?980 implementation
-            if (skill === CONSTANTS.skill.Firemaking
+            if (skill === Skills.Firemaking
                 && player.modifiers.summoningSynergy_18_19
                 && herbloreBonuses[8].bonus[0] === 0
                 && herbloreBonuses[8].bonus[1] > 0) {
@@ -2233,10 +2233,10 @@ function script() {
             const timeLeftElement = document.getElementById(timeLeftElementId);
             if (timeLeftElement === null) {
                 switch (initial.skillID) {
-                    case CONSTANTS.skill.Thieving:
+                    case Skills.Thieving:
                         ETA.makeThievingDisplay();
                         break;
-                    case CONSTANTS.skill.Agility:
+                    case Skills.Agility:
                         ETA.makeAgilityDisplay();
                         break;
                 }
@@ -2268,7 +2268,7 @@ function script() {
                         + "\r\nETA: " + dateFormat(now, finishedTime);
                 }
             }
-            if (initial.actions.length === 1 && (initial.isGathering || initial.skillID === CONSTANTS.skill.Cooking)) {
+            if (initial.actions.length === 1 && (initial.isGathering || initial.skillID === Skills.Cooking)) {
                 const itemID = initial.actions[0].itemID;
                 if (itemID !== undefined) {
                     const youHaveElementId = timeLeftElementId + "-YouHave";
@@ -2485,7 +2485,7 @@ function script() {
                 window[selectName] = function (...args) {
                     ETA.selectRef[selectName](...args);
                     try {
-                        ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], false);
+                        ETA.timeRemainingWrapper(Skills[skillName], false);
                     } catch (e) {
                         console.error(e);
                     }
@@ -2508,13 +2508,13 @@ function script() {
             // mimic Craftingskill.renderSkillMastery
             if (game[propName].renderQueue.skillMastery) {
                 try {
-                    ETA.timeRemainingWrapper(CONSTANTS.skill[skillName], false);
+                    ETA.timeRemainingWrapper(Skills[skillName], false);
                 } catch (e) {
                     console.error(e);
                 }
-                updateTotalMastery(CONSTANTS.skill[skillName]);
-                updateMasteryPoolProgress(CONSTANTS.skill[skillName]);
-                updateOpenMasteryXPModal(CONSTANTS.skill[skillName]);
+                updateTotalMastery(Skills[skillName]);
+                updateMasteryPoolProgress(Skills[skillName]);
+                updateOpenMasteryXPModal(Skills[skillName]);
             }
             game[propName].renderQueue.skillMastery = false;
         }
@@ -2540,7 +2540,7 @@ function script() {
             ETA.log('Remaking Agility display');
             ETA.makeAgilityDisplay();
             try {
-                ETA.timeRemainingWrapper(CONSTANTS.skill.Agility, false);
+                ETA.timeRemainingWrapper(Skills.Agility, false);
             } catch (e) {
                 console.error(e);
             }
