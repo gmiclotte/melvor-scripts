@@ -1,8 +1,8 @@
 // Quick Equip Max/Comp Cape
 quickEquipSkillcape = (skill) => {
     const capes = [
-        CONSTANTS.item.Cape_of_Completion,
-        CONSTANTS.item.Max_Skillcape,
+        Items.Cape_of_Completion,
+        Items.Max_Skillcape,
         skillcapeItems[skill],
     ];
     for (let i = 0; i < capes.length; i++) {

@@ -20,55 +20,55 @@ function script() {
     maf.treePriority = 'level';
     maf.amountLimit = 1e5; // after reaching this amount of crops, aim for highest level seeds again
     maf.allotmentSeedOrder = [
-        CONSTANTS.item.Potato_Seed,
-        CONSTANTS.item.Onion_Seed,
-        CONSTANTS.item.Cabbage_Seed,
-        CONSTANTS.item.Tomato_Seed,
-        CONSTANTS.item.Sweetcorn_Seed,
-        CONSTANTS.item.Strawberry_Seed,
-        CONSTANTS.item.Cherry_Seeds,
-        CONSTANTS.item.Watermelon_Seed,
-        CONSTANTS.item.Snape_Grass_Seed,
-        CONSTANTS.item.Carrot_Seeds,
+        Items.Potato_Seed,
+        Items.Onion_Seed,
+        Items.Cabbage_Seed,
+        Items.Tomato_Seed,
+        Items.Sweetcorn_Seed,
+        Items.Strawberry_Seed,
+        Items.Cherry_Seeds,
+        Items.Watermelon_Seed,
+        Items.Snape_Grass_Seed,
+        Items.Carrot_Seeds,
     ];
     maf.herbSeedOrder = [
-        CONSTANTS.item.Garum_Seed,
-        CONSTANTS.item.Sourweed_Seed,
-        CONSTANTS.item.Mantalyme_Seed,
-        CONSTANTS.item.Lemontyle_Seed,
-        CONSTANTS.item.Oxilyme_Seed,
-        CONSTANTS.item.Poraxx_Seed,
-        CONSTANTS.item.Pigtayle_Seed,
-        CONSTANTS.item.Barrentoe_Seed,
+        Items.Garum_Seed,
+        Items.Sourweed_Seed,
+        Items.Mantalyme_Seed,
+        Items.Lemontyle_Seed,
+        Items.Oxilyme_Seed,
+        Items.Poraxx_Seed,
+        Items.Pigtayle_Seed,
+        Items.Barrentoe_Seed,
     ];
     maf.treeSeedOrder = [
-        CONSTANTS.item.Oak_Tree_Seed,
-        CONSTANTS.item.Willow_Tree_Seed,
-        CONSTANTS.item.Maple_Tree_Seed,
-        CONSTANTS.item.Yew_Tree_Seed,
-        CONSTANTS.item.Apple_Tree_Seeds,
-        CONSTANTS.item.Magic_Tree_Seed,
+        Items.Oak_Tree_Seed,
+        Items.Willow_Tree_Seed,
+        Items.Maple_Tree_Seed,
+        Items.Yew_Tree_Seed,
+        Items.Apple_Tree_Seeds,
+        Items.Magic_Tree_Seed,
     ];
 
     // gear
     maf.farmGear = {
         Cape: [],
         Weapon: [
-            CONSTANTS.item.Bobs_Rake,
+            Items.Bobs_Rake,
         ],
         Ring: [
-            CONSTANTS.item.Aorpheats_Signet_Ring,
-            CONSTANTS.item.Ancient_Ring_Of_Mastery,
-            CONSTANTS.item.Ancient_Ring_Of_Skills,
+            Items.Aorpheats_Signet_Ring,
+            Items.Ancient_Ring_Of_Mastery,
+            Items.Ancient_Ring_Of_Skills,
         ],
     };
     if (completionStats >= 100) {
-        maf.farmGear.Cape.push(CONSTANTS.item.Cape_of_Completion);
+        maf.farmGear.Cape.push(Items.Cape_of_Completion);
     }
-    if (checkRequirements(items[CONSTANTS.item.Max_Skillcape].equipRequirements, false, '')) {
-        maf.farmGear.Cape.push(CONSTANTS.item.Max_Skillcape);
+    if (checkRequirements(items[Items.Max_Skillcape].equipRequirements, false, '')) {
+        maf.farmGear.Cape.push(Items.Max_Skillcape);
     }
-    maf.farmGear.Cape.push(CONSTANTS.item.Farming_Skillcape);
+    maf.farmGear.Cape.push(Items.Farming_Skillcape);
 
     maf.checkGrown = function () {
         for (let j = 0; j < newFarmingAreas.length; j++) {

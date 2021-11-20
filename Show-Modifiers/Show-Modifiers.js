@@ -909,7 +909,7 @@ function script() {
             + `onclick="window.${name}.showRelevantModifiers(player.modifiers, \'Active Modifiers\');" `
             + 'aria-haspopup="true" '
             + 'aria-expanded="true">'
-            + `<img class="skill-icon-xxs" src="${getItemMedia(CONSTANTS.item.Event_Clue_1)}">`
+            + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Event_Clue_1)}">`
             + '</button>'
             + '</div>';
     }

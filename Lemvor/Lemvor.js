@@ -13,10 +13,10 @@ function script() {
 
     // hats
     const hats = [
-        getItemMedia(CONSTANTS.item.Green_Party_Hat),
-        getItemMedia(CONSTANTS.item.Purple_Party_Hat),
-        getItemMedia(CONSTANTS.item.Red_Party_Hat),
-        getItemMedia(CONSTANTS.item.Yellow_Party_Hat),
+        getItemMedia(Items.Green_Party_Hat),
+        getItemMedia(Items.Purple_Party_Hat),
+        getItemMedia(Items.Red_Party_Hat),
+        getItemMedia(Items.Yellow_Party_Hat),
     ];
 
     const mediaBackup = items.map((_, i) => getItemMedia(i))
@@ -138,12 +138,12 @@ function script() {
 
     lemvor.setLemon = id => {
         lemvor.lemon = mediaBackup[id];
-        lemvor.replaceLemon = id === CONSTANTS.item.Lemon;
+        lemvor.replaceLemon = id === Items.Lemon;
         lemvor.makeLemon();
         lemvor.updateLemon();
     }
 
-    lemvor.setLemon(CONSTANTS.item.Lemon);
+    lemvor.setLemon(Items.Lemon);
 }
 
 (function () {

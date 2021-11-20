@@ -74,16 +74,16 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     let itemID;
     if (combatManager.enemy.hitpoints > 1) {
         if (skillID === CONSTANTS.skill.Magic) {
-            itemID = CONSTANTS.item.Normal_Shortbow;
+            itemID = Items.Normal_Shortbow;
         } else {
             // melee or ranged
-            itemID = CONSTANTS.item.Staff_of_Air;
+            itemID = Items.Staff_of_Air;
         }
     } else {
         if (skillID === CONSTANTS.skill.Ranged) {
-            itemID = CONSTANTS.item.Iron_Throwing_Knife;
+            itemID = Items.Iron_Throwing_Knife;
         } else if (skillID === CONSTANTS.skill.Magic) {
-            itemID = CONSTANTS.item.Staff_of_Air;
+            itemID = Items.Staff_of_Air;
         } else {
             // melee
             itemID = -1;
@@ -308,8 +308,8 @@ snippet.start();
 // Quick Equip Max/Comp Cape
 quickEquipSkillcape = (skill) => {
     const capes = [
-        CONSTANTS.item.Cape_of_Completion,
-        CONSTANTS.item.Max_Skillcape,
+        Items.Cape_of_Completion,
+        Items.Max_Skillcape,
         skillcapeItems[skill],
     ];
     for (let i = 0; i < capes.length; i++) {

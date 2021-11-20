@@ -459,7 +459,7 @@ function script() {
             const cols = 40;
             const size = 10;
             const fps = 2;
-            const lemon = getItemMedia(CONSTANTS.item.Lemon);
+            const lemon = getItemMedia(Items.Lemon);
             let view = `
             <iframe width="80" height="60"
             src="https://www.youtube.com/embed/i41KoE0iMYU?autoplay=1">
@@ -522,7 +522,7 @@ function script() {
             + `onclick="window.${name}.show();" `
             + 'aria-haspopup="true" '
             + 'aria-expanded="true">'
-            + `<img class="skill-icon-xxs" src="${getItemMedia(CONSTANTS.item.Black_Wizard_Hat)}">`
+            + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Black_Wizard_Hat)}">`
             + '</button>'
             + '</div>';
     }

@@ -1096,7 +1096,7 @@ function script() {
         // compute average actions per mastery token
         function actionsPerToken(skillID, skillXp, masteryXp) {
             let actions = 20000 / calcTotalUnlockedItems(skillID, skillXp);
-            if (player.equipment.slots.Amulet.item.id === CONSTANTS.item.Clue_Chasers_Insignia) {
+            if (player.equipment.slots.Amulet.item.id === Items.Clue_Chasers_Insignia) {
                 actions *= ETA.insigniaModifier;
             }
             return actions;
@@ -1124,7 +1124,7 @@ function script() {
                 itemQty: {}, // Initial amount of resources
                 hasMastery: skillID !== CONSTANTS.skill.Magic, // magic has no mastery, so we often check this
                 multiple: ETA.SINGLE,
-                completionCape: player.equipment.slots.Cape.item.id === CONSTANTS.item.Cape_of_Completion,
+                completionCape: player.equipment.slots.Cape.item.id === Items.Cape_of_Completion,
                 // gathering skills are treated differently, so we often check this
                 isGathering: isGathering(skillID),
                 // Generate default values for script
@@ -1171,8 +1171,8 @@ function script() {
             initial.staticPreservation -= player.modifiers.decreasedGlobalPreservationChance;
             initial.staticPreservation += getTotalFromModifierArray("increasedSkillPreservationChance", skillID);
             initial.staticPreservation -= getTotalFromModifierArray("decreasedSkillPreservationChance", skillID);
-            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx
-                && getBankQty(CONSTANTS.item.Charge_Stone_of_Rhaelyx) > 0) {
+            if (player.equipment.slots.Helmet.item.id === Items.Crown_of_Rhaelyx
+                && getBankQty(Items.Charge_Stone_of_Rhaelyx) > 0) {
                 initial.staticPreservation -= ETA.rhaelyxChargePreservation; // Remove stone 15% chance from base
             }
             return initial;
@@ -1181,8 +1181,8 @@ function script() {
         function skillCapeEquipped(capeID) {
             return [
                 capeID,
-                CONSTANTS.item.Max_Skillcape,
-                CONSTANTS.item.Cape_of_Completion,
+                Items.Max_Skillcape,
+                Items.Cape_of_Completion,
             ].includes(player.equipment.slots.Cape.item.id);
         }
 
@@ -1192,8 +1192,8 @@ function script() {
             initial.skillInterval = 2000;
             for (let i of items[initial.itemID].smithReq) {
                 const req = {...i};
-                if (req.id === CONSTANTS.item.Coal_Ore) {
-                    if (skillCapeEquipped(CONSTANTS.item.Smithing_Skillcape)) {
+                if (req.id === Items.Coal_Ore) {
+                    if (skillCapeEquipped(Items.Smithing_Skillcape)) {
                         req.qty /= 2;
                     }
                     req.qty -= player.modifiers.summoningSynergy_17_19;
@@ -1215,7 +1215,7 @@ function script() {
                 initial.skillReq.push(i);
             }
             //Special Case for Arrow Shafts
-            if (initial.itemID === CONSTANTS.item.Arrow_Shafts) {
+            if (initial.itemID === Items.Arrow_Shafts) {
                 if (selectedFletchLog === undefined) {
                     selectedFletchLog = 0;
                 }
@@ -1319,7 +1319,7 @@ function script() {
             }
             // Get Rune discount
             let capeMultiplier = 1;
-            if (skillCapeEquipped(CONSTANTS.item.Magic_Skillcape)) {
+            if (skillCapeEquipped(Items.Magic_Skillcape)) {
                 // Add cape multiplier
                 capeMultiplier = 2;
             }
@@ -1640,8 +1640,8 @@ function script() {
                 current.used[id] = 0;
             }
             // Check for Crown of Rhaelyx
-            if (player.equipment.slots.Helmet.item.id === CONSTANTS.item.Crown_of_Rhaelyx && initial.hasMastery && !initial.isGathering) {
-                let rhaelyxCharge = getQtyOfItem(CONSTANTS.item.Charge_Stone_of_Rhaelyx);
+            if (player.equipment.slots.Helmet.item.id === Items.Crown_of_Rhaelyx && initial.hasMastery && !initial.isGathering) {
+                let rhaelyxCharge = getQtyOfItem(Items.Charge_Stone_of_Rhaelyx);
                 current.chargeUses = rhaelyxCharge * 1000; // average crafts per Rhaelyx Charge Stone
             }
             return current;
@@ -2076,7 +2076,7 @@ function script() {
                 if (initial.targetPool !== 100) {
                     initial.targetPoolXp = initial.maxPoolXp / 100 * initial.targetPool;
                 }
-                initial.tokens = getQtyOfItem(CONSTANTS.item["Mastery_Token_" + Skills[initial.skillID]])
+                initial.tokens = getQtyOfItem(Items["Mastery_Token_" + Skills[initial.skillID]])
             }
 
             // convert single action skills to `actions` format
@@ -2451,9 +2451,9 @@ function script() {
         ETA.SEQUENTIAL = 2;
 
         // data
-        ETA.insigniaModifier = 1 - items[CONSTANTS.item.Clue_Chasers_Insignia].increasedItemChance / 100;
+        ETA.insigniaModifier = 1 - items[Items.Clue_Chasers_Insignia].increasedItemChance / 100;
         // rhaelyx goes from 10% to 25% with charge stones
-        ETA.rhaelyxChargePreservation = conditionalModifiers.get(CONSTANTS.item.Crown_of_Rhaelyx)[0].modifiers.increasedGlobalPreservationChance;
+        ETA.rhaelyxChargePreservation = conditionalModifiers.get(Items.Crown_of_Rhaelyx)[0].modifiers.increasedGlobalPreservationChance;
 
         // lvlToXp cache
         ETA.lvlToXp = Array.from({length: 200}, (_, i) => exp.level_to_xp(i));
