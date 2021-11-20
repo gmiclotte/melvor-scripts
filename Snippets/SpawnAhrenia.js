@@ -11,8 +11,8 @@ window.spawnAhrenia = (phaseToSpawn = 1) => {
     PETS[0].modifiers.decreasedMonsterRespawnTimer = 3000 - TICK_INTERVAL - player.modifiers.decreasedMonsterRespawnTimer + player.modifiers.increasedMonsterRespawnTimer;
     player.computeAllStats();
     // unlock itm
-    dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon] = Math.max(
-        dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon],
+    dungeonCompleteCount[Dungeons.Fire_God_Dungeon] = Math.max(
+        dungeonCompleteCount[Dungeons.Fire_God_Dungeon],
         1,
     );
     skillLevel[Skills.Slayer] = Math.max(
