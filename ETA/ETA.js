@@ -1569,15 +1569,8 @@ function script() {
             if (primaryBurnChance < 0) {
                 primaryBurnChance = 0;
             }
-            primaryBurnChance /= 100;
-            // secondary burn chance
-            let secondaryBurnChance = 1 - player.modifiers.decreasedSecondaryFoodBurnChance;
-            if (secondaryBurnChance < 0) {
-                secondaryBurnChance = 0;
-            }
-            secondaryBurnChance /= 100;
             // total burn chance
-            return 1 - (1 - primaryBurnChance) * (1 - secondaryBurnChance);
+            return primaryBurnChance / 100;
         }
 
         // calculate junk chance
