@@ -1,28 +1,25 @@
 // ==UserScript==
-// @name         Melvor Additive Skilling Anti-Lag
-// @version      0.2.6
-// @description  Adjusts game speed to compensate for lag so that the original intervals match realtime. Based on anti-lag by 8992
-// @author       GMiclotte
-// @match        https://*.melvoridle.com/*
-// @exclude      https://wiki.melvoridle.com/*
-// @grant        none
-// @namespace    http://tampermonkey.net/
+// @name        Melvor Additive Skilling Anti-Lag
+// @namespace   http://tampermonkey.net/
+// @version     0.2.7
+// @description Adjusts game speed to compensate for lag so that the original intervals match realtime. Based on anti-lag by 8992
+// @author      GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
+// @grant        none
 // ==/UserScript==
 
-function script() {
-    const skillFunctions = [
-        cutTree,
-        startFishing,
-        startSmithing,
-        startFletching,
-        startCrafting,
-        startRunecrafting,
-        startHerblore,
-        startAgility,
-        createSummon,
-        castMagic,
-    ];
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
     class ASAL {
         constructor(name) {
@@ -150,7 +147,7 @@ function script() {
         }
     }
 
-    function loadScript() {
+    function startASAL(skillFunctions) {
         const name = 'asal';
         window[name] = new ASAL(name);
         const asal = window[name];
@@ -163,37 +160,25 @@ function script() {
         asal.log('Loaded');
     }
 
-    loadScript();
-}
-
-(function () {
-    // copy of skillFunctions
-    const skillFunctions = [
-        cutTree,
-        startFishing,
-        startSmithing,
-        startFletching,
-        startCrafting,
-        startRunecrafting,
-        startHerblore,
-        startAgility,
-        createSummon,
-        castMagic,
-    ];
-
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
-    }
-
     function loadScript() {
+        const skillFunctions = [
+            cutTree,
+            startFishing,
+            startSmithing,
+            startFletching,
+            startCrafting,
+            startRunecrafting,
+            startHerblore,
+            startAgility,
+            createSummon,
+            castMagic,
+        ];
         if (skillFunctions.every((a) => a !== undefined)) {
             // Only load script after all functions have been defined
             clearInterval(scriptLoader);
-            injectScript(script);
+            startASAL(skillFunctions);
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

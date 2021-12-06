@@ -1,17 +1,30 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.6
+// @version		0.0.7
 // @description	Collection of various snippets
+// @grant		none
 // @author		GMiclotte
-// @match		https://*.melvoridle.com/*
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
 // @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
 // @grant		none
 // ==/UserScript==
 
-function script() {
-snippet = {
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
+
+function startSnippets() {
+
+const snippet = {
     name: '',
     log: (...args) => console.log('Snippets:', ...args),
     start: () => snippet.log(`Loading ${snippet.name}.`),
@@ -427,8 +440,8 @@ window.spawnAhrenia = (phaseToSpawn = 1) => {
     PETS[0].modifiers.decreasedMonsterRespawnTimer = 3000 - TICK_INTERVAL - player.modifiers.decreasedMonsterRespawnTimer + player.modifiers.increasedMonsterRespawnTimer;
     player.computeAllStats();
     // unlock itm
-    dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon] = Math.max(
-        dungeonCompleteCount[CONSTANTS.dungeon.Fire_God_Dungeon],
+    dungeonCompleteCount[Dungeons.Fire_God_Dungeon] = Math.max(
+        dungeonCompleteCount[Dungeons.Fire_God_Dungeon],
         1,
     );
     skillLevel[Skills.Slayer] = Math.max(
@@ -463,21 +476,13 @@ snippet.end();
 // footer start
 }
 
-// inject the script
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+function loadScript() {
+    if (typeof isLoaded !== typeof undefined && isLoaded) {
+        // Only load script after game has opened
+        clearInterval(scriptLoader);
+        startSnippets();
     }
+}
 
-    function loadScript() {
-        if (typeof isLoaded !== typeof undefined && isLoaded) {
-            // Only load script after game has opened
-            clearInterval(scriptLoader);
-            injectScript(script);
-        }
-    }
-
-    const scriptLoader = setInterval(loadScript, 200);
-})();
+const scriptLoader = setInterval(loadScript, 200);
+});

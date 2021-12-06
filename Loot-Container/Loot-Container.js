@@ -1,16 +1,25 @@
 // ==UserScript==
 // @name        Melvor Loot Container
 // @namespace   github.com/gmiclotte
-// @version     0.1.1
+// @version     0.1.2
 // @description For monster drops and pickpocketing: shows drop rates, avg drops per kill, and current number owned.
-// @author      GMiclotte
-// @match       https://*.melvoridle.com/*
-// @exclude     https://wiki.melvoridle.com*
+// @author		GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
-// @grant       none
+// @grant		none
 // ==/UserScript==
 
-function script() {
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
     window.mlc = {};
 
     mlc.tempContainer = (id, classNames, wrap) => {
@@ -28,8 +37,6 @@ function script() {
         }
         return container;
     }
-    $('#combat-area-selection').after(mlc.tempContainer('cb-lootContainer', 'border-combat', false))
-    $('#thieving-food-container').parent().parent().parent().next().after(mlc.tempContainer('pp-lootContainer', 'border-thieving', true))
 
     mlc.sortedLoot = {};
 
@@ -188,28 +195,24 @@ function script() {
         console.log(`Started Melvor Loot Container with interval ${mlc.interval}`);
     }
 
-    mlc.updateInterval(500);
+    function startLootContainer() {
+        $('#combat-area-selection').after(mlc.tempContainer('cb-lootContainer', 'border-combat', false))
+        $('#thieving-food-container').parent().parent().parent().next().after(mlc.tempContainer('pp-lootContainer', 'border-thieving', true))
+        mlc.updateInterval(500);
 
-    ///////
-    //log//
-    ///////
-    console.log("Melvor Loot Container Loaded");
-}
-
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+        ///////
+        //log//
+        ///////
+        console.log("Melvor Loot Container Loaded");
     }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startLootContainer();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

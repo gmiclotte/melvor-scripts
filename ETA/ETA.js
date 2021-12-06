@@ -1,15 +1,19 @@
 // ==UserScript==
 // @name		Melvor ETA
 // @namespace	http://tampermonkey.net/
-// @version		0.8.5-1.0
+// @version		0.8.6-1.0
 // @description	Shows xp/h and mastery xp/h, and the time remaining until certain targets are reached. Takes into account Mastery Levels and other bonuses.
 // @description	Please report issues on https://github.com/gmiclotte/melvor-scripts/issues or message TinyCoyote#1769 on Discord
 // @description	The last part of the version number is the most recent version of Melvor that was tested with this script. More recent versions might break the script.
 // @description	Forked from Breindahl#2660's Melvor TimeRemaining script v0.6.2.2., originally developed by Breindahl#2660, Xhaf#6478 and Visua#9999
 // @author		GMiclotte
-// @match		https://*.melvoridle.com/*
-// @exclude		https://wiki.melvoridle.com*
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
 // @grant		none
 // ==/UserScript==

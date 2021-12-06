@@ -2,21 +2,13 @@
 // footer start
 }
 
-// inject the script
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+function loadScript() {
+    if (typeof isLoaded !== typeof undefined && isLoaded) {
+        // Only load script after game has opened
+        clearInterval(scriptLoader);
+        startSnippets();
     }
+}
 
-    function loadScript() {
-        if (typeof isLoaded !== typeof undefined && isLoaded) {
-            // Only load script after game has opened
-            clearInterval(scriptLoader);
-            injectScript(script);
-        }
-    }
-
-    const scriptLoader = setInterval(loadScript, 200);
-})();
+const scriptLoader = setInterval(loadScript, 200);
+});

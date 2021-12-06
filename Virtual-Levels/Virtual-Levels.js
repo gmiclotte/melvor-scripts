@@ -1,15 +1,25 @@
 // ==UserScript==
-// @name         Melvor Virtual Levels
-// @version		 0.1.4
-// @namespace    github.com/gmiclotte
-// @author       GMiclotte
-// @match        https://*.melvoridle.com/*
-// @exclude      https://wiki.melvoridle.com*
-// @noframes
+// @name        Melvor Virtual Levels
+// @namespace   github.com/gmiclotte
+// @version		0.1.5
 // @description Display level and xp numbers for virtual levels, similar to regular levels.
+// @author		GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
+// @noframes
+// @grant		none
 // ==/UserScript==
 
-function script() {
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
     function addSummoningProgess() {
         // add summoning to combat skill progress menu
@@ -75,93 +85,86 @@ function script() {
         elems.xp.push(xpSmall);
     }
 
-    addSummoningProgess();
+    function startVirtualLevels() {
+        addSummoningProgess();
 
-    window.virtualLevels = {
-        // here `10000` represents `Infinity`, but `Infinity` is not valid JSON
-        navLevelCap: 10000,
-        pageLevelCap: 10000,
-        // method to save data to local storage
-        save: () => {
-            window.localStorage['virtualLevels'] = window.JSON.stringify(window.virtualLevels)
-        },
-        // method to update all skill displays
-        update: () => {
-            for (let id in SKILLS) {
-                updateSkillVisuals(Number(id));
+        window.virtualLevels = {
+            // here `10000` represents `Infinity`, but `Infinity` is not valid JSON
+            navLevelCap: 10000,
+            pageLevelCap: 10000,
+            // method to save data to local storage
+            save: () => {
+                window.localStorage['virtualLevels'] = window.JSON.stringify(window.virtualLevels)
+            },
+            // method to update all skill displays
+            update: () => {
+                for (let id in SKILLS) {
+                    updateSkillVisuals(Number(id));
+                }
             }
         }
-    }
 
-    if (window.localStorage['virtualLevels'] !== undefined) {
-        const stored = window.JSON.parse(window.localStorage['virtualLevels']);
-        Object.getOwnPropertyNames(stored).forEach(x => {
-            window.virtualLevels[x] = stored[x];
-        });
-    }
+        if (window.localStorage['virtualLevels'] !== undefined) {
+            const stored = window.JSON.parse(window.localStorage['virtualLevels']);
+            Object.getOwnPropertyNames(stored).forEach(x => {
+                window.virtualLevels[x] = stored[x];
+            });
+        }
 
-    window.virtualLevels.save();
+        window.virtualLevels.save();
 
-    //////////////////////////////////
-    //show exp to next level past 99//
-    //////////////////////////////////
-    eval(skillProgressDisplay.updateSkill.toString()
-        .replaceAll(
-            'this',
-            'skillProgressDisplay',
-        ).replace(
-            'showVirtualLevels',
-            'true',
-        ).replace(
-            'level<99',
-            'true',
-        ).replace(
-            '`${level} / 99`',
-            '`${Math.min(virtualLevels.pageLevelCap, level)} / 99`',
-        ).replace(
-            'nextLevelProgress[skillID]',
-            '100 * (xp - exp.level_to_xp(level)) / (exp.level_to_xp(level + 1) - exp.level_to_xp(level))',
-        ).replace(
-            'updateSkill(skillID){',
-            'skillProgressDisplay.updateSkill = (skillID) => {',
-        )
-    );
-    eval(skillNav.updateNav.toString()
-        .replaceAll(
-            'this',
-            'skillNav',
-        ).replace(
-            'showVirtualLevels?(exp.xp_to_level(xp)-1):level',
-            'Math.min(virtualLevels.navLevelCap, exp.xp_to_level(xp)-1)',
-        ).replace(
-            'updateNav(skillID){',
-            'skillNav.updateNav = (skillID) => {',
-        )
-    );
-    // one-time update of all skill windows after a slight delay
-    setTimeout(window.virtualLevels.update, 5000);
+        //////////////////////////////////
+        //show exp to next level past 99//
+        //////////////////////////////////
+        eval(skillProgressDisplay.updateSkill.toString()
+            .replaceAll(
+                'this',
+                'skillProgressDisplay',
+            ).replace(
+                'showVirtualLevels',
+                'true',
+            ).replace(
+                'level<99',
+                'true',
+            ).replace(
+                '`${level} / 99`',
+                '`${Math.min(virtualLevels.pageLevelCap, level)} / 99`',
+            ).replace(
+                'nextLevelProgress[skillID]',
+                '100 * (xp - exp.level_to_xp(level)) / (exp.level_to_xp(level + 1) - exp.level_to_xp(level))',
+            ).replace(
+                'updateSkill(skillID){',
+                'skillProgressDisplay.updateSkill = (skillID) => {',
+            )
+        );
+        eval(skillNav.updateNav.toString()
+            .replaceAll(
+                'this',
+                'skillNav',
+            ).replace(
+                'showVirtualLevels?(exp.xp_to_level(xp)-1):level',
+                'Math.min(virtualLevels.navLevelCap, exp.xp_to_level(xp)-1)',
+            ).replace(
+                'updateNav(skillID){',
+                'skillNav.updateNav = (skillID) => {',
+            )
+        );
+        // one-time update of all skill windows after a slight delay
+        setTimeout(window.virtualLevels.update, 5000);
 
-    ///////
-    //log//
-    ///////
-    console.log("Melvor Virtual Levels Loaded")
-}
-
-
-(() => {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+        ///////
+        //log//
+        ///////
+        console.log("Melvor Virtual Levels Loaded");
     }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startVirtualLevels();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

@@ -1,25 +1,25 @@
 // ==UserScript==
 // @name         Lemvor
-// @version      0.1.3
+// @version      0.1.4
 // @namespace    github.com/gmiclotte
 // @description  lemon
-// @author       GMiclotte
-// @match        https://*.melvoridle.com/*
-// @exclude      https://wiki.melvoridle.com*
+// @author		GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
+// @grant		none
 // ==/UserScript==
 
-function script() {
-
-    // hats
-    const hats = [
-        getItemMedia(Items.Green_Party_Hat),
-        getItemMedia(Items.Purple_Party_Hat),
-        getItemMedia(Items.Red_Party_Hat),
-        getItemMedia(Items.Yellow_Party_Hat),
-    ];
-
-    const mediaBackup = items.map((_, i) => getItemMedia(i))
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
     window.lemvor = {
         lemon: undefined,
@@ -34,7 +34,7 @@ function script() {
                     img.src = lemvor.lemon;
                     return;
                 }
-                const hat = hats[Math.floor(Math.random() * hats.length)];
+                const hat = lemvor.hats[Math.floor(Math.random() * lemvor.hats.length)];
                 img.src = hat;
             });
         },
@@ -116,8 +116,6 @@ function script() {
             + '</button>'
             + '</div>';
     }
-    let node = document.getElementById('page-header-potions-dropdown').parentNode;
-    node.parentNode.insertBefore($(partyButton().trim())[0], node);
 
     // make 0's lemons too
     numberWithCommas = (x) => {
@@ -137,29 +135,33 @@ function script() {
     }
 
     lemvor.setLemon = id => {
-        lemvor.lemon = mediaBackup[id];
+        lemvor.lemon = lemvor.mediaBackup[id];
         lemvor.replaceLemon = id === Items.Lemon;
         lemvor.makeLemon();
         lemvor.updateLemon();
     }
 
-    lemvor.setLemon(Items.Lemon);
-}
-
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+    function startLemvor() {
+        lemvor.mediaBackup = items.map((_, i) => getItemMedia(i));
+        // hats
+        lemvor.hats = [
+            getItemMedia(Items.Green_Party_Hat),
+            getItemMedia(Items.Purple_Party_Hat),
+            getItemMedia(Items.Red_Party_Hat),
+            getItemMedia(Items.Yellow_Party_Hat),
+        ];
+        let node = document.getElementById('page-header-potions-dropdown').parentNode;
+        node.parentNode.insertBefore($(partyButton().trim())[0], node);
+        lemvor.setLemon(Items.Lemon);
     }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startLemvor();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

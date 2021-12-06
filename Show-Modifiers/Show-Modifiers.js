@@ -1,17 +1,26 @@
 // ==UserScript==
-// @name         Melvor Show Modifiers
-// @version      0.2.8
-// @description  Adds a button to show all your modifiers
-// @author       GMiclotte
-// @match        https://*.melvoridle.com/*
-// @exclude      https://wiki.melvoridle.com/*
-// @grant        none
-// @namespace    http://tampermonkey.net/
+// @name        Melvor Show Modifiers
+// @namespace   http://tampermonkey.net/
+// @version     0.2.9
+// @description Adds a button to show all your modifiers
+// @author		GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
+// @grant		none
 // ==/UserScript==
 
 
-function script() {
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
     class ShowModifiers {
 
@@ -899,39 +908,33 @@ function script() {
         }
     }
 
-    const name = 'melvorShowModifiers';
-    window[name] = new ShowModifiers(name, 'Show Modifiers');
-    let modifierButton = () => {
-        return '<div class="dropdown d-inline-block ml-2">'
-            + '<button type="button" '
-            + 'class="btn btn-sm btn-dual text-combat-smoke" '
-            + 'id="page-header-modifiers" '
-            + `onclick="window.${name}.showRelevantModifiers(player.modifiers, \'Active Modifiers\');" `
-            + 'aria-haspopup="true" '
-            + 'aria-expanded="true">'
-            + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Event_Clue_1)}">`
-            + '</button>'
-            + '</div>';
-    }
+    function startShowModifiers() {
+        const name = 'melvorShowModifiers';
+        window[name] = new ShowModifiers(name, 'Show Modifiers');
+        let modifierButton = () => {
+            return '<div class="dropdown d-inline-block ml-2">'
+                + '<button type="button" '
+                + 'class="btn btn-sm btn-dual text-combat-smoke" '
+                + 'id="page-header-modifiers" '
+                + `onclick="window.${name}.showRelevantModifiers(player.modifiers, \'Active Modifiers\');" `
+                + 'aria-haspopup="true" '
+                + 'aria-expanded="true">'
+                + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Event_Clue_1)}">`
+                + '</button>'
+                + '</div>';
+        }
 
-    let node = document.getElementById('page-header-potions-dropdown').parentNode;
-    node.parentNode.insertBefore($(modifierButton().trim())[0], node);
-}
-
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+        let node = document.getElementById('page-header-potions-dropdown').parentNode;
+        node.parentNode.insertBefore($(modifierButton().trim())[0], node);
     }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startShowModifiers();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

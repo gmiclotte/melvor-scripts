@@ -1,16 +1,25 @@
 // ==UserScript==
 // @name		Bad Lemon
 // @namespace	http://tampermonkey.net/
-// @version		0.0.7
+// @version		0.0.8
 // @description	Bad Apple goes Melvor. This Fan Content is a fan work based on Touhou Project.
 // @author		GMiclotte
-// @match		https://*.melvoridle.com/*
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
 // @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
 // @grant		none
 // ==/UserScript==
 
-function script() {
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
     class BadLemon {
         constructor() {
@@ -512,40 +521,34 @@ function script() {
         }
     }
 
-    const name = 'melvorBadLemon';
-    window[name] = new BadLemon();
-    let modifierButton = () => {
-        return '<div class="dropdown d-inline-block ml-2">'
-            + '<button type="button" '
-            + 'class="btn btn-sm btn-dual text-combat-smoke" '
-            + 'id="page-header-modifiers" '
-            + `onclick="window.${name}.show();" `
-            + 'aria-haspopup="true" '
-            + 'aria-expanded="true">'
-            + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Black_Wizard_Hat)}">`
-            + '</button>'
-            + '</div>';
-    }
 
-    let node = document.getElementById('page-header-potions-dropdown').parentNode;
-    node.parentNode.insertBefore($(modifierButton().trim())[0], node);
-}
+    function startBadLemon() {
+        const name = 'melvorBadLemon';
+        window[name] = new BadLemon();
+        let modifierButton = () => {
+            return '<div class="dropdown d-inline-block ml-2">'
+                + '<button type="button" '
+                + 'class="btn btn-sm btn-dual text-combat-smoke" '
+                + 'id="page-header-modifiers" '
+                + `onclick="window.${name}.show();" `
+                + 'aria-haspopup="true" '
+                + 'aria-expanded="true">'
+                + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Black_Wizard_Hat)}">`
+                + '</button>'
+                + '</div>';
+        }
 
-
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
+        let node = document.getElementById('page-header-potions-dropdown').parentNode;
+        node.parentNode.insertBefore($(modifierButton().trim())[0], node);
     }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startBadLemon();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

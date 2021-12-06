@@ -1,22 +1,34 @@
 // ==UserScript==
 // @name		Melvor Obstacle Filter
 // @namespace	http://tampermonkey.net/
-// @version		0.1.5
+// @version		0.1.6
 // @description	Agility course planner that allows you to filter agility obstacles based on skill of interest.
 // @author		GMiclotte
-// @match		https://*.melvoridle.com/*
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
 // @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
 // @grant		none
 // ==/UserScript==
 
-function script() {
-    if (window.obstacleFilter !== undefined) {
-        console.error('Obstacle Filter is already loaded!');
-    } else {
-        createObstacleFilter();
-        // load after 5s to give Melvor Show Modifiers time to load
-        setTimeout(loadObstacleFilter, 200);
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
+
+    function startObstacleFilter() {
+        if (window.obstacleFilter !== undefined) {
+            console.error('Obstacle Filter is already loaded!');
+        } else {
+            createObstacleFilter();
+            // load after 5s to give Melvor Show Modifiers time to load
+            setTimeout(loadObstacleFilter, 200);
+        }
     }
 
     function createObstacleFilter() {
@@ -232,23 +244,14 @@ function script() {
         }
         return requirementsMet;
     }
-}
-
-// inject the script
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
-    }
 
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startObstacleFilter();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});

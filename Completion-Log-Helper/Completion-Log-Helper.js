@@ -1,27 +1,31 @@
 // ==UserScript==
-// @name         Melvor Completion Log Helper
-// @namespace    http://tampermonkey.net/
-// @version      0.6.1
-// @description  Replaces question mark icon in the Item Completion Log, Mastery Progression, Pet Completion and Monster Completion Log with greyed out images of items/pets/monsters that you have yet to get/kill and adds links to the wiki. Also includes toggle for highlighting items in bank.
-// @author       Breindahl#2660
-// @author       GMiclotte
-// @match        https://*.melvoridle.com/*
-// @exclude      https://wiki.melvoridle.com*
+// @name        Melvor Completion Log Helper
+// @namespace   http://tampermonkey.net/
+// @version     0.6.2
+// @description Replaces question mark icon in the Item Completion Log, Mastery Progression, Pet Completion and Monster Completion Log with greyed out images of items/pets/monsters that you have yet to get/kill and adds links to the wiki. Also includes toggle for highlighting items in bank.
+// @author      Breindahl#2660
+// @author		GMiclotte
+// @include		https://melvoridle.com/*
+// @include		https://*.melvoridle.com/*
+// @exclude		https://melvoridle.com/index.php
+// @exclude		https://*.melvoridle.com/index.php
+// @exclude		https://wiki.melvoridle.com*
+// @exclude		https://*.wiki.melvoridle.com*
+// @inject-into page
 // @noframes
-// @grant        none
+// @grant		none
 // ==/UserScript==
 /* jshint esversion: 6 */
 
 // Big thanks to Visua#9999 for helping with parts of the code and troubleshooting
 
-(function () {
-    function injectScript(main) {
-        var script = document.createElement('script');
-        script.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(script).parentNode.removeChild(script);
-    }
+((main) => {
+    const script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
 
-    function script() {
+    function startCompletionLogHelper() {
         // Loading script
 
         // item log
@@ -145,9 +149,9 @@
     function loadScript() {
         if (typeof confirmedLoaded !== typeof undefined && confirmedLoaded) {
             clearInterval(scriptLoader);
-            injectScript(script);
+            startCompletionLogHelper();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});
