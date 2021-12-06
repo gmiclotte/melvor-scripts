@@ -14,13 +14,19 @@
 // @grant		none
 // ==/UserScript==
 
-function script() {
-    if (window.ETA !== undefined) {
-        console.error('ETA is already loaded!');
-    } else {
-        createETASettings();
-        createETA();
-        loadETA();
+((main) => {
+    var script = document.createElement('script');
+    script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
+    document.body.appendChild(script).parentNode.removeChild(script);
+})(() => {
+    function startETA() {
+        if (window.ETA !== undefined) {
+            console.error('ETA is already loaded!');
+        } else {
+            createETASettings();
+            createETA();
+            loadETA();
+        }
     }
 
     function createETASettings() {
@@ -2578,23 +2584,14 @@ function script() {
         // regularly save settings to local storage
         setInterval(window.ETASettings.save, 1000)
     }
-}
-
-// inject the script
-(function () {
-    function injectScript(main) {
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = `try {(${main})();} catch (e) {console.log(e);}`;
-        document.body.appendChild(scriptElement).parentNode.removeChild(scriptElement);
-    }
-
+  
     function loadScript() {
         if (typeof isLoaded !== typeof undefined && isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
-            injectScript(script);
+            startETA();
         }
     }
 
     const scriptLoader = setInterval(loadScript, 200);
-})();
+});
