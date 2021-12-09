@@ -1057,6 +1057,11 @@
                         staticXpBonus += 0.03;
                     }
                     break;
+                case Skills.Thieving:
+                    if (poolReached(initial, poolXp, 0)) {
+                        staticXpBonus += 0.03;
+                    }
+                    break;
             }
             let xpMultiplier = 1;
             switch (initial.skillID) {
