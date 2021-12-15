@@ -23,11 +23,21 @@
     script.textContent = `try { (${main})(); } catch (e) { console.log(e); }`;
     document.body.appendChild(script).parentNode.removeChild(script);
 })(() => {
+    function startETASettings() {
+        if (window.ETASettings === undefined) {
+            createETASettings();
+            // load settings from local storage
+            if (window.localStorage['ETASettings'] !== undefined) {
+                window.ETASettings.load();
+                window.ETASettings.save();
+            }
+        }
+    }
+
     function startETA() {
         if (window.ETA !== undefined) {
             console.error('ETA is already loaded!');
         } else {
-            createETASettings();
             createETA();
             loadETA();
         }
@@ -135,7 +145,14 @@
             // save settings to local storage
             save: () => {
                 window.localStorage['ETASettings'] = window.JSON.stringify(window.ETASettings);
-            }
+            },
+            // load settings from local storage
+            load: () => {
+                const stored = window.JSON.parse(window.localStorage['ETASettings']);
+                Object.getOwnPropertyNames(stored).forEach(x => {
+                    window.ETASettings[x] = stored[x];
+                });
+            },
         };
     }
 
@@ -2582,19 +2599,14 @@
         ETA.log('loaded!');
         setTimeout(ETA.createSettingsMenu, 50);
 
-        // load settings from local storage
-        if (window.localStorage['ETASettings'] !== undefined) {
-            const stored = window.JSON.parse(window.localStorage['ETASettings']);
-            Object.getOwnPropertyNames(stored).forEach(x => {
-                window.ETASettings[x] = stored[x];
-            });
-            window.ETASettings.save();
-        }
         // regularly save settings to local storage
         setInterval(window.ETASettings.save, 1000)
     }
 
     function loadScript() {
+        if (typeof isLoaded !== typeof undefined) {
+            startETASettings();
+        }
         if (typeof isLoaded !== typeof undefined && isLoaded) {
             // Only load script after game has opened
             clearInterval(scriptLoader);
