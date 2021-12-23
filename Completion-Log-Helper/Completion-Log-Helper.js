@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Melvor Completion Log Helper
 // @namespace   http://tampermonkey.net/
-// @version     0.6.2
+// @version     0.7.0
 // @description The completion logs now show images of undiscovered items/monsters/pets, including those entities that do not count towards completion.
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
