@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.7
+// @version		0.0.8
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -113,6 +113,20 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
 }
 snippet.end();
+
+/////////////////////////
+//GetLocalisationKey.js//
+/////////////////////////
+snippet.name = 'GetLocalisationKey.js';
+snippet.start();
+// Get Localisation Key for a given string
+for (const key in loadedLangJson) {
+    for (const identifier in loadedLangJson[key]) {
+        if (loadedLangJson[key][identifier] === 'Minigame') {
+            snippet.log(key, identifier)
+        }
+    }
+}snippet.end();
 
 //////////////////
 //MasteryBars.js//
