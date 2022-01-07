@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.10
+// @version		0.0.11
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -112,6 +112,21 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     // loop
     setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
 }
+snippet.end();
+
+/////////////////////////////
+//FixPerformSkillProcess.js//
+/////////////////////////////
+snippet.name = 'FixPerformSkillProcess.js';
+snippet.start();
+// fix perform skill process
+eval(performSkillProcess.toString().replace(
+    'if(!confirmedAdded&&!offline)return false;',
+    'if (!confirmedAdded && !ignoreBankFull && !offline) return false;'
+).replace(
+    /^function (\w+)/,
+    'window.$1 = function'
+));
 snippet.end();
 
 /////////////////////////
@@ -365,6 +380,33 @@ quickEquipSkillcape = (skill) => {
     }
     notifyPlayer(skill, "There's no " + setToUppercase(Skills[skill]) + " Skillcape in your bank *shrug*", "danger");
 }
+snippet.end();
+
+////////////////////
+//ReclaimTokens.js//
+////////////////////
+snippet.name = 'ReclaimTokens.js';
+snippet.start();
+// reclaim tokens
+window.reclaimMasteryTokens = () => {
+    skillXP.forEach((_, s) => {
+        if (MASTERY[s] === undefined) {
+            return;
+        }
+        const id = Items['Mastery_Token_' + Skills[s]];
+        const p = Math.floor((MASTERY[s].pool - getMasteryPoolTotalXP(s) ) / Math.floor(getMasteryPoolTotalXP(s)*0.001));
+        const m = game.stats.Items.statsMap.get(id).stats.get(ItemStats.TimesFound);
+        const o = getBankQty(id);
+        const a = Math.min(p, m - o);
+        const b = getBankId(id);
+        if (a > 0 && b >= 0) {
+            bank[b].qty += a;
+            MASTERY[s].pool -= a * Math.floor(getMasteryPoolTotalXP(s)*0.001);
+            snippets.log('reclaimed', a, Skills[s], 'tokens');  
+        }
+    });
+}
+
 snippet.end();
 
 /////////////////////
