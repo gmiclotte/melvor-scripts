@@ -130,10 +130,10 @@
                 return Math.ceil(target);
             },
             getTargetLevel: (skillID, currentLevel) => {
-                return ETASettings.getTarget(currentLevel, ETASettings.GLOBAL_TARGET_LEVEL, ETASettings.TARGET_LEVEL[skillID], 99, 199);
+                return ETASettings.getTarget(currentLevel, ETASettings.GLOBAL_TARGET_LEVEL, ETASettings.TARGET_LEVEL[skillID], 99, 170);
             },
             getTargetMastery: (skillID, currentMastery) => {
-                return ETASettings.getTarget(currentMastery, ETASettings.GLOBAL_TARGET_MASTERY, ETASettings.TARGET_MASTERY[skillID], 99, 199);
+                return ETASettings.getTarget(currentMastery, ETASettings.GLOBAL_TARGET_MASTERY, ETASettings.TARGET_MASTERY[skillID], 99, 170);
             },
             getTargetPool: (skillID, currentPool) => {
                 return ETASettings.getTarget(currentPool, ETASettings.GLOBAL_TARGET_POOL, ETASettings.TARGET_POOL[skillID], 100, 100);
