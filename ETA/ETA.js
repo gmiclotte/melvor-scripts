@@ -549,7 +549,7 @@
                     break;
 
                 case Skills.Woodcutting:
-                    data = trees;
+                    data = Woodcutting.trees;
                     break;
 
                 case Skills.Fishing:
@@ -574,7 +574,9 @@
             if (data.length > 0) {
                 if (skillID !== Skills.Agility) {
                     data.forEach((x, i) => {
-                        if (skillID === Skills.Woodcutting && currentlyCutting === 2 && currentTrees.includes(i)) {
+                        if (skillID === Skills.Woodcutting
+                            && game.woodcutting.activeTrees.size === 2
+                            && game.woodcutting.activeTrees.has(Woodcutting.trees[i])) {
                             return;
                         }
                         let initial = initialVariables(skillID, checkTaskComplete);
@@ -593,10 +595,11 @@
                     });
                 }
                 if (skillID === Skills.Woodcutting) {
-                    if (currentlyCutting === 2) {
+                    if (game.woodcutting.activeTrees.size === 2) {
                         // init first tree
                         let initial = initialVariables(skillID, checkTaskComplete);
-                        initial.currentAction = currentTrees;
+                        initial.currentAction = [];
+                        game.woodcutting.activeTrees.forEach(x => initial.currentAction.push(x.id));
                         initial.multiple = ETA.PARALLEL;
                         // run time remaining
                         asyncTimeRemaining(initial);
@@ -1415,10 +1418,10 @@
         function configureWoodcutting(initial) {
             const wcAction = x => {
                 return {
-                    itemID: x,
-                    itemXp: trees[x].xp,
-                    skillInterval: trees[x].interval,
-                    masteryID: x,
+                    itemID: Woodcutting.trees[x].logID,
+                    itemXp: Woodcutting.trees[x].baseExperience,
+                    skillInterval: Woodcutting.trees[x].baseInterval,
+                    masteryID: Woodcutting.trees[x].id,
                 };
             }
             if (!isNaN(initial.currentAction)) {
@@ -2549,6 +2552,7 @@
         game.thieving.renderSkillMastery = () => ETA.renderSkillMastery('Thieving', 'thieving');
         game.firemaking.renderSkillMastery = () => ETA.renderSkillMastery('Firemaking', 'firemaking');
         game.mining.renderSkillMastery = () => ETA.renderSkillMastery('Mining', 'mining');
+        game.woodcutting.renderSkillMastery = () => ETA.renderSkillMastery('Woodcutting', 'woodcutting');
 
         // Create timeLeft containers
         ETA.makeProcessingDisplays();
