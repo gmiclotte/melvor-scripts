@@ -435,11 +435,12 @@
         }
 
         ETA.makeWoodcuttingDisplay = function () {
-            trees.forEach((_, i) => {
-                const node = document.getElementById(`cut-tree-${i}-progress`).parentNode;
+            const els = document.getElementsByClassName('progress-bar bg-woodcutting');
+            Woodcutting.trees.forEach((_, i) => {
+                const node = els[i + 1].parentNode;
                 node.parentNode.insertBefore(tempContainer(`timeLeftWoodcutting-${i}`), node.nextSibling);
             });
-            const node = document.getElementById('skill-woodcutting-multitree').parentNode;
+            const node = els[0].parentNode;
             node.parentNode.insertBefore(tempContainer('timeLeftWoodcutting-Secondary'), node.nextSibling);
         }
 
