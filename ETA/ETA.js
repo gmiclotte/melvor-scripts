@@ -1399,7 +1399,7 @@
 
         function configureMining(initial) {
             initial.itemID = Mining.rockData[initial.currentAction].oreID;
-            initial.itemXp = items[initial.itemID].miningXP;
+            initial.itemXp = Mining.rockData[initial.currentAction].baseExperience;
             initial.skillInterval = 3000;
             return configureGathering(initial);
         }
