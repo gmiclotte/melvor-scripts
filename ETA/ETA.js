@@ -404,8 +404,8 @@
             node = node.parentNode.parentNode.parentNode;
             node.parentNode.insertBefore(tempContainer('timeLeftFiremaking'), node.nextSibling);
             // Alt. Magic
-            node = document.getElementById('magic-item-have-and-div');
-            node.parentNode.insertBefore(tempContainer('timeLeftMagic'), node.nextSibling);
+            node = document.getElementById('magic-screen-cast').children[0].children[1];
+            node.appendChild(tempContainer('timeLeftMagic'));
             // Summoning
             node = document.querySelector('[aria-labelledBy=Summoning-artisan-menu-recipe-select]').parentElement.parentElement.parentElement
             if (node) {
