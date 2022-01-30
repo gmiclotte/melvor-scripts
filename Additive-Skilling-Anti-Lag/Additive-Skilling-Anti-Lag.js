@@ -162,16 +162,12 @@
 
     function loadScript() {
         const skillFunctions = [
-            cutTree,
             startFishing,
-            startSmithing,
             startFletching,
             startCrafting,
             startRunecrafting,
-            startHerblore,
             startAgility,
             createSummon,
-            castMagic,
         ];
         if (skillFunctions.every((a) => a !== undefined)) {
             // Only load script after all functions have been defined
