@@ -1985,8 +1985,16 @@
             let current = currentVariables(initial);
 
             // loop until out of resources
+            let sumTotalTime = current.sumTotalTime;
             while (!initial.isGathering && resourcesLeft(current.itemQty, current.skillReqMap)) {
-                current = actionsToBreakpoint(initial, current);
+                current = actionsToBreakpoint(initial, current, false);
+                if (sumTotalTime === current.sumTotalTime || isNaN(current.sumTotalTime) || !isFinite(current.sumTotalTime)) {
+                    ETA.log(sumTotalTime)
+                    ETA.log(JSON.parse(JSON.stringify(initial)));
+                    ETA.log(JSON.parse(JSON.stringify(current)));
+                    break;
+                }
+                sumTotalTime = current.sumTotalTime;
             }
 
             // method to convert final pool xp to percentage
@@ -2009,6 +2017,12 @@
             // continue calculations until time to all targets is found
             while (!current.targetSkillReached || (initial.hasMastery && (!current.actions.map(x => x.targetMasteryReached).reduce((a, b) => a && b, true) || !current.targetPoolReached))) {
                 current = actionsToBreakpoint(initial, current, true);
+                if (sumTotalTime === current.sumTotalTime || isNaN(current.sumTotalTime) || !isFinite(current.sumTotalTime)) {
+                    ETA.log(JSON.parse(JSON.stringify(initial)));
+                    ETA.log(JSON.parse(JSON.stringify(current)));
+                    break;
+                }
+                sumTotalTime = current.sumTotalTime;
             }
             // if it is a gathering skill, then set final values to the values when reaching the final target
             if (initial.isGathering) {
