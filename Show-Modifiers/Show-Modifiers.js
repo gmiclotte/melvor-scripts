@@ -185,6 +185,7 @@
                 ],
                 firemaking: [
                     'ChanceForDiamondFiremaking',
+                    'GPFromFiremaking',
                 ],
                 fishing: [
                     'FishingSpecialChance',
