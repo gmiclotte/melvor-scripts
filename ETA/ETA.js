@@ -2546,7 +2546,11 @@
             }
         }
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
-        game.mining.startActionTimer = () => ETA.startActionTimer('Mining', 'mining');
+        game.mining.startActionTimer = () => {
+            if (!game.mining.selectedRockActiveData.isRespawning) {
+                ETA.startActionTimer('Mining', 'mining');
+            }
+        }
         game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
         game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
         game.altMagic.startActionTimer = () => ETA.startActionTimer('Magic', 'altMagic');
