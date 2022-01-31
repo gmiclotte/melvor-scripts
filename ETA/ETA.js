@@ -2528,11 +2528,13 @@
 
         // update tick-based skills
         ETA.startActionTimer = (skillName, propName) => {
-            // call ETA
-            try {
-                ETA.timeRemainingWrapper(Skills[skillName], false);
-            } catch (e) {
-                console.error(e);
+            if (game.loopStarted) {
+                // call ETA if game loop is active, in particular do not call ETA when catching up
+                try {
+                    ETA.timeRemainingWrapper(Skills[skillName], false);
+                } catch (e) {
+                    console.error(e);
+                }
             }
             // mimic Craftingskill.startActionTimer
             game[propName].actionTimer.start(game[propName].actionInterval);
