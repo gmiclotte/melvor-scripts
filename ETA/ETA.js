@@ -2540,7 +2540,11 @@
         }
 
         // Thieving
-        game.thieving.startActionTimer = () => ETA.startActionTimer('Thieving', 'thieving');
+        game.thieving.startActionTimer = () => {
+            if (!game.thieving.isStunned) {
+                ETA.startActionTimer('Thieving', 'thieving');
+            }
+        }
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
         game.mining.startActionTimer = () => ETA.startActionTimer('Mining', 'mining');
         game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
