@@ -88,7 +88,7 @@
     }
 
     const showEquipment = function (slot, instance, event) {
-        if (isGolbinRaid) {
+        if (game.isGolbinRaid) {
             return;
         }
         event.preventDefault();
