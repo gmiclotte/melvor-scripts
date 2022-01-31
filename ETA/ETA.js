@@ -1315,7 +1315,7 @@
             initial.recipe = Firemaking.recipes[initial.currentAction];
             initial.itemXp = initial.recipe.baseXP * (1 + initial.recipe.bonfireXPBonus / 100);
             initial.skillInterval = initial.recipe.baseInterval;
-            initial.skillReq = [{id: initial.itemID, qty: 1}];
+            initial.skillReq = [{id: initial.recipe.logID, qty: 1}];
             return initial;
         }
 
