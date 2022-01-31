@@ -72,7 +72,7 @@
         items,
         slayerAreas,
         Thieving.npcs,
-        trees,
+        Woodcutting.trees,
         // objects of objects that have media
         unpack(SKILLS),
         // objects of arrays of objects that have media
@@ -87,7 +87,6 @@
         loadBank();
         updateShop("gloves");
         updateSpellbook();
-        updateWCRates();
         updatePlayerStats();
         updateAgilityBreakdown();
         Object.getOwnPropertyNames(SKILLS).forEach((_, skillID) => {
