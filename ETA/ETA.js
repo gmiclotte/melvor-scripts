@@ -36,7 +36,7 @@
 
     function startETA() {
         if (window.ETA !== undefined) {
-            console.error('ETA is already loaded!');
+            ETA.error('ETA is already loaded!');
         } else {
             createETA();
             loadETA();
@@ -162,6 +162,10 @@
 
         ETA.log = function (...args) {
             console.log("Melvor ETA:", ...args)
+        }
+
+        ETA.error = function (...args) {
+            console.error("Melvor ETA:", ...args)
         }
 
         ETA.createSettingsMenu = () => {
@@ -2511,7 +2515,7 @@
                     try {
                         ETA.timeRemainingWrapper(Skills[skillName], false);
                     } catch (e) {
-                        console.error(e);
+                        ETA.error(e);
                     }
                 };
             });
@@ -2522,7 +2526,7 @@
             try {
                 ETA.timeRemainingWrapper(skill, false);
             } catch (e) {
-                console.error(e);
+                ETA.error(e);
             }
             ETA.updateSkillWindowRef(skill);
         };
@@ -2534,7 +2538,7 @@
                 try {
                     ETA.timeRemainingWrapper(Skills[skillName], false);
                 } catch (e) {
-                    console.error(e);
+                    ETA.error(e);
                 }
             }
             // mimic Craftingskill.startActionTimer
@@ -2577,7 +2581,7 @@
             try {
                 ETA.timeRemainingWrapper(Skills.Agility, false);
             } catch (e) {
-                console.error(e);
+                ETA.error(e);
             }
         }
 
