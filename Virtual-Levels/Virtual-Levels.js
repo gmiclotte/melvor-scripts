@@ -101,7 +101,15 @@
                 for (let id in SKILLS) {
                     updateSkillVisuals(Number(id));
                 }
-            }
+            },
+            // set caps
+            setCaps(level, xp, nav = undefined) {
+                window.virtualLevels.navLevelCap = nav ?? level;
+                window.virtualLevels.pageLevelCap = level;
+                window.virtualLevels.xpCap = xp;
+                window.virtualLevels.save();
+                window.virtualLevels.update();
+            },
         }
 
         if (window.localStorage['virtualLevels'] !== undefined) {
