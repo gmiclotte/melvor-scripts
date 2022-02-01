@@ -89,9 +89,9 @@
         addSummoningProgess();
 
         window.virtualLevels = {
-            // here `10000` represents `Infinity`, but `Infinity` is not valid JSON
-            navLevelCap: 10000,
-            pageLevelCap: 10000,
+            navLevelCap: undefined,
+            pageLevelCap: undefined,
+            xpCap: undefined,
             // method to save data to local storage
             save: () => {
                 window.localStorage['virtualLevels'] = window.JSON.stringify(window.virtualLevels)
@@ -116,39 +116,67 @@
         //////////////////////////////////
         //show exp to next level past 99//
         //////////////////////////////////
-        eval(skillProgressDisplay.updateSkill.toString()
-            .replaceAll(
-                'this',
-                'skillProgressDisplay',
-            ).replace(
-                'showVirtualLevels',
-                'true',
-            ).replace(
-                'level<99',
-                'true',
-            ).replace(
-                '`${level} / 99`',
-                '`${Math.min(virtualLevels.pageLevelCap, level)} / 99`',
-            ).replace(
-                'nextLevelProgress[skillID]',
-                '100 * (xp - exp.level_to_xp(level)) / (exp.level_to_xp(level + 1) - exp.level_to_xp(level))',
-            ).replace(
-                'updateSkill(skillID){',
-                'skillProgressDisplay.updateSkill = (skillID) => {',
-            )
+
+        // skill page
+        let updateSkillString = skillProgressDisplay.updateSkill.toString();
+        // replace this with object name
+        updateSkillString = updateSkillString.replaceAll(
+            'this',
+            'skillProgressDisplay',
         );
-        eval(skillNav.updateNav.toString()
-            .replaceAll(
-                'this',
-                'skillNav',
-            ).replace(
-                'showVirtualLevels?(exp.xp_to_level(xp)-1):level',
-                'Math.min(virtualLevels.navLevelCap, exp.xp_to_level(xp)-1)',
-            ).replace(
-                'updateNav(skillID){',
-                'skillNav.updateNav = (skillID) => {',
-            )
+        // ignore showVirtualLevels
+        updateSkillString = updateSkillString.replace(
+            'showVirtualLevels',
+            'true',
         );
+        // always use the <99 display mode that shows xp
+        updateSkillString = updateSkillString.replace(
+            'level<99',
+            'true',
+        );
+        // limit xp to xpCap if given
+        updateSkillString = updateSkillString.replace(
+            '`${xpText} / ${numberWithCommas(exp.level_to_xp(level+1))}`',
+            'xp >= (virtualLevels.xpCap ?? Infinity) ? numberWithCommas(Math.floor(virtualLevels.xpCap)) : `${xpText} / ${numberWithCommas(exp.level_to_xp(level + 1))}`',
+        );
+        // limit level display to pageLevelCap if given
+        updateSkillString = updateSkillString.replace(
+            '`${level} / 99`',
+            '`${Math.min(virtualLevels.pageLevelCap ?? Infinity, level)} / 99`',
+        );
+        // compute next level progress, if pageLevelCap set it to 100
+        updateSkillString = updateSkillString.replace(
+            'nextLevelProgress[skillID]',
+            'level > virtualLevels.pageLevelCap ? 100 : 100 * (xp - exp.level_to_xp(level)) / (exp.level_to_xp(level + 1) - exp.level_to_xp(level))',
+        );
+        // hookup
+        updateSkillString = updateSkillString.replace(
+            'updateSkill(skillID){',
+            'skillProgressDisplay.updateSkill = (skillID) => {',
+        );
+        // evaluate
+        eval(updateSkillString);
+
+        // navigation
+        let updateNavString = skillNav.updateNav.toString();
+        // replace this with object name
+        updateNavString = updateNavString.replaceAll(
+            'this',
+            'skillNav',
+        );
+        // limit level display to navLevelCap if given
+        updateNavString = updateNavString.replace(
+            'showVirtualLevels?exp.xp_to_level(xp)-1:level',
+            'Math.min(virtualLevels.navLevelCap ?? Infinity, exp.xp_to_level(xp)-1)',
+        );
+        // hookup
+        updateNavString = updateNavString.replace(
+            'updateNav(skillID){',
+            'skillNav.updateNav = (skillID) => {',
+        );
+        // evaluate
+        eval(updateNavString);
+
         // one-time update of all skill windows after a slight delay
         setTimeout(window.virtualLevels.update, 5000);
 
