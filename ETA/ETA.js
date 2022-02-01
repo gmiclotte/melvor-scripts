@@ -2546,22 +2546,108 @@
             game[propName].renderQueue.progressBar = true;
         }
 
-        // Thieving
-        game.thieving.startActionTimer = () => {
-            if (!game.thieving.isStunned) {
-                ETA.startActionTimer('Thieving', 'thieving');
+        ETA.selectRecipeOnClick = (skillName, propName, recipeID) => {
+            if (recipeID !== game[propName].selectedRecipeID && game[propName].isActive) {
+                game[propName].stop();
+            }
+            game[propName].selectedRecipeID = recipeID;
+            game[propName].renderQueue.selectedRecipe = true;
+            game[propName].render();
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
             }
         }
-        game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
+
+        ETA.selectLog = (skillName, propName, recipeID) => {
+            const recipeToSelect = Firemaking.recipes[recipeID];
+            if (recipeToSelect.level > game[propName].level) {
+                notifyPlayer(game[propName].id, getLangString('TOASTS', 'LEVEL_REQUIRED_TO_BURN'), 'danger');
+            } else {
+                if (game[propName].selectedRecipeID !== recipeID && game[propName].isActive)
+                    game[propName].stop();
+                game[propName].selectedRecipeID = recipeID;
+                game[propName].renderQueue.selectedLog = true;
+                game[propName].renderQueue.logQty = true;
+                try {
+                    ETA.timeRemainingWrapper(Skills[skillName], false);
+                } catch (e) {
+                    ETA.error(e);
+                }
+            }
+        }
+
+        ETA.selectSpellOnClick = (skillName, propName, spellID) => {
+            if (game[propName].selectedSpellID !== spellID) {
+                if (game[propName].isActive)
+                    game[propName].stop();
+                game[propName].selectedConversionItem = -1;
+            }
+            game[propName].selectedSpellID = spellID;
+            game[propName].renderQueue.selectedSpellImage = true;
+            game[propName].renderQueue.selectedSpellInfo = true;
+            hideElement(altMagicItemMenu);
+            showElement(altMagicMenu);
+            game[propName].render();
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
+        ETA.selectItemOnClick = (skillName, propName, itemID) => {
+            game[propName].selectedConversionItem = itemID;
+            game[propName].renderQueue.selectedSpellInfo = true;
+            hideElement(altMagicItemMenu);
+            showElement(altMagicMenu);
+            game[propName].render();
+            altMagicMenu.setSpellImage(game[propName]);
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
+        ETA.selectBarOnClick = (skillName, propName, recipe) => {
+            game[propName].selectedSmithingRecipe = recipe;
+            game[propName].renderQueue.selectedSpellInfo = true;
+            hideElement(altMagicItemMenu);
+            showElement(altMagicMenu);
+            game[propName].render();
+            altMagicMenu.setSpellImage(game[propName]);
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
+        // gathering, only override startActionTimer
+        game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
         game.mining.startActionTimer = () => {
             if (!game.mining.selectedRockActiveData.isRespawning) {
                 ETA.startActionTimer('Mining', 'mining');
             }
         }
-        game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
-        game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
-        game.altMagic.startActionTimer = () => ETA.startActionTimer('Magic', 'altMagic');
+        game.thieving.startActionTimer = () => {
+            if (!game.thieving.isStunned) {
+                ETA.startActionTimer('Thieving', 'thieving');
+            }
+        }
+        // production, override startActionTimer and selectXOnClick
+        game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
+        game.firemaking.selectLog = (recipeID) => ETA.selectRecipeOnClick('Firemaking', 'firemaking', recipeID);
         game.smithing.startActionTimer = () => ETA.startActionTimer('Smithing', 'smithing');
+        game.smithing.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Smithing', 'smithing', recipeID);
+        game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
+        game.herblore.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Herblore', 'herblore', recipeID);
+        game.altMagic.startActionTimer = () => ETA.startActionTimer('Magic', 'altMagic');
+        game.altMagic.selectSpellOnClick = (recipeID) => ETA.selectSpellOnClick('Magic', 'altMagic', recipeID);
+        game.altMagic.selectItemOnClick = (recipeID) => ETA.selectItemOnClick('Magic', 'altMagic', recipeID);
+        game.altMagic.selectBarOnClick = (recipeID) => ETA.selectBarOnClick('Magic', 'altMagic', recipeID);
 
         // Create timeLeft containers
         ETA.makeProcessingDisplays();
