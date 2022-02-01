@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Melvor Virtual Levels
 // @namespace   github.com/gmiclotte
-// @version		0.1.5
+// @version		0.1.6
 // @description Display level and xp numbers for virtual levels, similar to regular levels.
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
