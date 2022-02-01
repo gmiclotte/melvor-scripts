@@ -1185,7 +1185,7 @@
                 //////////////
                 //DEPRECATED//
                 //////////////
-                masteryID: 0,
+                masteryID: undefined,
                 masteryXp: 0,
                 skillInterval: 0,
                 itemID: undefined,
