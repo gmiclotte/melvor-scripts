@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name        Melvor Make-XI
 // @namespace   http://tampermonkey.net/
-// @version     0.1.6
+// @version     0.1.7
 // @description Specify the number of actions to perform, Firemaking and Cooking are not supported. Forked from the original Melvor MakeX by Breindahl#2660
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none

@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name        Melvor Unlimited Offline
 // @namespace   http://tampermonkey.net/
-// @version     0.0.2
+// @version     0.0.3
 // @description Offline progress is no longer limited to 18h
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none

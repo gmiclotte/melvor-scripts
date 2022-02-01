@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Lemvor
-// @version      0.1.5
+// @version      0.1.6
 // @namespace    github.com/gmiclotte
 // @description  lemon
 // @author		GMiclotte
@@ -8,8 +8,8 @@
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none

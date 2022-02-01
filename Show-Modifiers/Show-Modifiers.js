@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name        Melvor Show Modifiers
 // @namespace   http://tampermonkey.net/
-// @version     0.2.10
+// @version     0.2.11
 // @description Adds a button to show all your modifiers
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none

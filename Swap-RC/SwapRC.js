@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name        Melvor Swap RC
 // @namespace   github.com/gmiclotte
-// @version     0.0.4
+// @version     0.0.5
 // @description Automatically changes RC runes.
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none

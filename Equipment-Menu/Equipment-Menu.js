@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name        Melvor Equipment Menu
 // @namespace   http://tampermonkey.net/
-// @version     0.1.3
+// @version     0.1.4
 // @description Adds an equipment menu to equipment slots on Combat page and top bar, forked from Melvor Equipment Menu by NotCorgan#1234
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
 // @include		https://*.melvoridle.com/*
 // @exclude		https://melvoridle.com/index.php
 // @exclude		https://*.melvoridle.com/index.php
-// @exclude		https://wiki.melvoridle.com*
-// @exclude		https://*.wiki.melvoridle.com*
+// @exclude		https://wiki.melvoridle.com/*
+// @exclude		https://*.wiki.melvoridle.com/*
 // @inject-into page
 // @noframes
 // @grant		none
