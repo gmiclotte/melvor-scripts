@@ -380,108 +380,145 @@
                 + '</div>');
         }
 
-        ETA.makeProcessingDisplays = function () {
-            // smithing
-            let node = document.querySelector('[aria-labelledBy=Smithing-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
-            node.parentNode.insertBefore(tempContainer('timeLeftSmithing'), node.nextSibling);
-            // fletching
-            node = document.querySelector('[aria-labelledBy=Fletching-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
-            node.parentNode.insertBefore(tempContainer('timeLeftFletching'), node.nextSibling);
-            // Runecrafting
-            node = document.querySelector('[aria-labelledBy=Runecrafting-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
-            node.parentNode.insertBefore(tempContainer('timeLeftRunecrafting'), node.nextSibling);
-            // Crafting
-            node = document.querySelector('[aria-labelledBy=Crafting-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
-            node.parentNode.insertBefore(tempContainer('timeLeftCrafting'), node.nextSibling);
-            // Herblore
-            node = document.querySelector('[aria-labelledBy=Herblore-artisan-menu-recipe-select]').parentElement.parentElement.parentElement;
-            node.parentNode.insertBefore(tempContainer('timeLeftHerblore'), node.nextSibling);
-            // Cooking
-            for (let i = 0; i < 3; i++) {
-                node = document.getElementById(`cooking-menu-container`).children[i].firstChild.firstChild.firstChild.firstChild.children[4];
-                const newChild = html2Node(`<div class="col-12"/>`)
-                newChild.appendChild(tempContainer(`timeLeftCooking-${i}`));
-                node.parentNode.appendChild(newChild);
+        ETA.displays = {};
+
+        ETA.createDisplay = (skillID, index) => {
+            let displayID = `timeLeft${Skills[skillID]}`;
+            if (index !== undefined) {
+                displayID += `-${index}`;
             }
-            // Firemaking
-            node = document.getElementById('skill-fm-logs-selected-qty');
-            node = node.parentNode.parentNode.parentNode;
-            node.parentNode.insertBefore(tempContainer('timeLeftFiremaking'), node.nextSibling);
-            // Alt. Magic
-            node = document.getElementById('magic-screen-cast').children[0].children[1];
-            node.appendChild(tempContainer('timeLeftMagic'));
-            // Summoning
-            node = document.querySelector('[aria-labelledBy=Summoning-artisan-menu-recipe-select]').parentElement.parentElement.parentElement
-            if (node) {
-                node.parentNode.insertBefore(tempContainer('timeLeftSummoning'), node.nextSibling);
+            let display = document.getElementById(displayID);
+            if (display !== null) {
+                // display already exists
+                return display;
             }
+            ETA.displays[displayID] = true;
+            // standard processing container
+            if ([
+                Skills.Smithing,
+                Skills.Fletching,
+                Skills.Crafting,
+                Skills.Runecrafting,
+                Skills.Herblore,
+                Skills.Summoning
+            ].includes(skillID)) {
+                const node = document.querySelector(`[aria-labelledBy=${Skills[skillID]}-artisan-menu-recipe-select]`).parentElement.parentElement.parentElement
+                display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                return display;
+            }
+            // other containers
+            let node = null;
+            switch (skillID) {
+                case Skills.Woodcutting:
+                    if (index === undefined) {
+                        node = document.getElementsByClassName('progress-bar bg-woodcutting')[0].parentNode;
+                        display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                    } else {
+                        node = document.getElementsByClassName('progress-bar bg-woodcutting')[index + 1].parentNode;
+                        display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                    }
+                    break;
+                case Skills.Fishing:
+                    node = document.getElementById('fishing-area-menu-container').children[1 + index].children[0].children[0].children[3].children[0].children[1].children[1];
+                    display = node.appendChild(tempContainer(displayID));
+                    break;
+                case Skills.Firemaking:
+                    node = document.getElementById('skill-fm-logs-selected-qty');
+                    node = node.parentNode.parentNode.parentNode;
+                    display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                    break;
+                case Skills.Cooking:
+                    node = document.getElementById(`cooking-menu-container`).children[index].firstChild.firstChild.firstChild.firstChild.children[4];
+                    const newChild = html2Node(`<div class="col-12"/>`)
+                    newChild.appendChild(tempContainer(displayID));
+                    display = node.parentNode.appendChild(newChild);
+                    break;
+                case Skills.Mining:
+                    node = document.getElementById(`mining-ores-container`).children[(11 + index + 1) % 11].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
+                    display = node.parentNode.insertBefore(tempContainer(displayID), node);
+                    break;
+                case Skills.Thieving:
+                    document.getElementById(`mastery-screen-skill-10-${index}`)
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .children[0]
+                        .appendChild(tempContainer(displayID));
+                    break;
+                case Skills.Agility:
+                    if (index === undefined) {
+                        document.getElementById('agility-breakdown-items').appendChild(tempContainer(displayID));
+                    } else {
+                        node = document.getElementById(`skill-content-container-20`).children[index].children[0].children[0].children[1].children[0];
+                        display = node.insertBefore(tempContainer(displayID), node.children[4]);
+                    }
+                    break;
+                case Skills.Astrology:
+                    node = document.getElementById(`astrology-container-content`).children[index];
+                    const wrapper = html2Node('<div class="col-12"></div>');
+                    node.parentNode.insertBefore(wrapper, node);
+                    display = wrapper.appendChild(tempContainer(displayID));
+                    break;
+                case Skills.Magic:
+                    node = document.getElementById('magic-screen-cast').children[0].children[1];
+                    display = node.appendChild(tempContainer('timeLeftMagic'));
+                    break;
+            }
+            return display;
         }
 
-        ETA.makeMiningDisplay = function () {
-            Mining.rockData.forEach((_, i) => {
-                const node = document.getElementById(`mining-ores-container`).children[i].childNodes[1].childNodes[1].childNodes[1].children[7];
-                node.parentNode.insertBefore(tempContainer(`timeLeftMining-${(10 + i) % 11}`), node);
-            });
-        }
-
-        ETA.makeThievingDisplay = function () {
-            Thieving.npcs.forEach(npc => {
-                document.getElementById(`mastery-screen-skill-10-${npc.id}`)
-                    .parentElement
-                    .parentElement
-                    .parentElement
-                    .parentElement
-                    .parentElement
-                    .parentElement
-                    .children[0]
-                    .appendChild(tempContainer(`timeLeftThieving-${npc.id}`));
-            });
-        }
-
-        ETA.makeWoodcuttingDisplay = function () {
-            const els = document.getElementsByClassName('progress-bar bg-woodcutting');
+        ETA.createAllDisplays = function () {
             Woodcutting.trees.forEach((_, i) => {
-                const node = els[i + 1].parentNode;
-                node.parentNode.insertBefore(tempContainer(`timeLeftWoodcutting-${i}`), node.nextSibling);
+                ETA.createDisplay(Skills.Woodcutting, i);
             });
-            const node = els[0].parentNode;
-            node.parentNode.insertBefore(tempContainer('timeLeftWoodcutting-Secondary'), node.nextSibling);
-        }
-
-        ETA.makeFishingDisplay = function () {
-            fishingAreas.forEach((_, i) => {
-                const node = document.getElementById(`fishing-area-${i}-selected-fish-xp`);
-                node.parentNode.insertBefore(tempContainer(`timeLeftFishing-${i}`), node.nextSibling);
+            ETA.createDisplay(Skills.Woodcutting);
+            Fishing.areas.forEach((_, i) => {
+                ETA.createDisplay(Skills.Fishing, i);
             });
-        }
-
-        ETA.makeAgilityDisplay = function () {
-            chosenAgilityObstacles.forEach(i => {
-                if (i === -1) {
-                    return;
-                }
-                if (document.getElementById(`timeLeftAgility-${i}`)) {
-                    // element already exists
-                    return;
-                }
-                let node = document.getElementById(`agility-obstacle-${i}`);
-                node = node.children[0].children[0].children[0];
-                node.insertBefore(tempContainer(`timeLeftAgility-${i}`), node.children[3]);
-            });
-            if (document.getElementById('timeLeftAgility-Secondary')) {
-                // element already exists
-                return;
+            ETA.createDisplay(Skills.Firemaking);
+            for (let i = 0; i < 3; i++) {
+                ETA.createDisplay(Skills.Cooking, i);
             }
-            document.getElementById('agility-breakdown-items').appendChild(tempContainer('timeLeftAgility-Secondary'));
+            Mining.rockData.forEach((_, i) => {
+                ETA.createDisplay(Skills.Mining, i);
+            });
+            ETA.createDisplay(Skills.Smithing);
+            Thieving.npcs.forEach(npc => {
+                ETA.createDisplay(Skills.Thieving, npc.id);
+            });
+            ETA.createDisplay(Skills.Fletching);
+            ETA.createDisplay(Skills.Crafting);
+            ETA.createDisplay(Skills.Runecrafting);
+            ETA.createDisplay(Skills.Herblore);
+            game.agility.builtObstacles.forEach(obstacle => {
+                ETA.createDisplay(Skills.Agility, obstacle.category);
+            });
+            ETA.createDisplay(Skills.Agility);
+            ETA.createDisplay(Skills.Summoning);
+            Astrology.constellations.forEach((_, i) => {
+                ETA.createDisplay(Skills.Astrology, i);
+            });
+            ETA.createDisplay(Skills.Magic);
         }
 
-        ETA.makeAstrologyDisplay = function () {
-            ASTROLOGY.forEach((_, i) => {
-                const node = document.getElementById(`astrology-buttons-${i}`);
-                const wrapper = html2Node('<div class="col-12"></div>');
-                node.parentNode.insertBefore(wrapper, node);
-                wrapper.appendChild(tempContainer(`timeLeftAstrology-${i}`));
-            });
+        ETA.removeAllDisplays = () => {
+            for (const displayID in ETA.displays) {
+                let display = document.getElementById(displayID);
+                let counter = 0;
+                while (display !== null) {
+                    display.remove();
+                    display = document.getElementById(displayID);
+                    counter++;
+                    if (counter === 10) {
+                        ETA.error(`Error removing element with id ${displayID}`);
+                        break;
+                    }
+                }
+            }
+            ETA.displays = {};
         }
 
         ////////////////
@@ -2253,31 +2290,18 @@
             }
         }
 
-        function injectHTML(initial, results, msLeft, now, initialRun = true) {
-            let timeLeftElementId = `timeLeft${Skills[initial.skillID]}`;
-            if (initial.actions.length > 1) {
-                timeLeftElementId += "-Secondary";
-            } else if (initial.isGathering) {
-                timeLeftElementId += "-" + initial.currentAction;
-            } else if (initial.cookingCategory !== undefined) {
-                timeLeftElementId += "-" + initial.cookingCategory;
-            }
-            const timeLeftElement = document.getElementById(timeLeftElementId);
-            if (timeLeftElement === null) {
-                switch (initial.skillID) {
-                    case Skills.Thieving:
-                        ETA.makeThievingDisplay();
-                        break;
-                    case Skills.Agility:
-                        ETA.makeAgilityDisplay();
-                        break;
+        function injectHTML(initial, results, msLeft, now) {
+            let index = undefined;
+            if (initial.actions.length === 1) {
+                if (initial.skillID === Skills.Fishing) {
+                    index = initial.areaID;
+                } else if (initial.isGathering) {
+                    index = initial.currentAction;
+                } else if (initial.cookingCategory !== undefined) {
+                    index = initial.cookingCategory;
                 }
-                if (initialRun) {
-                    // try running the method again
-                    return injectHTML(initial, results, msLeft, now, false);
-                }
-                return null;
             }
+            const timeLeftElement = ETA.createDisplay(initial.skillID, index);
             let finishedTime = addMSToDate(now, msLeft);
             timeLeftElement.textContent = "";
             if (ETASettings.SHOW_XP_RATE) {
@@ -2303,7 +2327,7 @@
             if (initial.actions.length === 1 && (initial.isGathering || initial.skillID === Skills.Cooking)) {
                 const itemID = initial.actions[0].itemID;
                 if (itemID !== undefined) {
-                    const youHaveElementId = timeLeftElementId + "-YouHave";
+                    const youHaveElementId = timeLeftElement.id + "-YouHave";
                     const perfectID = items[itemID].perfectItem;
                     $("#" + youHaveElementId).replaceWith(''
                         + `<small id="${youHaveElementId}">`
@@ -2650,13 +2674,7 @@
         game.altMagic.selectBarOnClick = (recipeID) => ETA.selectBarOnClick('Magic', 'altMagic', recipeID);
 
         // Create timeLeft containers
-        ETA.makeProcessingDisplays();
-        ETA.makeMiningDisplay();
-        ETA.makeThievingDisplay();
-        ETA.makeWoodcuttingDisplay();
-        ETA.makeFishingDisplay();
-        ETA.makeAgilityDisplay();
-        ETA.makeAstrologyDisplay();
+        ETA.createAllDisplays();
 
         // remake Agility display after loading the Agility Obstacles
         ETA.loadAgilityRef = loadAgility;
