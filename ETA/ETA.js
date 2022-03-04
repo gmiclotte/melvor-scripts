@@ -2665,6 +2665,27 @@
             }
         }
 
+        ETA.onRecipeSelectionClick = (skillName, propName, recipe) => {
+            const category = recipe.category;
+            const existingRecipe = game[propName].selectedRecipes.get(category);
+            if (game[propName].isActive) {
+                if (category === game[propName].activeCookingCategory && recipe !== game[propName].activeRecipe)
+                    game[propName].stop();
+                else if (game[propName].passiveCookTimers.has(category) && recipe !== existingRecipe)
+                    game[propName].stopPassiveCooking(category);
+            }
+            game[propName].selectedRecipes.set(category, recipe);
+            game[propName].renderQueue.selectedRecipes.add(category);
+            game[propName].renderQueue.recipeRates = true;
+            game[propName].renderQueue.quantities = true;
+            game[propName].render();
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
         ETA.selectAltRecipeOnClick = (skillName, propName, altID) => {
             if (altID !== game[propName].selectedAltRecipe && game[propName].isActive) {
                 game[propName].stop();
@@ -2696,6 +2717,7 @@
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
         game.firemaking.selectLog = (recipeID) => ETA.selectLog('Firemaking', 'firemaking', recipeID);
         game.cooking.startActionTimer = () => ETA.startActionTimer('Cooking', 'cooking');
+        game.cooking.onRecipeSelectionClick = (recipe) => ETA.onRecipeSelectionClick('Cooking', 'cooking', recipe);
         game.smithing.startActionTimer = () => ETA.startActionTimer('Smithing', 'smithing');
         game.smithing.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Smithing', 'smithing', recipeID);
         game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
