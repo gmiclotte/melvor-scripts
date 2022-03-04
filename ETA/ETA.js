@@ -594,7 +594,7 @@
                     break;
 
                 case Skills.Fishing:
-                    data = fishingAreas;
+                    data = Fishing.areas;
                     break;
 
                 case Skills.Agility:
@@ -622,10 +622,11 @@
                         }
                         let initial = initialVariables(skillID, checkTaskComplete);
                         if (initial.skillID === Skills.Fishing) {
-                            initial.fishID = selectedFish[i];
-                            if (initial.fishID === null) {
+                            initial.fish = game.fishing.selectedAreaFish.get(Fishing.areas[i]);
+                            if (initial.fish === undefined) {
                                 return;
                             }
+                            initial.areaID = i;
                         }
                         initial.currentAction = i;
                         if (initial.skillID === Skills.Agility) {
@@ -1458,16 +1459,15 @@
         }
 
         function configureFishing(initial) {
-            initial.itemID = fishingItems[fishingAreas[initial.currentAction].fish[initial.fishID]].itemID;
-            initial.itemXp = items[initial.itemID].fishingXP;
+            initial.itemID = initial.fish.itemID;
+            initial.itemXp = initial.fish.baseXP;
             // base avg interval
             let avgRoll = 0.5;
-            const max = items[initial.itemID].maxFishingInterval;
-            const min = items[initial.itemID].minFishingInterval;
+            const max = initial.fish.baseMaxInterval;
+            const min = initial.fish.baseMinInterval;
             initial.skillInterval = Math.floor(avgRoll * (max - min)) + min;
+            initial.currentAction = initial.fish.masteryID;
             initial = configureGathering(initial);
-            // correctly set masteryID
-            initial.masteryID = fishingAreas[initial.currentAction].fish[initial.fishID];
             return initial
         }
 
@@ -1637,7 +1637,7 @@
         // calculate junk chance
         function calcJunkChance(initial, masteryXp, poolXp) {
             // base
-            let junkChance = fishingAreas[initial.currentAction].junkChance;
+            let junkChance = Fishing.areas[initial.areaID].junkChance;
             // mastery turns 3% junk in 3% special
             let masteryLevel = convertXpToLvl(masteryXp);
             if (masteryLevel >= 50) {
@@ -2651,6 +2651,7 @@
 
         // gathering, only override startActionTimer
         game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
+        game.fishing.startActionTimer = () => ETA.startActionTimer('Fishing', 'fishing');
         game.mining.startActionTimer = () => {
             if (!game.mining.selectedRockActiveData.isRespawning) {
                 ETA.startActionTimer('Mining', 'mining');
