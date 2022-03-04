@@ -665,6 +665,18 @@
         function productionWrapper(skillID, checkTaskComplete) {
             // production skills
             let initial = initialVariables(skillID, checkTaskComplete);
+            if (skillID === Skills.Cooking) {
+                game.cooking.selectedRecipes.forEach((recipe, i) => {
+                    if (recipe === undefined) {
+                        return;
+                    }
+                    let initial = initialVariables(skillID, checkTaskComplete);
+                    initial.recipe = recipe;
+                    initial.currentAction = recipe.masteryID;
+                    initial.cookingCategory = i;
+                    asyncTimeRemaining(initial);
+                });
+            }
             switch (initial.skillID) {
                 case Skills.Smithing:
                     initial.currentAction = game.smithing.selectedRecipeID;
@@ -681,9 +693,6 @@
                 case Skills.Herblore:
                     initial.currentAction = game.herblore.selectedRecipeID;
                     break;
-                case Skills.Cooking:
-                    initial.data = selectedCookingRecipe;
-                    break;
                 case Skills.Firemaking:
                     initial.currentAction = game.firemaking.selectedRecipeID;
                     break;
@@ -693,22 +702,11 @@
                 case Skills.Summoning:
                     initial.currentAction = selectedSummon;
             }
-            if (initial.currentAction === undefined && initial.data === undefined) {
+            if (initial.currentAction === undefined) {
                 return;
             }
-            if (initial.data === undefined) {
-                asyncTimeRemaining(initial);
-                return;
-            }
-            initial.data.forEach((x, i) => {
-                if (x === -1) {
-                    return;
-                }
-                let initial = initialVariables(skillID, checkTaskComplete);
-                initial.currentAction = x;
-                initial.cookingCategory = i;
-                asyncTimeRemaining(initial);
-            });
+            asyncTimeRemaining(initial);
+
         }
 
         function asyncTimeRemaining(initial) {
@@ -1343,12 +1341,11 @@
         }
 
         function configureCooking(initial) {
-            const item = items[initial.currentAction];
-            initial.itemID = item.id;
-            initial.masteryID = item.masteryID[1];
-            initial.itemXp = item.cookingXP;
-            initial.skillInterval = item.cookingInterval;
-            initial.skillReq = items[initial.itemID].recipeRequirements[0];
+            initial.itemID = initial.recipe.id;
+            initial.masteryID = initial.recipe.masteryID;
+            initial.itemXp = initial.recipe.baseXP;
+            initial.skillInterval = initial.recipe.baseInterval;
+            initial.skillReq = initial.recipe.itemCosts;
             initial.masteryLimLevel = [99, Infinity]; //Cooking has no Mastery bonus
             return initial;
         }
@@ -2665,6 +2662,7 @@
         // production, override startActionTimer and selectXOnClick
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
         game.firemaking.selectLog = (recipeID) => ETA.selectLog('Firemaking', 'firemaking', recipeID);
+        game.cooking.startActionTimer = () => ETA.startActionTimer('Cooking', 'cooking');
         game.smithing.startActionTimer = () => ETA.startActionTimer('Smithing', 'smithing');
         game.smithing.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Smithing', 'smithing', recipeID);
         game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
