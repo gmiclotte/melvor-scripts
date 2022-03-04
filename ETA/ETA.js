@@ -564,7 +564,7 @@
                     }
                     break;
                 case Skills.Summoning:
-                    if (selectedSummon === null) {
+                    if (game.herblore.selectedRecipeID === -1) {
                         return;
                     }
                     break;
@@ -700,7 +700,7 @@
                     initial.currentAction = game.altMagic.selectedSpellID;
                     break;
                 case Skills.Summoning:
-                    initial.currentAction = selectedSummon;
+                    initial.currentAction = game.summoning.selectedRecipeID;
             }
             if (initial.currentAction === undefined) {
                 return;
@@ -1360,25 +1360,21 @@
         }
 
         function configureSummoning(initial) {
-            initial.itemID = summoningItems[initial.currentAction].itemID;
-            initial.itemXp = getBaseSummoningXP(initial.currentAction);
-            initial.useTabletXp = getBaseSummoningXP(initial.currentAction, true);
-            initial.skillInterval = 5000;
-            initial.recipeID = summoningData.defaultRecipe[items[initial.itemID].masteryID[1]];
+            initial.recipe = Summoning.marks[initial.currentAction];
+            initial.altRecipeID = game.summoning.setAltRecipes.get(initial.recipe);
+            initial.itemID = initial.recipe.itemID;
+            initial.itemXp = initial.recipe.baseXP;
+            initial.useTabletXp = Summoning.getTabletConsumptionXP(initial.currentAction, true);
+            initial.skillInterval = game.summoning.baseInterval;
             // costs can change with increasing pool / mastery
-            initial.skillReq = items[initial.itemID].summoningReq[initial.recipeID].map((r, i) => {
-                return {
-                    id: r.id,
-                    qty: getSummoningRecipeQty(initial.itemID, initial.recipeID, i),
-                };
-            });
+            initial.skillReq = calcSummoningRecipeQty(initial, 0, 1);
             // add xp of owned tablets to initial xp
             if (ETASettings.USE_TABLETS) {
                 const qty = getQtyOfItem(initial.itemID);
                 initial.skillXp += qty * initial.useTabletXp;
                 initial.targetSkillReached = initial.skillXp >= initial.targetXp;
             }
-            initial.chanceToDouble = calculateChanceToDouble(Skills.Summoning, false, 0, 0, items[initial.itemID]);
+            initial.chanceToDouble = game.summoning.actionDoublingChance;
             return initial;
         }
 
@@ -1491,50 +1487,77 @@
             return configureGathering(initial);
         }
 
-        function calcSummoningRecipeQty(initial, poolXp, recipeItemIndex, masteryLevel) {
-            const recipe = items[initial.itemID].summoningReq[initial.recipeID][recipeItemIndex];
-            const recipeGPCostReduction = Math.floor(masteryLevel / 10);
-            const recipeGPCost = SUMMONING.Settings.recipeGPCost * (1 - (recipeGPCostReduction * 5) / 100);
-
-            // gp cost or sc cost
-            if (recipe.id === -4 || recipe.id === -5) {
-                return {
-                    id: recipe.id,
-                    qty: Math.max(1, recipeGPCost),
-                };
-            }
-
-            // non-shard item cost
-            if (items[recipe.id].type !== undefined && items[recipe.id].type !== "Shard") {
-                const itemCost = Math.max(20, items[recipe.id].sellsFor);
-                return {
-                    id: recipe.id,
-                    qty: Math.max(1, Math.floor(recipeGPCost / itemCost)),
-                };
-            }
-
-            // shard cost
-            let qty = recipe.qty;
-            // shard cost
+        function calcShardReduction(initial, poolXp, masteryLevel) {
+            let shardReduction = 0;
             // mastery shard reduction
             if (masteryLevel >= 50) {
-                qty--;
+                shardReduction++;
             }
             if (masteryLevel >= 99) {
-                qty--;
+                shardReduction++;
             }
             // pool shard reduction
             if (poolReached(initial, poolXp, 1) && items[initial.itemID].summoningTier <= 2) {
-                qty--;
+                shardReduction++;
             } else if (poolReached(initial, poolXp, 3) && items[initial.itemID].summoningTier === 3) {
-                qty--;
+                shardReduction++;
             }
             // modifier shard reduction
-            qty -= player.modifiers.decreasedSummoningShardCost - player.modifiers.increasedSummoningShardCost;
-            return {
-                id: recipe.id,
-                qty: Math.max(1, qty),
-            };
+            shardReduction += player.modifiers.decreasedSummoningShardCost - player.modifiers.increasedSummoningShardCost;
+            return shardReduction;
+        }
+
+        function calcSummoningRecipeQtyMap(initial, poolXp, masteryLevel) {
+            const map = {};
+            calcSummoningRecipeQty(initial, poolXp, masteryLevel).forEach(x => map[x.id] = x.qty);
+            return map;
+        }
+        function calcSummoningRecipeQty(initial, poolXp, masteryLevel) {
+            // shard costs
+            const shardReduction = calcShardReduction(initial, poolXp, masteryLevel);
+            const recipe = initial.recipe.itemCosts.map(x=> {
+                return {
+                    id:x.id,
+                    qty: Math.max(1, x.qty - shardReduction),
+                }
+            });
+
+            // cost multiplier
+            let nonShardCostReduction = 0;
+            // Non-Shard Cost reduction that scales with mastery level
+            nonShardCostReduction += Math.floor(masteryLevel / 10) * 5;
+            // Level 99 Mastery: +5% Non Shard Cost Reduction
+            if (masteryLevel >= 99) {
+                nonShardCostReduction += 5;
+            }
+            const costMultiplier = 1 - nonShardCostReduction / 100;
+
+            // currency cost
+            if (initial.recipe.gpCost > 0) {
+                recipe.push({
+                    id: -5,
+                    qty: Math.max(initial.recipe.gpCost * costMultiplier),
+                });
+            }
+            if (initial.recipe.scCost > 0) {
+                recipe.push({
+                    id: -4,
+                    qty: Math.max(initial.recipe.scCost * costMultiplier),
+                });
+            }
+
+            // non-shard item cost
+            if (initial.recipe.nonShardItemCosts.length > 0) {
+                const itemID = initial.recipe.nonShardItemCosts[initial.altRecipeID ?? 0];
+                const itemCost = Math.max(20, items[itemID].sellsFor);
+                recipe.push({
+                    id: itemID,
+                    qty: Math.max(1, Math.floor(Summoning.recipeGPCost * costMultiplier / itemCost)),
+                });
+            }
+
+            // return all costs
+            return recipe;
         }
 
         function calcSummoningTabletQty(initial, poolXp, masteryLevel) {
@@ -1774,11 +1797,7 @@
             // update summoning costs
             if (initial.skillID === Skills.Summoning) {
                 const masteryLevel = convertXpToLvl(current.actions[0].masteryXp);
-                initial.skillReq.map((_, i) =>
-                    calcSummoningRecipeQty(initial, current.poolXp, i, masteryLevel)
-                ).forEach(x => {
-                    current.skillReqMap[x.id] = x.qty;
-                })
+                current.skillReqMap = calcSummoningRecipeQtyMap(initial, current.poolXp, masteryLevel);
             }
             // estimate actions remaining with current resources
             if (!noResources) {
@@ -2646,6 +2665,20 @@
             }
         }
 
+        ETA.selectAltRecipeOnClick = (skillName, propName, altID) => {
+            if (altID !== game[propName].selectedAltRecipe && game[propName].isActive) {
+                game[propName].stop();
+            }
+            game[propName].setAltRecipes.set(game[propName].selectedRecipe, altID);
+            game[propName].renderQueue.selectedRecipe = true;
+            game[propName].render();
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
         // gathering, only override startActionTimer
         game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
         game.fishing.startActionTimer = () => ETA.startActionTimer('Fishing', 'fishing');
@@ -2667,6 +2700,9 @@
         game.smithing.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Smithing', 'smithing', recipeID);
         game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
         game.herblore.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Herblore', 'herblore', recipeID);
+        game.summoning.startActionTimer = () => ETA.startActionTimer('Summoning', 'summoning');
+        game.summoning.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Summoning', 'summoning', recipeID);
+        game.summoning.selectAltRecipeOnClick = (altID) => ETA.selectAltRecipeOnClick('Summoning', 'summoning', altID);
         game.altMagic.startActionTimer = () => ETA.startActionTimer('Magic', 'altMagic');
         game.altMagic.selectSpellOnClick = (recipeID) => ETA.selectSpellOnClick('Magic', 'altMagic', recipeID);
         game.altMagic.selectItemOnClick = (recipeID) => ETA.selectItemOnClick('Magic', 'altMagic', recipeID);
