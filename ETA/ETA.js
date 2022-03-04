@@ -2733,19 +2733,6 @@
         // Create timeLeft containers
         ETA.createAllDisplays();
 
-        // remake Agility display after loading the Agility Obstacles
-        ETA.loadAgilityRef = loadAgility;
-        loadAgility = (...args) => {
-            ETA.loadAgilityRef(...args);
-            ETA.log('Remaking Agility display');
-            ETA.makeAgilityDisplay();
-            try {
-                ETA.timeRemainingWrapper(Skills.Agility, false);
-            } catch (e) {
-                ETA.error(e);
-            }
-        }
-
         // Mastery Pool progress
         for (let id in SKILLS) {
             if (SKILLS[id].hasMastery) {
