@@ -1,6 +1,6 @@
 //reroll slayer task until desired task is met
 window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
-    if (window.stopRerolling) {
+    if (snippets.stopRerolling) {
         return;
     }
     const task = combatManager.slayerTask;
