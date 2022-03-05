@@ -454,8 +454,10 @@
                     }
                     break;
                 case Skills.Astrology:
-                    node = document.getElementById(`astrology-container-content`).children[index];
-                    const wrapper = html2Node('<div class="col-12"></div>');
+                    node = document.getElementById(`astrology-container-content`).children[index].children[0].children[0].children[5];
+                    const wrapperID = `${displayID}Wrapper`;
+                    ETA.displays[wrapperID] = false;
+                    const wrapper = html2Node(`<div class="col-12" id="${wrapperID}"></div>`);
                     node.parentNode.insertBefore(wrapper, node);
                     display = wrapper.appendChild(tempContainer(displayID));
                     break;
@@ -601,7 +603,7 @@
                     }
                     break;
                 case Skills.Astrology:
-                    data = ASTROLOGY;
+                    data = Astrology.constellations;
                     break;
             }
             if (data.length > 0) {
@@ -1474,8 +1476,8 @@
 
         function configureAstrology(initial) {
             initial.itemID = undefined;
-            initial.itemXp = ASTROLOGY[initial.currentAction].provides.xp;
-            initial.skillInterval = AstrologyDefaults.interval;
+            initial.itemXp = Astrology.constellations[initial.currentAction].provides.xp;
+            initial.skillInterval = Astrology.baseInterval;
             return configureGathering(initial);
         }
 
@@ -2708,6 +2710,8 @@
             }
         }
         game.agility.startActionTimer = () => ETA.startActionTimer('Agility', 'agility');
+        game.astrology.startActionTimer = () => ETA.startActionTimer('Astrology', 'astrology');
+
         // production, override startActionTimer and selectXOnClick
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
         game.firemaking.selectLog = (recipeID) => ETA.selectLog('Firemaking', 'firemaking', recipeID);
