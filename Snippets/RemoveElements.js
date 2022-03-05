@@ -17,6 +17,3 @@ document.getElementById('magic-container').children[0].children[1].remove();
 // cloud saving
 document.getElementById('header-cloud-save-time').remove();
 document.getElementById('header-cloud-save-btn-connected').remove();
-
-// minibar-max-cape
-document.getElementById('minibar-max-cape').remove();
