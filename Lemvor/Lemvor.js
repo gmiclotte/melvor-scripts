@@ -67,7 +67,7 @@
         PETS,
         PRAYER,
         SPELLS,
-        agilityObstacles,
+        Agility.obstacles,
         combatAreas,
         items,
         slayerAreas,
@@ -88,7 +88,6 @@
         updateShop("gloves");
         updateSpellbook();
         updatePlayerStats();
-        updateAgilityBreakdown();
         Object.getOwnPropertyNames(SKILLS).forEach((_, skillID) => {
             updateSkillWindow(skillID);
             if (SKILLS[skillID].hasMastery) {
