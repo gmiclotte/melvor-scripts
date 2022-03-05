@@ -600,9 +600,10 @@
                 case Skills.Agility:
                     data = [];
                     // only keep active chosen obstacles
-                    for (const x of chosenAgilityObstacles) {
-                        if (x >= 0) {
-                            data.push(x);
+                    for (let category = 0; category < 10; category++) {
+                        const obstacle = game.agility.builtObstacles.get(category);
+                        if (obstacle !== undefined) {
+                            data.push(obstacle.id);
                         } else {
                             break;
                         }
@@ -1467,8 +1468,8 @@
         function configureAgility(initial) {
             const agiAction = x => {
                 return {
-                    itemXp: agilityObstacles[x].completionBonuses.xp,
-                    skillInterval: agilityObstacles[x].interval,
+                    itemXp: Agility.obstacles[x].completionBonuses.xp,
+                    skillInterval: Agility.obstacles[x].interval,
                     masteryID: x,
                 };
             }
@@ -1929,7 +1930,7 @@
                 return;
             }
             // check if we need to halve one of the debuffs
-            const m = agilityObstacles[id].modifiers;
+            const m = Agility.obstacles[id].modifiers;
             // xp
             initial.staticXpBonus += getBuff(m, 'decreasedGlobalSkillXP', 'decreasedSkillXP') / 100 / 2;
             // mxp
@@ -2144,7 +2145,7 @@
                     const poolXp = MASTERY[initial.skillID].pool;
                     initial.agilityObstacles.forEach(x => {
                         const masteryXp = MASTERY[initial.skillID].xp[x];
-                        const interval = agilityObstacles[x].interval;
+                        const interval = Agility.obstacles[x].interval;
                         initial.agiLapTime += intervalAdjustment(initial, poolXp, masteryXp, interval);
                     });
                 }
@@ -2311,6 +2312,8 @@
             if (initial.actions.length === 1) {
                 if (initial.skillID === Skills.Fishing) {
                     index = initial.areaID;
+                } else if(initial.skillID === Skills.Agility) {
+                    index = Agility.obstacles[initial.currentAction].category;
                 } else if (initial.isGathering) {
                     index = initial.currentAction;
                 } else if (initial.cookingCategory !== undefined) {
@@ -2713,6 +2716,7 @@
                 ETA.startActionTimer('Thieving', 'thieving');
             }
         }
+        game.agility.startActionTimer = () => ETA.startActionTimer('Agility', 'agility');
         // production, override startActionTimer and selectXOnClick
         game.firemaking.startActionTimer = () => ETA.startActionTimer('Firemaking', 'firemaking');
         game.firemaking.selectLog = (recipeID) => ETA.selectLog('Firemaking', 'firemaking', recipeID);
