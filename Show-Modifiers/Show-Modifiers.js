@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Melvor Show Modifiers
 // @namespace   http://tampermonkey.net/
-// @version     0.2.11
+// @version     0.2.12
 // @description Adds a button to show all your modifiers
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
