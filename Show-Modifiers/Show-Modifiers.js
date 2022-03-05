@@ -865,7 +865,7 @@
                 + '<button type="button" '
                 + 'class="btn btn-sm btn-dual text-combat-smoke" '
                 + 'id="page-header-modifiers" '
-                + `onclick="window.${this.name}.replaceRelevantModifiersHtml(player.modifiers, '${text}', '${tag}');" `
+                + `onclick="window.${this.name}.replaceRelevantModifiersHtml(window.${this.name}.getModifiers(), '${text}', '${tag}');" `
                 + 'aria-haspopup="true" '
                 + 'aria-expanded="true">'
                 + `<img class="skill-icon-xxs" src="${icon}">`
@@ -907,6 +907,10 @@
                 html: passives,
             });
         }
+
+        getModifiers() {
+            return game.isGolbinRaid ? game.golbinRaid.player.modifiers : player.modifiers;
+        }
     }
 
     function startShowModifiers() {
@@ -917,7 +921,7 @@
                 + '<button type="button" '
                 + 'class="btn btn-sm btn-dual text-combat-smoke" '
                 + 'id="page-header-modifiers" '
-                + `onclick="window.${name}.showRelevantModifiers(player.modifiers, \'Active Modifiers\');" `
+                + `onclick="window.${name}.showRelevantModifiers(window.${name}.getModifiers(), \'Active Modifiers\');" `
                 + 'aria-haspopup="true" '
                 + 'aria-expanded="true">'
                 + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Event_Clue_1)}">`
