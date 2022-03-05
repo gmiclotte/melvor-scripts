@@ -641,7 +641,10 @@
                         asyncTimeRemaining(initial);
                     } else {
                         // wipe the display, there's no way of knowing which tree is being cut
-                        document.getElementById(`timeLeft${Skills[skillID]}`).textContent = '';
+                        const node = document.getElementById(`timeLeft${Skills[skillID]}`);
+                        if (node) {
+                            node.textContent = '';
+                        }
                     }
                 }
                 if (skillID === Skills.Agility) {
