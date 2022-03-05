@@ -170,7 +170,6 @@
         for (const slot in equipmentSlotData) {
             const equipmentSlot = document.getElementById(`combat-equipment-slot-${EquipmentSlots[slot]}-0`);
             const equipmentSlotTop = document.getElementById(`combat-equipment-slot-${EquipmentSlots[slot]}-1`);
-            console.log(slot, equipmentSlot, equipmentSlotTop)
 
             let instance = tippy(equipmentSlot, {
                 placement: 'right-start',
