@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.13
+// @version		0.0.14
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -112,21 +112,6 @@ defensePure.lastHitOnly = (skillID, maxLevel = 1) => {
     // loop
     setTimeout(() => defensePure.lastHitOnly(skillID, maxLevel), 1000);
 }
-snippet.end();
-
-/////////////////////////////
-//FixPerformSkillProcess.js//
-/////////////////////////////
-snippet.name = 'FixPerformSkillProcess.js';
-snippet.start();
-// fix perform skill process
-eval(performSkillProcess.toString().replace(
-    'if(!confirmedAdded&&!offline)return false;',
-    'if (!confirmedAdded && !ignoreBankFull && !offline) return false;'
-).replace(
-    /^function (\w+)/,
-    'window.$1 = function'
-));
 snippet.end();
 
 /////////////////////////
@@ -451,9 +436,6 @@ document.getElementById('magic-container').children[0].children[1].remove();
 // cloud saving
 document.getElementById('header-cloud-save-time').remove();
 document.getElementById('header-cloud-save-btn-connected').remove();
-
-// minibar-max-cape
-document.getElementById('minibar-max-cape').remove();
 snippet.end();
 
 ///////////////////
@@ -463,7 +445,7 @@ snippet.name = 'RerollSlayer.js';
 snippet.start();
 //reroll slayer task until desired task is met
 window.rerollSlayerTask = (monsterIDs, tier, extend = true) => {
-    if (window.stopRerolling) {
+    if (snippets.stopRerolling) {
         return;
     }
     const task = combatManager.slayerTask;
