@@ -532,17 +532,17 @@
                     }
                     break;
                 case Skills.Fletching:
-                    if (selectedFletch === null) {
+                    if (game.fletching.selectedRecipeID === -1) {
                         return;
                     }
                     break;
                 case Skills.Crafting:
-                    if (selectedCraft === null) {
+                    if (game.crafting.selectedRecipeID === -1) {
                         return;
                     }
                     break;
                 case Skills.Runecrafting:
-                    if (selectedRunecraft === null) {
+                    if (game.runecrafting.selectedRecipeID === -1) {
                         return;
                     }
                     break;
@@ -679,13 +679,13 @@
                     initial.currentAction = game.smithing.selectedRecipeID;
                     break;
                 case Skills.Fletching:
-                    initial.currentAction = selectedFletch;
+                    initial.currentAction = game.fletching.selectedRecipeID;
                     break;
                 case Skills.Runecrafting:
-                    initial.currentAction = selectedRunecraft;
+                    initial.currentAction = game.runecrafting.selectedRecipeID;
                     break;
                 case Skills.Crafting:
-                    initial.currentAction = selectedCraft;
+                    initial.currentAction = game.crafting.selectedRecipeID;
                     break;
                 case Skills.Herblore:
                     initial.currentAction = game.herblore.selectedRecipeID;
@@ -934,7 +934,7 @@
                     if (poolReached(initial, poolXp, 1)) {
                         preservationChance += 5;
                     }
-                    if (craftingJewelleryIDs.includes(itemID)) {
+                    if (initial.recipe.category === CraftingCategory.Necklaces || initial.recipe.category === CraftingCategory.Rings) {
                         preservationChance += player.modifiers.summoningSynergy_16_17;
                     }
                     break;
@@ -1282,27 +1282,26 @@
         }
 
         function configureFletching(initial) {
-            initial.itemID = fletchingItems[initial.currentAction].itemID;
-            initial.itemXp = items[initial.itemID].fletchingXP;
-            initial.skillInterval = 2000;
-            for (let i of items[initial.itemID].fletchReq) {
-                initial.skillReq.push(i);
+            initial.recipe = Fletching.recipes[initial.currentAction];
+            initial.itemID = initial.recipe.itemID;
+            initial.itemXp = initial.recipe.baseXP;
+            initial.skillInterval = game.fletching.baseInterval;
+            let costs = initial.recipe.itemCosts;
+            if (initial.recipe.alternativeCosts !== undefined) {
+                costs = initial.recipe.alternativeCosts[game.fletching.selectedAltRecipe].itemCosts;
             }
-            //Special Case for Arrow Shafts
-            if (initial.itemID === Items.Arrow_Shafts) {
-                if (selectedFletchLog === undefined) {
-                    selectedFletchLog = 0;
-                }
-                initial.skillReq = [initial.skillReq[selectedFletchLog]];
+            for (let i of costs) {
+                initial.skillReq.push(i);
             }
             return initial;
         }
 
         function configureRunecrafting(initial) {
-            initial.itemID = runecraftingItems[initial.currentAction].itemID;
-            initial.itemXp = items[initial.itemID].runecraftingXP;
-            initial.skillInterval = 2000;
-            for (let i of items[initial.itemID].runecraftReq) {
+            initial.recipe = Runecrafting.recipes[initial.currentAction];
+            initial.itemID = initial.recipe.itemID;
+            initial.itemXp = initial.recipe.baseXP;
+            initial.skillInterval = game.runecrafting.baseInterval;
+            for (let i of initial.recipe.itemCosts) {
                 initial.skillReq.push(i);
             }
             initial.masteryLimLevel = [99, Infinity]; // Runecrafting has no Mastery bonus
@@ -1310,10 +1309,11 @@
         }
 
         function configureCrafting(initial) {
-            initial.itemID = craftingItems[initial.currentAction].itemID;
-            initial.itemXp = items[initial.itemID].craftingXP;
-            initial.skillInterval = 3000;
-            items[initial.itemID].craftReq.forEach(i => {
+            initial.recipe = Crafting.recipes[initial.currentAction];
+            initial.itemID = initial.recipe.itemID;
+            initial.itemXp = initial.recipe.baseXP;
+            initial.skillInterval = game.crafting.baseInterval;
+            for (let i of initial.recipe.itemCosts) {
                 let qty = i.qty;
                 if (items[initial.itemID].category === "Combat" && items[initial.itemID].tier === "Dragonhide" && qty > 1) {
                     qty -= player.modifiers.summoningSynergy_9_16;
@@ -1322,7 +1322,7 @@
                     ...i,
                     qty: qty,
                 });
-            });
+            };
             return initial;
         }
 
@@ -2722,6 +2722,13 @@
         game.cooking.onRecipeSelectionClick = (recipe) => ETA.onRecipeSelectionClick('Cooking', 'cooking', recipe);
         game.smithing.startActionTimer = () => ETA.startActionTimer('Smithing', 'smithing');
         game.smithing.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Smithing', 'smithing', recipeID);
+        game.fletching.startActionTimer = () => ETA.startActionTimer('Fletching', 'fletching');
+        game.fletching.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Fletching', 'fletching', recipeID);
+        game.fletching.selectAltRecipeOnClick = (altID) => ETA.selectAltRecipeOnClick('Fletching', 'fletching', altID);
+        game.crafting.startActionTimer = () => ETA.startActionTimer('Crafting', 'crafting');
+        game.crafting.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Crafting', 'crafting', recipeID);
+        game.runecrafting.startActionTimer = () => ETA.startActionTimer('Runecrafting', 'runecrafting');
+        game.runecrafting.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Runecrafting', 'runecrafting', recipeID);
         game.herblore.startActionTimer = () => ETA.startActionTimer('Herblore', 'herblore');
         game.herblore.selectRecipeOnClick = (recipeID) => ETA.selectRecipeOnClick('Herblore', 'herblore', recipeID);
         game.summoning.startActionTimer = () => ETA.startActionTimer('Summoning', 'summoning');
