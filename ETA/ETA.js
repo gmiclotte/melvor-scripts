@@ -372,11 +372,8 @@
         const tempContainer = (id) => {
             return html2Node(''
                 + '<div class="font-size-base font-w600 text-center text-muted">'
-                + `	<small id ="${id}" class="mb-2" style="display:block;clear:both;white-space:pre-line" data-toggle="tooltip" data-placement="top" data-html="true" title="" data-original-title="">`
-                + '	</small>'
-                + `	<small id ="${id}" class="mb-2" style="display:block;clear:both;white-space:pre-line">`
-                + `<div id="${id + '-YouHave'}"/>`
-                + '	</small>'
+                + `	<small id ="${id}" class="mb-2" style="display:block;clear:both;white-space:pre-line" data-toggle="tooltip" data-placement="top" data-html="true" title="" data-original-title=""></small>`
+                + `	<small id="${id + '-YouHave'}"class="mb-2" style="display:block;clear:both;white-space:pre-line"></small>`
                 + '</div>');
         }
 
@@ -387,12 +384,12 @@
             if (index !== undefined) {
                 displayID += `-${index}`;
             }
+            ETA.displays[displayID] = true;
             let display = document.getElementById(displayID);
             if (display !== null) {
                 // display already exists
                 return display;
             }
-            ETA.displays[displayID] = true;
             // standard processing container
             if ([
                 Skills.Smithing,
@@ -506,16 +503,10 @@
 
         ETA.removeAllDisplays = () => {
             for (const displayID in ETA.displays) {
-                let display = document.getElementById(displayID);
-                let counter = 0;
-                while (display !== null) {
-                    display.remove();
-                    display = document.getElementById(displayID);
-                    counter++;
-                    if (counter === 10) {
-                        ETA.error(`Error removing element with id ${displayID}`);
-                        break;
-                    }
+                if (ETA.displays[displayID]) {
+                    document.getElementById(displayID).parentNode.remove();
+                } else {
+                    document.getElementById(displayID).remove();
                 }
             }
             ETA.displays = {};
@@ -648,7 +639,7 @@
                         asyncTimeRemaining(initial);
                     } else {
                         // wipe the display, there's no way of knowing which tree is being cut
-                        document.getElementById(`timeLeft${Skills[skillID]}-Secondary`).textContent = '';
+                        document.getElementById(`timeLeft${Skills[skillID]}`).textContent = '';
                     }
                 }
                 if (skillID === Skills.Agility) {
