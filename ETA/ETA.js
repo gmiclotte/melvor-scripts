@@ -2529,37 +2529,6 @@
         // lvlToXp cache
         ETA.lvlToXp = Array.from({length: 200}, (_, i) => exp.level_to_xp(i));
 
-        // select and start craft overrides
-        ETA.selectRef = {};
-        [	// skill name, select names, < start name >
-            // start name is only required if the start method is not of the form `start${skill name}`
-            // production skills
-            ["Fletching", ["Fletch"]],
-            ["Runecrafting", ["Runecraft"]],
-            ["Crafting", ["Craft"]],
-            ["Cooking", ["CookingRecipe"]],
-            ["Summoning", ["Summon"]],
-            // gathering skills
-            ["Fishing", ["Fish"]],
-        ].forEach(skill => {
-            let skillName = skill[0];
-            // wrap the select methods
-            let selectNames = skill[1];
-            selectNames.forEach(entry => {
-                let selectName = "select" + entry;
-                // original methods are kept in the selectRef object
-                ETA.selectRef[selectName] = window[selectName];
-                window[selectName] = function (...args) {
-                    ETA.selectRef[selectName](...args);
-                    try {
-                        ETA.timeRemainingWrapper(Skills[skillName], false);
-                    } catch (e) {
-                        ETA.error(e);
-                    }
-                };
-            });
-        });
-
         ETA.updateSkillWindowRef = updateSkillWindow;
         updateSkillWindow = function (skill) {
             try {
