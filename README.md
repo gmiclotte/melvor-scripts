@@ -28,6 +28,8 @@ Note: based on [Melvor MakeX](https://greasyfork.org/en/scripts/408741)
 
 [![Melvor Snippets](https://img.shields.io/badge/dynamic/json?label=Melvor%20Snippets&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F432152.json)](https://greasyfork.org/en/scripts/432152)
 
+[![Melvor Summoning Simulator](https://img.shields.io/badge/dynamic/json?label=Melvor%20Summoning%20Simulator&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F440993.json)](https://greasyfork.org/scripts/440993)
+
 [![Melvor Swap RC](https://img.shields.io/badge/dynamic/json?label=Melvor%20Swap%20RC&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F425582.json)](https://greasyfork.org/en/scripts/425582)
 
 [![Melvor Unlimited Offline](https://img.shields.io/badge/dynamic/json?label=Melvor%20Unlimited%20Offline&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F435372.json)](https://greasyfork.org/en/scripts/435372)
