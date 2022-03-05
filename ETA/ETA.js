@@ -1532,13 +1532,13 @@
             // currency cost
             if (initial.recipe.gpCost > 0) {
                 recipe.push({
-                    id: -5,
+                    id: -4,
                     qty: Math.max(initial.recipe.gpCost * costMultiplier),
                 });
             }
             if (initial.recipe.scCost > 0) {
                 recipe.push({
-                    id: -4,
+                    id: -5,
                     qty: Math.max(initial.recipe.scCost * costMultiplier),
                 });
             }
