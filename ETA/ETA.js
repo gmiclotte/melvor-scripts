@@ -361,20 +361,25 @@
         //containers//
         //////////////
 
-        const html2Node = (html) => {
-            html = html.trim(); // Never return a text node of whitespace as the result
-            return $(html)[0];
-            // var template = document.createElement('template');
-            // template.innerHTML = html;
-            // return template.content.firstChild;
-        }
-
-        const tempContainer = (id) => {
-            return html2Node(''
-                + '<div class="font-size-base font-w600 text-center text-muted">'
-                + `	<small id ="${id}" class="mb-2" style="display:block;clear:both;white-space:pre-line" data-toggle="tooltip" data-placement="top" data-html="true" title="" data-original-title=""></small>`
-                + `	<small id="${id + '-YouHave'}"class="mb-2" style="display:block;clear:both;white-space:pre-line"></small>`
-                + '</div>');
+        ETA.displayContainer = (id) => {
+            const displayContainer = document.createElement('div');
+            displayContainer.classList = "font-size-base font-w600 text-center text-muted";
+            const display = document.createElement('small');
+            display.id = id;
+            display.classList = 'mb-2';
+            display.style = 'display:block;clear:both;white-space:pre-line';
+            display.dataToggle = 'tooltip';
+            display.dataPlacement = 'top';
+            display.dataHtml = 'true';
+            display.title = '';
+            display.dataOriginalTitle = '';
+            displayContainer.appendChild(display);
+            const displayAmt = document.createElement('small');
+            displayAmt.id = `${id + '-YouHave'}`;
+            displayAmt.classList = 'mb-2';
+            displayAmt.style = 'display:block;clear:both;white-space:pre-line';
+            displayContainer.appendChild(displayAmt);
+            return displayContainer;
         }
 
         ETA.displays = {};
@@ -400,39 +405,44 @@
                 Skills.Summoning
             ].includes(skillID)) {
                 const node = document.querySelector(`[aria-labelledBy=${Skills[skillID]}-artisan-menu-recipe-select]`).parentElement.parentElement.parentElement
-                display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
-                return display;
+                display = node.parentNode.insertBefore(ETA.displayContainer(displayID), node.nextSibling);
+                return display ? display.firstChild : undefined;
             }
             // other containers
             let node = null;
+            const wrapperID = `${displayID}Wrapper`;
+            let wrapper = undefined;
             switch (skillID) {
                 case Skills.Woodcutting:
                     if (index === undefined) {
                         node = document.getElementsByClassName('progress-bar bg-woodcutting')[0].parentNode;
-                        display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                        display = node.parentNode.insertBefore(ETA.displayContainer(displayID), node.nextSibling);
                     } else {
                         node = document.getElementsByClassName('progress-bar bg-woodcutting')[index + 1].parentNode;
-                        display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                        display = node.parentNode.insertBefore(ETA.displayContainer(displayID), node.nextSibling);
                     }
                     break;
                 case Skills.Fishing:
                     node = document.getElementById('fishing-area-menu-container').children[1 + index].children[0].children[0].children[3].children[0].children[1].children[1];
-                    display = node.appendChild(tempContainer(displayID));
+                    display = node.appendChild(ETA.displayContainer(displayID));
                     break;
                 case Skills.Firemaking:
                     node = document.getElementById('skill-fm-logs-selected-qty');
                     node = node.parentNode.parentNode.parentNode;
-                    display = node.parentNode.insertBefore(tempContainer(displayID), node.nextSibling);
+                    display = node.parentNode.insertBefore(ETA.displayContainer(displayID), node.nextSibling);
                     break;
                 case Skills.Cooking:
                     node = document.getElementById(`cooking-menu-container`).children[index].firstChild.firstChild.firstChild.firstChild.children[4];
-                    const newChild = html2Node(`<div class="col-12"/>`)
-                    newChild.appendChild(tempContainer(displayID));
-                    display = node.parentNode.appendChild(newChild);
+                    ETA.displays[wrapperID] = false;
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'col-12';
+                    wrapper.id = wrapperID;
+                    wrapper.appendChild(ETA.displayContainer(displayID));
+                    display = node.parentNode.appendChild(wrapper);
                     break;
                 case Skills.Mining:
                     node = document.getElementById(`mining-ores-container`).children[(11 + index + 1) % 11].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
-                    display = node.parentNode.insertBefore(tempContainer(displayID), node);
+                    display = node.parentNode.insertBefore(ETA.displayContainer(displayID), node);
                     break;
                 case Skills.Thieving:
                     document.getElementById(`mastery-screen-skill-10-${index}`)
@@ -443,30 +453,31 @@
                         .parentElement
                         .parentElement
                         .children[0]
-                        .appendChild(tempContainer(displayID));
+                        .appendChild(ETA.displayContainer(displayID));
                     break;
                 case Skills.Agility:
                     if (index === undefined) {
-                        document.getElementById('agility-breakdown-items').appendChild(tempContainer(displayID));
+                        document.getElementById('agility-breakdown-items').appendChild(ETA.displayContainer(displayID));
                     } else {
                         node = document.getElementById(`skill-content-container-20`).children[index].children[0].children[0].children[1].children[0];
-                        display = node.insertBefore(tempContainer(displayID), node.children[4]);
+                        display = node.insertBefore(ETA.displayContainer(displayID), node.children[4]);
                     }
                     break;
                 case Skills.Astrology:
                     node = document.getElementById(`astrology-container-content`).children[index].children[0].children[0].children[5];
-                    const wrapperID = `${displayID}Wrapper`;
                     ETA.displays[wrapperID] = false;
-                    const wrapper = html2Node(`<div class="col-12" id="${wrapperID}"></div>`);
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'col-12';
+                    wrapper.id = wrapperID;
                     node.parentNode.insertBefore(wrapper, node);
-                    display = wrapper.appendChild(tempContainer(displayID));
+                    display = wrapper.appendChild(ETA.displayContainer(displayID));
                     break;
                 case Skills.Magic:
                     node = document.getElementById('magic-screen-cast').children[0].children[1];
-                    display = node.appendChild(tempContainer('timeLeftMagic'));
+                    display = node.appendChild(ETA.displayContainer('timeLeftMagic'));
                     break;
             }
-            return display;
+            return display ? display.firstChild : undefined;
         }
 
         ETA.createAllDisplays = function () {
@@ -1322,7 +1333,8 @@
                     ...i,
                     qty: qty,
                 });
-            };
+            }
+
             return initial;
         }
 
@@ -1509,12 +1521,13 @@
             calcSummoningRecipeQty(initial, poolXp, masteryLevel).forEach(x => map[x.id] = x.qty);
             return map;
         }
+
         function calcSummoningRecipeQty(initial, poolXp, masteryLevel) {
             // shard costs
             const shardReduction = calcShardReduction(initial, poolXp, masteryLevel);
-            const recipe = initial.recipe.itemCosts.map(x=> {
+            const recipe = initial.recipe.itemCosts.map(x => {
                 return {
-                    id:x.id,
+                    id: x.id,
                     qty: Math.max(1, x.qty - shardReduction),
                 }
             });
@@ -2308,7 +2321,7 @@
             if (initial.actions.length === 1) {
                 if (initial.skillID === Skills.Fishing) {
                     index = initial.areaID;
-                } else if(initial.skillID === Skills.Agility) {
+                } else if (initial.skillID === Skills.Agility) {
                     index = Agility.obstacles[initial.currentAction].category;
                 } else if (initial.isGathering) {
                     index = initial.currentAction;
@@ -2344,16 +2357,26 @@
                 if (itemID !== undefined) {
                     const youHaveElementId = timeLeftElement.id + "-YouHave";
                     const perfectID = items[itemID].perfectItem;
-                    $("#" + youHaveElementId).replaceWith(''
-                        + `<small id="${youHaveElementId}">`
-                        + `<span>You have: ${formatNumber(getQtyOfItem(itemID))}</span>`
-                        + `<img class="skill-icon-xs mr-2" src="${items[itemID].media}">`
-                        + (items[itemID].perfectItem === undefined
-                            ? ''
-                            : `<span>${formatNumber(getQtyOfItem(perfectID))}</span>`
-                            + `<img class="skill-icon-xs mr-2" src="${items[perfectID].media}">`)
-                        + "</small>"
-                    );
+                    const youHaveElement = document.getElementById(youHaveElementId);
+                    while (youHaveElement.lastChild) {
+                        youHaveElement.removeChild(youHaveElement.lastChild);
+                    }
+                    const span = document.createElement('span');
+                    span.textContent = `You have: ${formatNumber(getQtyOfItem(itemID))}`;
+                    youHaveElement.appendChild(span);
+                    const img = document.createElement('img');
+                    img.classList = 'skill-icon-xs mr-2';
+                    img.src = items[itemID].media;
+                    youHaveElement.appendChild(img);
+                    if (perfectID !== undefined) {
+                        const perfectSpan = document.createElement('span');
+                        perfectSpan.textContent = `You have: ${formatNumber(getQtyOfItem(perfectID))}`;
+                        youHaveElement.appendChild(perfectSpan);
+                        const perfectImg = document.createElement('img');
+                        perfectImg.classList = 'skill-icon-xs mr-2';
+                        perfectImg.src = items[perfectID].media;
+                        youHaveElement.appendChild(perfectImg);
+                    }
                 }
             }
             timeLeftElement.style.display = "block";
