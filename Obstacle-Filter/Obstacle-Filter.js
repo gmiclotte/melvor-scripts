@@ -231,8 +231,8 @@
 
         const reqMicsrMajorVersion = 1;
         const reqMicsrMinorVersion = 6;
-        const reqMicsrPatchVersion = 0;
-        const reqMicsrPreReleaseVersion = 2;
+        const reqMicsrPatchVersion = 4;
+        const reqMicsrPreReleaseVersion = undefined;
 
         let reqMicsrversion = `v${reqMicsrMajorVersion}.${reqMicsrMinorVersion}.${reqMicsrPatchVersion}`;
         if (reqMicsrPreReleaseVersion !== undefined) {
