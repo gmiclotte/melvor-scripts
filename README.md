@@ -3,6 +3,8 @@ Various scripts for Melvor Idle
 
 [![Melvor Additive Skilling Anti-Lag](https://img.shields.io/badge/dynamic/json?label=Melvor%20Additive%20Skilling%20Anti-Lag&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F430727.json)](https://greasyfork.org/scripts/430727)
 
+[![Melvor Astrology Reroller](https://img.shields.io/badge/dynamic/json?label=Melvor%20Astrology%20Reroller&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F441426.json)](https://greasyfork.org/scripts/441426)
+
 [![Melvor Auto Farming](https://img.shields.io/badge/dynamic/json?label=Melvor%20Auto%20Farming&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F419699.json)](https://greasyfork.org/scripts/419699)
 
 [![Bad Lemon](https://img.shields.io/badge/dynamic/json?label=Bad%20Lemon&query=version&prefix=v&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F426675.json)](https://greasyfork.org/en/scripts/426675)
