@@ -1326,7 +1326,7 @@
             initial.skillInterval = game.crafting.baseInterval;
             for (let i of initial.recipe.itemCosts) {
                 let qty = i.qty;
-                if (initial.recipe.category === CraftingCategory.Dragonhide)  {
+                if (initial.recipe.category === CraftingCategory.Dragonhide) {
                     qty -= player.modifiers.summoningSynergy_9_16;
                 }
                 initial.skillReq.push({
@@ -2693,9 +2693,27 @@
             }
         }
 
+        ETA.onAreaFishSelection = (skillName, propName, area, fish) => {
+            const previousSelection = game[propName].selectedAreaFish.get(area);
+            if (area === game[propName].activeFishingArea && previousSelection !== fish && game[propName].isActive && !game[propName].stop())
+                return;
+            game[propName].selectedAreaFish.set(area, fish);
+            game[propName].renderQueue.selectedAreaFish = true;
+            game[propName].renderQueue.selectedAreaFishRates = true;
+            game[propName].renderQueue.areaChances = true;
+            game[propName].renderQueue.actionMastery.add(fish.masteryID);
+            game[propName].render();
+            try {
+                ETA.timeRemainingWrapper(Skills[skillName], false);
+            } catch (e) {
+                ETA.error(e);
+            }
+        }
+
         // gathering, only override startActionTimer
         game.woodcutting.startActionTimer = () => ETA.startActionTimer('Woodcutting', 'woodcutting');
         game.fishing.startActionTimer = () => ETA.startActionTimer('Fishing', 'fishing');
+        game.fishing.onAreaFishSelection = (area, fish) => ETA.onAreaFishSelection('Fishing', 'fishing', area, fish);
         game.mining.startActionTimer = () => {
             if (!game.mining.selectedRockActiveData.isRespawning) {
                 ETA.startActionTimer('Mining', 'mining');
