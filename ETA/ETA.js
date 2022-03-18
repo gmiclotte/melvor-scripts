@@ -2628,6 +2628,8 @@
         }
 
         ETA.selectItemOnClick = (skillName, propName, itemID) => {
+            if (game.isGolbinRaid)
+                return;
             game[propName].selectedConversionItem = itemID;
             game[propName].renderQueue.selectedSpellInfo = true;
             hideElement(altMagicItemMenu);
@@ -2642,6 +2644,8 @@
         }
 
         ETA.selectBarOnClick = (skillName, propName, recipe) => {
+            if (game.isGolbinRaid)
+                return;
             game[propName].selectedSmithingRecipe = recipe;
             game[propName].renderQueue.selectedSpellInfo = true;
             hideElement(altMagicItemMenu);
