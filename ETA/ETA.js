@@ -2578,9 +2578,8 @@
         }
 
         ETA.selectRecipeOnClick = (skillName, propName, recipeID) => {
-            if (recipeID !== game[propName].selectedRecipeID && game[propName].isActive) {
-                game[propName].stop();
-            }
+            if (recipeID !== game[propName].selectedRecipeID && game[propName].isActive && !game[propName].stop())
+                return;
             game[propName].selectedRecipeID = recipeID;
             game[propName].renderQueue.selectedRecipe = true;
             game[propName].render();
@@ -2596,8 +2595,8 @@
             if (recipeToSelect.level > game[propName].level) {
                 notifyPlayer(game[propName].id, getLangString('TOASTS', 'LEVEL_REQUIRED_TO_BURN'), 'danger');
             } else {
-                if (game[propName].selectedRecipeID !== recipeID && game[propName].isActive)
-                    game[propName].stop();
+                if (game[propName].selectedRecipeID !== recipeID && game[propName].isActive && !game[propName].stop())
+                    return;
                 game[propName].selectedRecipeID = recipeID;
                 game[propName].renderQueue.selectedLog = true;
                 game[propName].renderQueue.logQty = true;
@@ -2611,8 +2610,8 @@
 
         ETA.selectSpellOnClick = (skillName, propName, spellID) => {
             if (game[propName].selectedSpellID !== spellID) {
-                if (game[propName].isActive)
-                    game[propName].stop();
+                if (game[propName].isActive && !game[propName].stop())
+                    return;
                 game[propName].selectedConversionItem = -1;
             }
             game[propName].selectedSpellID = spellID;
@@ -2660,10 +2659,10 @@
             const category = recipe.category;
             const existingRecipe = game[propName].selectedRecipes.get(category);
             if (game[propName].isActive) {
-                if (category === game[propName].activeCookingCategory && recipe !== game[propName].activeRecipe)
-                    game[propName].stop();
-                else if (game[propName].passiveCookTimers.has(category) && recipe !== existingRecipe)
-                    game[propName].stopPassiveCooking(category);
+                if (category === game[propName].activeCookingCategory && recipe !== game[propName].activeRecipe && !game[propName].stop())
+                    return;
+                else if (game[propName].passiveCookTimers.has(category) && recipe !== existingRecipe && !game[propName].stopPassiveCooking(category))
+                    return;
             }
             game[propName].selectedRecipes.set(category, recipe);
             game[propName].renderQueue.selectedRecipes.add(category);
@@ -2678,9 +2677,8 @@
         }
 
         ETA.selectAltRecipeOnClick = (skillName, propName, altID) => {
-            if (altID !== game[propName].selectedAltRecipe && game[propName].isActive) {
-                game[propName].stop();
-            }
+            if (altID !== game[propName].selectedAltRecipe && game[propName].isActive && !game[propName].stop())
+                return;
             game[propName].setAltRecipes.set(game[propName].selectedRecipe, altID);
             game[propName].renderQueue.selectedRecipe = true;
             game[propName].render();
