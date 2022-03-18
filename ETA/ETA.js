@@ -568,7 +568,7 @@
                     }
                     break;
                 case Skills.Summoning:
-                    if (game.herblore.selectedRecipeID === -1) {
+                    if (game.summoning.selectedRecipeID === -1) {
                         return;
                     }
                     break;
