@@ -950,10 +950,10 @@
                     }
                     break;
                 case Skills.Runecrafting:
-                    if (items[itemID].type === "Rune") {
+                    if (game.runecrafting.isMakingRunes) {
                         preservationChance += player.modifiers.increasedRunecraftingEssencePreservation;
                     }
-                    if (items[itemID].type === "Magic Staff") {
+                    if (game.runecrafting.isMakingStaff) {
                         preservationChance += player.modifiers.summoningSynergy_3_10;
                     }
                     if (poolReached(initial, poolXp, 2)) {
@@ -1135,7 +1135,7 @@
             let xpMultiplier = 1;
             switch (initial.skillID) {
                 case Skills.Runecrafting:
-                    if (poolReached(initial, poolXp, 1) && items[itemID].type === "Rune") {
+                    if (poolReached(initial, poolXp, 1) && game.runecrafting.isMakingRunes) {
                         xpMultiplier += 1.5;
                     }
                     break;
