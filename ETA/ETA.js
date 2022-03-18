@@ -1326,12 +1326,12 @@
             initial.skillInterval = game.crafting.baseInterval;
             for (let i of initial.recipe.itemCosts) {
                 let qty = i.qty;
-                if (items[initial.itemID].category === "Combat" && items[initial.itemID].tier === "Dragonhide" && qty > 1) {
+                if (initial.recipe.category === CraftingCategory.Dragonhide)  {
                     qty -= player.modifiers.summoningSynergy_9_16;
                 }
                 initial.skillReq.push({
                     ...i,
-                    qty: qty,
+                    qty: Math.max(1, qty),
                 });
             }
 
