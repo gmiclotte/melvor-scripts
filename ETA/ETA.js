@@ -1506,9 +1506,9 @@
                 shardReduction++;
             }
             // pool shard reduction
-            if (poolReached(initial, poolXp, 1) && items[initial.itemID].summoningTier <= 2) {
+            if (poolReached(initial, poolXp, 1) && initial.recipe.tier <= 2) {
                 shardReduction++;
-            } else if (poolReached(initial, poolXp, 3) && items[initial.itemID].summoningTier === 3) {
+            } else if (poolReached(initial, poolXp, 3) && initial.recipe.tier === 3) {
                 shardReduction++;
             }
             // modifier shard reduction
