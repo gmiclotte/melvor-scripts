@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.14
+// @version		0.0.15
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -44,6 +44,19 @@ listObstaclesWithFewerThanTenBuilds = () => {
         .filter(i => agilityObstacleBuildCount[i] < 10)
         .map(i => agilityObstacles[i])
         .map(x => [x.category + 1, x.name]);
+}
+snippet.end();
+
+///////////////////
+//BankedHealth.js//
+///////////////////
+snippet.name = 'BankedHealth.js';
+snippet.start();
+// return total healing in bank
+bankedHealth = () => {
+    return items.filter(x => x.healsFor)
+        .map(x => player.getFoodHealing(x) * combatManager.bank.getQty(x.id))
+        .reduce((a, b) => a + b, 0);
 }
 snippet.end();
 
@@ -149,6 +162,41 @@ listCrateItems = (unlocked = true) =>
 // listCrateItems()
 // to list the ones you haven't unlocked:
 // listCrateItems(false)
+snippet.end();
+
+////////////////
+//LootDrops.js//
+////////////////
+snippet.name = 'LootDrops.js';
+snippet.start();
+// Loot Drops
+window.lootDrops = () => {
+    combatManager.loot.drops = combatManager.loot.drops.filter(drop => {
+        const fit = addItemToBank(drop.item.id, drop.qty);
+        if (fit)
+            game.stats.Combat.add(CombatStats.ItemsLooted, drop.qty);
+        return false;
+    });
+}
+
+// hook to player.rewardGPForKill, this runs on player death and is a relatively small method
+eval(player.rewardGPForKill.toString().replaceAll(
+    'this',
+    'player',
+).replace(
+    'rewardGPForKill(){',
+    'window.rewardGPForKill = () => {window.lootDrops();',
+));
+
+hookLootDrops = () => {
+    if (player) {
+        player.rewardGPForKill = window.rewardGPForKill;
+    } else {
+        setTimeout(hookLootDrops, 50);
+    }
+}
+
+// hookLootDrops();
 snippet.end();
 
 //////////////////
