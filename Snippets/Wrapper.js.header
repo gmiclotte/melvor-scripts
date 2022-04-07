@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.14
+// @version		0.0.16
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -24,7 +24,7 @@
 
 function startSnippets() {
 
-const snippet = {
+window.snippet = {
     name: '',
     log: (...args) => console.log('Snippets:', ...args),
     start: () => snippet.log(`Loading ${snippet.name}.`),

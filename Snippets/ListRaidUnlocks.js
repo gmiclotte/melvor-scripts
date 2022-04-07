@@ -1,5 +1,5 @@
 // list unlocked raid items
-listCrateItems = (unlocked = true) =>
+window.listCrateItems = (unlocked = true) =>
     RaidManager.crateItemWeights.filter(x =>
         unlocked === game.golbinRaid.ownedCrateItems.has(x.itemID)
     ).forEach(x =>

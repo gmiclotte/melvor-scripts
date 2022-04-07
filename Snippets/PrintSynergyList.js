@@ -1,5 +1,5 @@
 // functions to print synergies per category (cb vs non-cb)
-printSynergy = (x, y) => console.log('- [ ]',
+window.printSynergy = (x, y) => console.log('- [ ]',
     x.summoningID,
     parseInt(y),
     items[x.itemID].name,
@@ -8,7 +8,7 @@ printSynergy = (x, y) => console.log('- [ ]',
     SUMMONING.Synergies[x.summoningID][y].modifiers
 );
 
-printCombatSynergyList = () => {
+window.printCombatSynergyList = () => {
     // get combat synergies
     summoningItems.filter(x => items[x.itemID].summoningMaxHit).map(x => {
         for (y in SUMMONING.Synergies[x.summoningID]) {
@@ -17,7 +17,7 @@ printCombatSynergyList = () => {
     });
 }
 
-printNonCombatSynergyList = () => {
+window.printNonCombatSynergyList = () => {
     // get non-combat synergies
     summoningItems.filter(x => !items[x.itemID].summoningMaxHit).map(x => {
         for (y in SUMMONING.Synergies[x.summoningID]) {

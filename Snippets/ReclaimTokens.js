@@ -13,7 +13,7 @@ window.reclaimMasteryTokens = () => {
         if (a > 0 && b >= 0) {
             bank[b].qty += a;
             MASTERY[s].pool -= a * Math.floor(getMasteryPoolTotalXP(s)*0.001);
-            snippets.log('reclaimed', a, Skills[s], 'tokens');  
+            console.log('reclaimed', a, Skills[s], 'tokens');
         }
     });
 }

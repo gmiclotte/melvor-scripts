@@ -17,12 +17,12 @@ eval(player.rewardGPForKill.toString().replaceAll(
     'window.rewardGPForKill = () => {window.lootDrops();',
 ));
 
-hookLootDrops = () => {
+window.hookLootDrops = () => {
     if (player) {
         player.rewardGPForKill = window.rewardGPForKill;
     } else {
-        setTimeout(hookLootDrops, 50);
+        setTimeout(window.hookLootDrops, 50);
     }
 }
 
-// hookLootDrops();
+// window.hookLootDrops();

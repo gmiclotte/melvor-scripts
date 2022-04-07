@@ -1,5 +1,5 @@
 // unsell sold items
-unsell = (id, count = Infinity) => {
+window.unsell = (id, count = Infinity) => {
     if (count < 0) {
         return;
     }

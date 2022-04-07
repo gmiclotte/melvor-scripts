@@ -7,7 +7,7 @@ for f in *.js; do
     echo `python -c "print('/' * (${#f} + 4))"` >> ActiveSnippets
     echo "snippet.name = '${f}';" >> ActiveSnippets
     echo "snippet.start();" >> ActiveSnippets
-    cat ${f} >> ActiveSnippets
+    cat ${f} | sed 's/console/snippet/g' >> ActiveSnippets
     echo "snippet.end();" >> ActiveSnippets
 done
 cat Wrapper.js.footer >> ActiveSnippets

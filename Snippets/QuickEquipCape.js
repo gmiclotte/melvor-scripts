@@ -1,5 +1,5 @@
 // Quick Equip Max/Comp Cape
-quickEquipSkillcape = (skill) => {
+window.quickEquipSkillcape = (skill) => {
     const capes = [
         Items.Cape_of_Completion,
         Items.Max_Skillcape,
