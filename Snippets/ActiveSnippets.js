@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Snippets
 // @namespace	http://tampermonkey.net/
-// @version		0.0.16
+// @version		0.0.17
 // @description	Collection of various snippets
 // @grant		none
 // @author		GMiclotte
@@ -171,9 +171,27 @@ snippet.name = 'LootDrops.js';
 snippet.start();
 // Loot Drops
 window.lootDrops = () => {
-    combatManager.loot.drops = combatManager.loot.drops.filter(drop => {
-        const fit = addItemToBank(drop.item.id, drop.qty);
-        if (fit)
+    const loot = combatManager.loot;
+    // only loot when the loot table is full
+    if (loot.drops.length < loot.maxLoot) {
+        return;
+    }
+    // when the bank is full, update the bank cache
+    const bankFull = bank.length === getMaxBankSpace();
+    if (bankFull) {
+        for (let i = 0; i < bank.length; i++) {
+            bankCache[bank[i].id] = i;
+        }
+    }
+    loot.drops = loot.drops.filter(drop => {
+        const itemID = drop.item.id;
+        if (bankFull) {
+            // reject all items that aren't in the bank cache
+            if (bankCache[itemID] === undefined) {
+                return false;
+            }
+        }
+        if (addItemToBank(itemID, drop.qty))
             game.stats.Combat.add(CombatStats.ItemsLooted, drop.qty);
         return false;
     });
@@ -556,49 +574,58 @@ window.rerollSlayerTask = (monsterIDs, tier, extend = true, loop = true) => {
 }
 
 // simulate rerolling of slayer task until desired task is met
-window.rerollSlayerTaskFast = (monsterIDs, tier, extend = true) => {
+window.rerollSlayerTaskFast = (monsterIDs, tier, extend = true, verbose = false) => {
     const task = combatManager.slayerTask;
-    const taskID = task.monster.id;
-    const taskName = MONSTERS[taskID].name;
-    if (!combatManager.slayerTask.taskTimer.active) {
-        // only do something if slayer task timer is not running
-        if (!combatManager.slayerTask.active || !monsterIDs.includes(taskID)) {
-            // roll task if we don't have one, or if it has the wrong monster
-            snippet.log(`simulating reroll for tier ${tier} task ${monsterIDs.map(monsterID => MONSTERS[monsterID].name).join(', ')}`);
-            const monsterSelection = combatManager.slayerTask.getMonsterSelection(tier).map(x => x.id);
-            monsterIDs = monsterIDs.filter(x => monsterSelection.includes(x));
-            if (monsterIDs.length === 0) {
-                snippet.log(`no valid monsterIDs provided for tier ${tier}`);
-                return;
-            }
-            // simulate rerolls until one of the target monsters is rolled
-            let rerolls = 1;
-            const prob = monsterIDs.length / monsterSelection.length;
-            while (Math.random() > prob) {
-                rerolls++;
-            }
-            const scAmount = SlayerTask.data[tier].cost * rerolls;
-            if (scAmount > player._slayercoins) {
-                snippet.log(`insufficient slayer coins, needed ${scAmount}, have ${player._slayercoins}`);
-                return;
-            }
-            // randomly pick one of the valid monsters
-            const monsterID = monsterIDs[rollInteger(0, monsterIDs.length - 1)];
-            // mimic combatManager.slayerTask.selectTask
-            combatManager.slayerTask.player.removeSlayerCoins(scAmount, true);
-            combatManager.slayerTask.monster = MONSTERS[monsterID];
-            combatManager.slayerTask.tier = tier;
-            combatManager.slayerTask.active = true;
-            combatManager.slayerTask.extended = false;
-            combatManager.slayerTask.killsLeft = combatManager.slayerTask.getTaskLength(tier);
-            combatManager.slayerTask.renderRequired = true;
-            combatManager.slayerTask.renderNewButton = true;
-            snippet.log(`simulated ${rerolls} rerolls for tier ${tier} task ${MONSTERS[monsterID].name} costing ${scAmount}SC`);
-        } else if (extend && !task.extended) {
+    if (task.taskTimer.active) {
+        return;
+    }
+    // only do something if slayer task timer is not running
+    if (task.active && monsterIDs.includes(task.monster.id)) {
+        if (extend && !task.extended) {
             // extend task if it is the right monster
-            snippet.log(`extending ${taskName}`);
-            combatManager.slayerTask.extendTask();
+            if (verbose) {
+                snippet.log(`extending ${MONSTERS[task.monster.id].name}`);
+            }
+            task.extendTask();
         }
+        return;
+    }
+    // roll task if we don't have one, or if it has the wrong monster
+    const monsterSelection = task.getMonsterSelection(tier).map(x => x.id);
+    const monsterSelectionMap = {};
+    monsterSelection.forEach(x => monsterSelectionMap[x] = true);
+    monsterIDs = monsterIDs.filter(x => monsterSelectionMap[x]);
+    if (monsterIDs.length === 0) {
+        snippet.log(`no valid monsterIDs provided for tier ${tier}`);
+        return;
+    }
+    // simulate rerolls until one of the target monsters is rolled
+    let rerolls = 1;
+    const prob = monsterIDs.length / monsterSelection.length;
+    while (Math.random() > prob) {
+        rerolls++;
+    }
+    let scAmount = 0;
+    if (tier > 0) {
+        scAmount = SlayerTask.data[tier].cost * rerolls;
+        if (scAmount > player._slayercoins) {
+            snippet.log(`insufficient slayer coins, needed ${scAmount}, have ${player._slayercoins}`);
+            return;
+        }
+        task.player.removeSlayerCoins(scAmount, true);
+    }
+    // randomly pick one of the valid monsters
+    const monsterID = monsterIDs[rollInteger(0, monsterIDs.length - 1)];
+    // mimic task.selectTask
+    task.monster = MONSTERS[monsterID];
+    task.tier = tier;
+    task.active = true;
+    task.extended = false;
+    task.killsLeft = task.getTaskLength(tier);
+    task.renderRequired = true;
+    task.renderNewButton = true;
+    if (verbose) {
+        snippet.log(`simulated ${rerolls} rerolls for tier ${tier} task ${MONSTERS[monsterID].name} costing ${scAmount}SC`);
     }
 }
 snippet.end();
