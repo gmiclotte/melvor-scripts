@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor JuniorFarmer
 // @namespace	http://tampermonkey.net/
-// @version		0.0.17
+// @version		0.0.18
 // @description	Collection of various juniorFarmers
 // @grant		none
 // @author		GMiclotte
