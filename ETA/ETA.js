@@ -895,6 +895,9 @@
 
         //Return the preservation for any mastery and pool
         masteryPreservation = (initial, masteryXp, poolXp) => {
+            if (initial.skillID === Skills.Magic) {
+                return initial.runePreservationChance;
+            }
             if (!initial.hasMastery) {
                 return 0;
             }
@@ -1226,10 +1229,12 @@
                 targetPool: 0,
                 targetPoolXp: 0,
                 poolLim: [], // Xp need to reach next pool checkpoint
-                staticPreservation: 0,
                 maxPoolXp: 0,
                 tokens: 0,
                 poolLimCheckpoints: [10, 25, 50, 95, 100, Infinity], //Breakpoints for mastery pool bonuses followed by Infinity
+                // preservation
+                staticPreservation: 0,
+                runePreservationChance: game.altMagic.runePreservationChance,
                 //////////////
                 //DEPRECATED//
                 //////////////
