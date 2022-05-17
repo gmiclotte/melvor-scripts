@@ -168,6 +168,7 @@
                 altMagic: [
                     'AltMagicSkillXP',
                     'AltMagicRunePreservation',
+                    'RunePreservation',
                 ],
                 astrology: [],
                 cooking: [
