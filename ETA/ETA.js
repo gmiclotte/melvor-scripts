@@ -2385,6 +2385,9 @@
                 }
             }
             timeLeftElement.style.display = "block";
+            if (timeLeftElement.textContent.length === 0) {
+                timeLeftElement.textContent = "Melvor ETA";
+            }
             return timeLeftElement;
         }
 
