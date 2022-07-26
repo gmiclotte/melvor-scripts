@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Summoning Simulator
 // @namespace	http://tampermonkey.net/
-// @version		0.0.2
+// @version		0.0.3
 // @description	Melvor Summoning Simulator, see examples to run it.
 // @grant		none
 // @author		GMiclotte
@@ -326,11 +326,13 @@
 
             let newItems = 0;
             Object.getOwnPropertyNames(current.tabletTypesUsed).forEach(x => {
+                x = Number(x);
                 if (game.stats.Items.get(x, ItemStats.TimesFound) === 0) {
                     newItems++;
                 }
             });
             current.endCosts._items.forEach((_, x) => {
+                x = Number(x);
                 if (game.stats.Items.get(x, ItemStats.TimesFound) === 0) {
                     newItems++;
                 }
@@ -385,11 +387,20 @@
     // scenario 4
     // Ent to 15, 1300ms wc actions (dragon axe, normal tree, mastery = 99, no other speed modifiers)
     // Octopus to 99, 6000ms fishing actions (bronze fishing rod)
-    sumSim.example3 = () => {
+    sumSim.example4 = () => {
         let current = sumSim.getInitial();
         current = sumSim.plan(current, 45, Summons.Ent, 1300, 0);
         current.startMasteryXP = 0; // different action, so reset mastery xp
         current = sumSim.plan(current, 99, Summons.Octopus, 6000, 0);
+        sumSim.processPlanOutcome(current);
+        return current;
+    }
+
+    // scenario 5
+    // Ent to 99, 1300ms wc actions (dragon axe, normal tree, mastery = 99, no other speed modifiers)
+    sumSim.example5 = () => {
+        let current = sumSim.getInitial();
+        current = sumSim.plan(current, 99, Summons.Ent, 1300, 0);
         sumSim.processPlanOutcome(current);
         return current;
     }
