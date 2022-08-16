@@ -1085,7 +1085,7 @@
                 case Skills.Thieving:
                     const successRate = getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp);
                     // stunTime = 3s + time of the failed action, since failure gives no xp or mxp
-                    let stunTime = 3000 + adjustedInterval;
+                    let stunTime = game.thieving.baseStunInterval + adjustedInterval;
                     // compute average time per action
                     adjustedInterval = adjustedInterval + stunTime / successRate - stunTime;
                     break;
@@ -1279,7 +1279,7 @@
             initial.recipe = Smithing.recipes[initial.currentAction];
             initial.masteryID = initial.recipe.masteryID;
             initial.itemXp = initial.recipe.baseXP;
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.smithing.baseInterval;
             for (let i of initial.recipe.itemCosts) {
                 const req = {...i};
                 if (req.id === Items.Coal_Ore) {
@@ -1347,7 +1347,7 @@
             initial.recipe = Herblore.potions[initial.currentAction];
             initial.itemXp = initial.recipe.baseXP;
             initial.masteryID = initial.recipe.masteryID;
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.herblore.baseInterval;
             for (let i of initial.recipe.itemCosts) {
                 initial.skillReq.push(i);
             }
@@ -1393,7 +1393,7 @@
         }
 
         function configureMagic(initial) {
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.altMagic.baseInterval;
             initial.recipe = AltMagic.spells[initial.currentAction];
             initial.selectedConversionItem = game.altMagic.selectedConversionItem;
             initial.selectedSmithingRecipe = game.altMagic.selectedSmithingRecipe;
@@ -1437,14 +1437,14 @@
         function configureMining(initial) {
             initial.itemID = Mining.rockData[initial.currentAction].oreID;
             initial.itemXp = Mining.rockData[initial.currentAction].baseExperience;
-            initial.skillInterval = 3000;
+            initial.skillInterval = game.mining.baseInterval;
             return configureGathering(initial);
         }
 
         function configureThieving(initial) {
             initial.itemID = undefined;
             initial.itemXp = Thieving.npcs[initial.currentAction].xp;
-            initial.skillInterval = 3000;
+            initial.skillInterval = game.thieving.baseInterval;
             return configureGathering(initial);
         }
 
