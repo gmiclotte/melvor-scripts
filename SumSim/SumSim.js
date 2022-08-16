@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor Summoning Simulator
 // @namespace	http://tampermonkey.net/
-// @version		0.0.3
+// @version		0.0.4
 // @description	Melvor Summoning Simulator, see examples to run it.
 // @grant		none
 // @author		GMiclotte
@@ -401,6 +401,24 @@
     sumSim.example5 = () => {
         let current = sumSim.getInitial();
         current = sumSim.plan(current, 99, Summons.Ent, 1300, 0);
+        sumSim.processPlanOutcome(current);
+        return current;
+    }
+
+    // scenario 6
+    // Golbin to 99, 3000ms combat actions (fixed)
+    sumSim.example6 = () => {
+        let current = sumSim.getInitial();
+        current = sumSim.plan(current, 99, Summons.GolbinThief, 3000, 0);
+        sumSim.processPlanOutcome(current);
+        return current;
+    }
+
+    // scenario 7
+    // Ent to 99, no tablets
+    sumSim.fuckit = () => {
+        let current = sumSim.getInitial();
+        current = sumSim.plan(current, 99, Summons.Ent, 0, 0);
         sumSim.processPlanOutcome(current);
         return current;
     }
