@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Melvor ETA
 // @namespace	http://tampermonkey.net/
-// @version		0.11.4
+// @version		0.12.4
 // @description	Shows xp/h and mastery xp/h, and the time remaining until certain targets are reached. Takes into account Mastery Levels and other bonuses.
 // @description	Please report issues on https://github.com/gmiclotte/melvor-scripts/issues or message TinyCoyote#1769 on Discord
 // @description	The last part of the version number is the most recent version of Melvor that was tested with this script. More recent versions might break the script.
@@ -249,9 +249,9 @@
         ETA.addGlobalTargetInputs = () => {
             ETA.globalTargetsCard = new MICSR.Card(ETA.content, '', '150px', true);
             [
-                {id: 'LEVEL', label: 'Global level targets', defaultValue: [99]},
-                {id: 'MASTERY', label: 'Global mastery targets', defaultValue: [99]},
-                {id: 'POOL', label: 'Global pool targets (%)', defaultValue: [100]},
+                { id: 'LEVEL', label: 'Global level targets', defaultValue: [99] },
+                { id: 'MASTERY', label: 'Global mastery targets', defaultValue: [99] },
+                { id: 'POOL', label: 'Global pool targets (%)', defaultValue: [100] },
             ].forEach(target => {
                 const globalKey = 'GLOBAL_TARGET_' + target.id;
                 ETA.globalTargetsCard.addNumberArrayInput(
@@ -286,9 +286,9 @@
                 const card = ETA.skillTargetCard.addTab(SKILLS[i].name, SKILLS[i].media, '', '150px', false);
                 card.addSectionTitle(SKILLS[i].name + ' Targets');
                 [
-                    {id: 'LEVEL', label: 'Level targets'},
-                    {id: 'MASTERY', label: 'Mastery targets'},
-                    {id: 'POOL', label: 'Pool targets (%)'},
+                    { id: 'LEVEL', label: 'Level targets' },
+                    { id: 'MASTERY', label: 'Mastery targets' },
+                    { id: 'POOL', label: 'Pool targets (%)' },
                 ].forEach(target => {
                     const key = 'TARGET_' + target.id;
                     card.addNumberArrayInput(
@@ -342,7 +342,7 @@
         }
 
         ETA.time = (ding, target, current, msg) => {
-            return {ding: ding, target: target, current: current, msg: msg};
+            return { ding: ding, target: target, current: current, msg: msg };
         };
 
         ETA.setTimeLeft = function (initial, times) {
@@ -810,7 +810,7 @@
 
         // Format date 24 hour clock
         function dateFormat(now, then, is12h = ETASettings.IS_12H_CLOCK) {
-            let format = {weekday: "short", month: "short", day: "numeric"};
+            let format = { weekday: "short", month: "short", day: "numeric" };
             let date = then.toLocaleString(undefined, format);
             if (date === now.toLocaleString(undefined, format)) {
                 date = "";
@@ -1085,7 +1085,7 @@
                 case Skills.Thieving:
                     const successRate = getThievingSuccessRate(initial, currentInterval, skillXp, poolXp, masteryXp);
                     // stunTime = 3s + time of the failed action, since failure gives no xp or mxp
-                    let stunTime = 3000 + adjustedInterval;
+                    let stunTime = game.thieving.baseStunInterval + adjustedInterval;
                     // compute average time per action
                     adjustedInterval = adjustedInterval + stunTime / successRate - stunTime;
                     break;
@@ -1247,12 +1247,12 @@
             // skill
             initial.targetXp = convertLvlToXp(initial.targetLevel);
             // Breakpoints for skill bonuses - default all levels starting at 2 to 99, followed by Infinity
-            initial.skillLimLevel = Array.from({length: 98}, (_, i) => i + 2);
+            initial.skillLimLevel = Array.from({ length: 98 }, (_, i) => i + 2);
             initial.skillLimLevel.push(Infinity);
             // mastery
             // Breakpoints for mastery bonuses - default all levels starting at 2 to 99, followed by Infinity
             if (initial.hasMastery) {
-                initial.masteryLimLevel = Array.from({length: 98}, (_, i) => i + 2);
+                initial.masteryLimLevel = Array.from({ length: 98 }, (_, i) => i + 2);
             }
             initial.masteryLimLevel.push(Infinity);
             // static preservation
@@ -1279,9 +1279,9 @@
             initial.recipe = Smithing.recipes[initial.currentAction];
             initial.masteryID = initial.recipe.masteryID;
             initial.itemXp = initial.recipe.baseXP;
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.smithing.baseInterval;
             for (let i of initial.recipe.itemCosts) {
-                const req = {...i};
+                const req = { ...i };
                 if (req.id === Items.Coal_Ore) {
                     if (skillCapeEquipped(Items.Smithing_Skillcape)) {
                         req.qty /= 2;
@@ -1347,7 +1347,7 @@
             initial.recipe = Herblore.potions[initial.currentAction];
             initial.itemXp = initial.recipe.baseXP;
             initial.masteryID = initial.recipe.masteryID;
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.herblore.baseInterval;
             for (let i of initial.recipe.itemCosts) {
                 initial.skillReq.push(i);
             }
@@ -1369,7 +1369,7 @@
             initial.itemXp = initial.recipe.baseXP * (1 + initial.recipe.bonfireXPBonus / 100);
             initial.masteryID = initial.recipe.masteryID;
             initial.skillInterval = initial.recipe.baseInterval;
-            initial.skillReq = [{id: initial.recipe.logID, qty: 1}];
+            initial.skillReq = [{ id: initial.recipe.logID, qty: 1 }];
             return initial;
         }
 
@@ -1393,14 +1393,14 @@
         }
 
         function configureMagic(initial) {
-            initial.skillInterval = 2000;
+            initial.skillInterval = game.altMagic.baseInterval;
             initial.recipe = AltMagic.spells[initial.currentAction];
             initial.selectedConversionItem = game.altMagic.selectedConversionItem;
             initial.selectedSmithingRecipe = game.altMagic.selectedSmithingRecipe;
             //Find need runes for spell
             game.altMagic.getCurrentRecipeRuneCosts()._items.forEach((qty, itemID) => {
                 if (itemID > -1) {
-                    initial.skillReq.push({id: itemID, qty: qty});
+                    initial.skillReq.push({ id: itemID, qty: qty });
                 }
             });
             // Get Rune discount
@@ -1419,7 +1419,7 @@
             //Other items
             game.altMagic.getCurrentRecipeCosts()._items.forEach((qty, itemID) => {
                 if (itemID > -1) {
-                    initial.skillReq.push({id: itemID, qty: qty});
+                    initial.skillReq.push({ id: itemID, qty: qty });
                 }
             });
             //
@@ -1437,14 +1437,14 @@
         function configureMining(initial) {
             initial.itemID = Mining.rockData[initial.currentAction].oreID;
             initial.itemXp = Mining.rockData[initial.currentAction].baseExperience;
-            initial.skillInterval = 3000;
+            initial.skillInterval = game.mining.baseInterval;
             return configureGathering(initial);
         }
 
         function configureThieving(initial) {
             initial.itemID = undefined;
             initial.itemXp = Thieving.npcs[initial.currentAction].xp;
-            initial.skillInterval = 3000;
+            initial.skillInterval = game.thieving.baseInterval;
             return configureGathering(initial);
         }
 
@@ -1721,8 +1721,8 @@
                 // stats per action
                 actions: initial.actions.map(x => perAction(x.masteryXp, x.targetMasteryXp)),
                 // available resources
-                itemQty: {...initial.itemQty},
-                skillReqMap: {...initial.skillReqMap},
+                itemQty: { ...initial.itemQty },
+                skillReqMap: { ...initial.skillReqMap },
                 used: {},
             };
             for (let id in current.itemQty) {
@@ -1907,19 +1907,19 @@
             if (!current.targetSkillReached && initial.targetXp <= current.skillXp) {
                 current.targetSkillTime = current.sumTotalTime;
                 current.targetSkillReached = true;
-                current.targetSkillResources = {...current.used};
+                current.targetSkillResources = { ...current.used };
             }
             current.actions.forEach((x, i) => {
                 if (!x.targetMasteryReached && initial.actions[i].targetMasteryXp <= x.masteryXp) {
                     x.targetMasteryTime = current.sumTotalTime;
                     x.targetMasteryReached = true;
-                    x.targetMasteryResources = {...current.used};
+                    x.targetMasteryResources = { ...current.used };
                 }
             });
             if (!current.targetPoolReached && initial.targetPoolXp <= current.poolXp) {
                 current.targetPoolTime = current.sumTotalTime;
                 current.targetPoolReached = true;
-                current.targetPoolResources = {...current.used};
+                current.targetPoolResources = { ...current.used };
             }
             // Update total mastery level
             current.totalMasteryLevel = initial.totalMasteryLevel;
@@ -2272,7 +2272,7 @@
             const now = new Date();
             const timeLeftElement = injectHTML(initial, results, ms.resources, now);
             if (timeLeftElement !== null) {
-                generateTooltips(initial, ms, results, timeLeftElement, now, {noMastery: initial.actions.length > 1});
+                generateTooltips(initial, ms, results, timeLeftElement, now, { noMastery: initial.actions.length > 1 });
             }
             if (initial.actions.length > 1) {
                 const actions = [...initial.actions];
@@ -2280,13 +2280,13 @@
                 actions.forEach((a, i) => {
                     initial.actions = [a];
                     initial.currentAction = currentActions[i];
-                    const singleTimeLeftElement = injectHTML(initial, {rates: currentXpRates(initial)}, ms.resources, now, false);
+                    const singleTimeLeftElement = injectHTML(initial, { rates: currentXpRates(initial) }, ms.resources, now, false);
                     if (singleTimeLeftElement !== null) {
                         const aux = {
                             finalMasteryXp: [results.finalMasteryXp[i]],
-                            current: {actions: [{targetMasteryResources: {}}]},
+                            current: { actions: [{ targetMasteryResources: {} }] },
                         }
-                        generateTooltips(initial, {mastery: results.current.actions[i].targetMasteryTime}, aux, singleTimeLeftElement, now, {
+                        generateTooltips(initial, { mastery: results.current.actions[i].targetMasteryTime }, aux, singleTimeLeftElement, now, {
                             noSkill: true,
                             noPool: true
                         });
@@ -2490,18 +2490,18 @@
                 return '';
             }
             let req = Object.getOwnPropertyNames(resources).map(id => {
-                    let src;
-                    if (id === "-5") {
-                        src = "assets/media/main/slayer_coins.svg"
-                    }
-                    if (id === "-4") {
-                        src = "assets/media/main/coins.svg"
-                    }
-                    if (items[id] !== undefined) {
-                        src = items[id].media;
-                    }
-                    return `<span>${formatNumber(resources[id])}</span><img class="skill-icon-xs mr-2" src="${src}">`
+                let src;
+                if (id === "-5") {
+                    src = "assets/media/main/slayer_coins.svg"
                 }
+                if (id === "-4") {
+                    src = "assets/media/main/coins.svg"
+                }
+                if (items[id] !== undefined) {
+                    src = items[id].media;
+                }
+                return `<span>${formatNumber(resources[id])}</span><img class="skill-icon-xs mr-2" src="${src}">`
+            }
             ).join('');
             return `<br/>Requires: ${req}`;
         }
@@ -2558,7 +2558,7 @@
         ETA.rhaelyxChargePreservation = conditionalModifiers.get(Items.Crown_of_Rhaelyx)[0].modifiers.increasedGlobalPreservationChance;
 
         // lvlToXp cache
-        ETA.lvlToXp = Array.from({length: 200}, (_, i) => exp.level_to_xp(i));
+        ETA.lvlToXp = Array.from({ length: 200 }, (_, i) => exp.level_to_xp(i));
 
         ETA.updateSkillWindowRef = updateSkillWindow;
         updateSkillWindow = function (skill) {
