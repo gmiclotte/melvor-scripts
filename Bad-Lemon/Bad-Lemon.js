@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Bad Lemon
 // @namespace	http://tampermonkey.net/
-// @version		0.0.9
+// @version		0.1.0
 // @description	Bad Apple goes Melvor. This Fan Content is a fan work based on Touhou Project.
 // @author		GMiclotte
 // @include		https://melvoridle.com/*
@@ -468,7 +468,7 @@
             const cols = 40;
             const size = 10;
             const fps = 2;
-            const lemon = getItemMedia(Items.Lemon);
+            const lemon = game.items.getObjectByID('melvorD:Lemon').media;
             let view = `
             <iframe width="80" height="60"
             src="https://www.youtube.com/embed/i41KoE0iMYU?autoplay=1">
@@ -533,7 +533,7 @@
                 + `onclick="window.${name}.show();" `
                 + 'aria-haspopup="true" '
                 + 'aria-expanded="true">'
-                + `<img class="skill-icon-xxs" src="${getItemMedia(Items.Black_Wizard_Hat)}">`
+                + `<img class="skill-icon-xxs" src="${game.items.getObjectByID('melvorD:Black_Wizard_Hat').media}">`
                 + '</button>'
                 + '</div>';
         }
