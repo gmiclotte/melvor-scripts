@@ -1,0 +1,19 @@
+{
+  "name": "Melvor Unlimited Offline",
+  "version": "0.1.2",
+  "description": "Removes the offline time limit.",
+  "scripts": {
+    "lint": "cd ./dist && web-ext lint",
+    "build": "node build.js"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gmiclotte/melvor-scripts/issues"
+  },
+  "homepage": "https://github.com/gmiclotte/melvor-scripts",
+  "devDependencies": {
+    "archiver": "^5.3.1",
+    "copy-dir": "^1.3.0",
+    "web-ext": "^7.2.0"
+  }
+}
