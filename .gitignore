@@ -8,3 +8,4 @@ dist/
 /*/test.js
 /*/test.css.js
 /*/tsconfig.json
+*.old
