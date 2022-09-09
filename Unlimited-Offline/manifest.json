@@ -1,6 +1,5 @@
 {
   "namespace": "Unlimited_Offline",
-  "version": "0.1.2",
   "icon": "icons/unlimited.png",
   "setup": "setup.js",
   "load": []
