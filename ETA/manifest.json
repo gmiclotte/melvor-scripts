@@ -1,0 +1,5 @@
+{
+  "namespace": "ETA",
+  "setup": "src/setup.js",
+  "load": []
+}
