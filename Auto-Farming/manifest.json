@@ -1,0 +1,7 @@
+{
+  "namespace": "Auto_Farming",
+  "version": "2.0.0",
+  "icon": "icons/unlimited.png",
+  "setup": "setup.js",
+  "load": []
+}
