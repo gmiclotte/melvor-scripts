@@ -1,0 +1,521 @@
+#tinyModModal.show {
+    display: flex !important;
+}
+
+#tinyModModal .modal-dialog {
+    max-width: 95%;
+    display: inline-block;
+}
+
+.tinyModTabContent {
+    width: 100%;
+    border-color: black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-style: none;
+    justify-content: center;
+}
+
+.tinyModBot {
+    height: 400px;
+}
+
+.tinyModNoSelect {
+    user-select: none;
+}
+
+.tinyModFlexFiller {
+    flex-grow: 1;
+    height: 0px;
+}
+
+.tinyModTab {
+    position: absolute;
+    height: 50px;
+    width: 200px;
+    background-color: inherit;
+    right: 0px;
+    border-style: solid;
+    border-width: thin;
+    border-color: inherit;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+}
+
+.tinyModTabLogo {
+    margin: 3px;
+    width: 44px;
+}
+
+.tinyModTabText {
+    text-align: left;
+}
+
+.tinyModInfoText {
+    text-align: center;
+    margin: 8px 0;
+    max-width: 220px;
+}
+
+.tinyModOuter {
+    padding: 0.25rem;
+    margin: 0.25rem !important;
+    min-width: 250px;
+}
+
+.tinyModCardContainer {
+    border: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 16px;
+}
+
+.tinyModPlotContainer {
+    border: none;
+    position: relative;
+    font-size: 16px;
+    overflow-x: auto;
+    min-height: 428px;
+}
+
+.tinyModTabContainer {
+    border-style: none solid solid solid;
+    border-color: #bbbbbb;
+    width: 100%;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-width: 2px;
+}
+
+.tinyModPlotTopContainer {
+    position: relative;
+    margin-top: 0.25rem;
+    margin-right: 0.25rem;
+    flex-grow: 1;
+    border-color: inherit;
+    background-color: inherit;
+    display: flex;
+    height: 280px;
+}
+
+.tinyModXAxis {
+    position: absolute;
+    display: flex;
+    min-height: 80px;
+    flex-grow: 0;
+    left: 85px;
+    border-color: inherit;
+}
+
+.tinyModYAxis {
+    position: relative;
+    height: 100%;
+    min-width: 80px;
+}
+
+.tinyModPlotBox {
+    position: relative;
+    display: flex;
+    height: 100%;
+    border-width: thin;
+    border-style: solid;
+    border-color: inherit;
+    background-color: inherit;
+}
+
+.tinyModPlotLabel {
+    position: absolute;
+    top: 20px;
+    text-align: center;
+    text-align: right;
+    transform: rotate(-20deg);
+    transform-origin: top right;
+    white-space: nowrap;
+}
+
+.tinyModPlotHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    margin-left: 80px;
+    white-space: nowrap;
+}
+
+.tinyModPlotHeader .form-control {
+    width: unset;
+}
+
+.tinyModXAxisSection {
+    position: absolute;
+    top: 10px;
+    border-color: inherit;
+    border-width: thin;
+    height: 10px;
+    border-bottom-style: solid;
+    border-right-style: solid;
+    pointer-events: none;
+}
+
+.tinyModXAxisImage {
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+.tinyModCross {
+    width: 80%;
+    top: 10%;
+    left: 10%;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tinyModImageButton {
+    background-color: #fff;
+    margin: 4px;
+    padding: 0px;
+    position: relative;
+    border-radius: 0.5rem;
+}
+
+#tinyModModal input.form-control {
+    width: 100px;
+}
+
+.tinyModImageButton:hover {
+    background-color: lightgray;
+}
+
+.tinyModButtonImage {
+    margin: 4px;
+    width: 25px;
+    height: 25px;
+}
+
+.tinyModImageSmall {
+    width: 24px;
+    height: 24px;
+}
+
+.tinyModImageMedium {
+    width: 30px;
+    height: 30px;
+}
+
+.tinyModButtonImageSelected {
+    background-color: lightgray;
+    border-color: #46c37b;
+}
+
+.tinyModMultiImageButtonContainer {
+    width: 192px;
+}
+
+.tinyModMultiImageButtonContainer button {
+    margin: 4px;
+    padding: 0px;
+}
+
+.tinyModTabButtonContainer {
+    display: flex;
+    width: 100%;
+    background-color: inherit;
+    border-color: inherit;
+}
+
+.tinyModTabButton {
+    flex-grow: 1;
+    background-color: #bbbbbb;
+    position: relative;
+    padding: 0;
+    border-style: solid solid none solid;
+    border-color: #bbbbbb;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.tinyModTabButton:hover {
+    background-color: white;
+}
+
+.tinyModTabContent button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.tinyModTabButtonSelected {
+    background-color: #ececec !important;
+}
+
+.darkMode .tinyModTabButtonSelected {
+    background-color: #4a5568 !important;
+}
+
+.tinyModEquipmentImageContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#tinyModModal .combat-equip-img {
+    margin: 2px;
+}
+
+.tinyModTooltip {
+    background-color: black;
+    position: absolute;
+    width: 250px;
+    margin-left: -125px;
+    top: 105%;
+    left: 50%;
+    z-index: 1;
+    pointer-events: none;
+    line-height: normal;
+}
+
+.tinyModTTTitle {
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: medium;
+}
+
+.tinyModTTDivider {
+    border-bottom: solid thin white;
+    width: 90%;
+    margin-right: 5%;
+    margin-left: 5%;
+}
+
+.tinyModTTText {
+    color: white;
+    text-align: left;
+    font-size: small;
+    margin: 1px;
+}
+
+.tinyModButton:hover {
+    background: #3e69c9;
+}
+
+.tinyModButton:disabled {
+    background-color: #3359A0;
+    color: #bbbbbb;
+}
+
+/*Card Container Container */
+.tinyModCCContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    line-height: 20px;
+    padding: 0 0.25rem;
+}
+
+.tinyModCCContainer img {
+    margin-right: 4px;
+}
+
+.tinyModMultiButtonContainer {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    background-color: inherit;
+    border-color: inherit;
+}
+
+.tinyModMultiHeader {
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 600;
+    display: inline-block;
+    border-color: inherit;
+}
+
+.tinyModNoMargin {
+    margin: 0px;
+}
+
+.tinyModLabel {
+    text-align: right;
+    margin-right: 4px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+    font-weight: unset;
+}
+
+.tinyModNumberOutput {
+    text-align: right;
+    border-bottom: 1px solid;
+    line-height: 1.15;
+    padding: 0 2px;
+}
+
+.tinyModSectionTitle {
+    text-align: center;
+    font-size: 18px;
+    max-width: 240px;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.tinyModTextInput {
+    text-align: right;
+    height: 100%;
+    color: inherit;
+    background-color: inherit;
+}
+
+.tinyModTicktext {
+    position: absolute;
+    width: 100%;
+    right: 0px;
+    text-align: right;
+    margin-right: 2px;
+    line-height: 0.9;
+}
+
+.tinyModGridline {
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+    border-color: lightgray;
+}
+
+.tinyModBarTooltip {
+    bottom: 100%;
+    padding-right: 2px;
+    padding-left: 2px;
+    height: 25px;
+    color: white;
+    border: solid thin white;
+    background-color: black;
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+}
+
+.tinyMod-bar-container {
+    display: flex;
+    z-index: 1;
+}
+
+.tinyModBar {
+    position: relative;
+    background-color: #0072BD;
+    width: 15px;
+    margin-right: 1px;
+    margin-left: 1px;
+    align-self: flex-end;
+}
+
+.tinyModBarCantEnter {
+    background-color: crimson !important;
+}
+
+.tinyMod-bar-max {
+    background-color: #d7b400 !important;
+}
+
+.tinyModXAxisImageContainer {
+    align-self: flex-start;
+    width: 17px;
+    height: 17px;
+    position: relative;
+}
+
+.tinyModRadioContainer {
+    display: flex;
+    margin-right: -10px;
+    line-height: 24px;
+}
+
+.tinyModRadioContainer .custom-control-inline {
+    margin-right: 10px;
+}
+
+.tinyModCheckbox {
+    transform: scale(1.5);
+}
+
+.tinyModPopup {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: #ececec;
+    color: #575757;
+    border-color: #6c757d;
+    border-style: solid;
+    border-width: thick;
+    border-radius: 0.5rem;
+    width: 614px;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+    z-index: 999;
+    cursor: default;
+}
+
+.tooltip-icon {
+    width: 24px;
+    height: 24px;
+    margin: 2px 6px;
+}
+
+.darkMode .tinyModTabContent {
+    color: whitesmoke !important;
+    border-color: whitesmoke !important;
+}
+
+.darkMode .tinyModGridline {
+    border-color: lightslategray;
+}
+
+.darkMode .tinyModOption {
+    background-color: #2c343f;
+}
+
+.darkMode .tinyModBar {
+    background-color: steelblue;
+}
+
+.darkMode .tinyModPopup {
+    background-color: #3e4856;
+    color: whitesmoke;
+}
+
+.darkMode .tinyModImageButton {
+    background-color: #3e4856;
+}
+
+.darkMode .tinyModButtonImageSelected {
+    background-color: #252A33;
+}
+
+.darkMode .tinyModImageButton:hover {
+    background-color: #252A33;
+}
+
+.darkMode .tinyModTabButton {
+    background-color: #3e4856;
+    border-color: #3e4856;
+}
+
+.darkMode .tinyModTabButton:hover {
+    background-color: #252A33;
+}
+
+.darkMode .tinyModTabContainer {
+    border-color: #3e4856;
+}
+
+.darkMode .form-control {
+    border-color: #343a40;
+}

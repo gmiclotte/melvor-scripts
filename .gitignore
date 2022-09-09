@@ -3,3 +3,8 @@
 node_modules/
 .build/
 dist/
+/*/build.js
+/*/test.sh
+/*/test.js
+/*/test.css.js
+/*/tsconfig.json
