@@ -5,7 +5,7 @@ shopt -s extglob
 
 # copy all js files into test.js, first add TinyMod then the current mod files
 cd dist/built || exit
-cat TinyMod/**/*.js !(TinyMod)/**/*.js *.js > ../../test.js
+cat TinyMod/**/*.js !(TinyMod)/**/*.js ./*.js > ../../test.js
 cd ../..
 
 # fix test.js script so we can paste it in the console

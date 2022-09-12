@@ -1,0 +1,11 @@
+{
+  "name": "melvor-game-files",
+  "description": "a copy of the melvor game files",
+  "scripts": {
+    "declarations": "npx -p typescript tsc ./built/*.js --declaration --allowJs --emitDeclarationOnly",
+    "update": "bash update.sh"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}
