@@ -3,9 +3,16 @@ import {ETASettings} from "./Settings";
 import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
+import {Targets} from "./Targets";
+import {CurrentSkill} from "./CurrentSkill"
+import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {Game} from "../../Game-Files/built/game";
+import {EtaMining} from "./EtaMining.js";
 
 export class ETA extends TinyMod {
     private readonly settings: ETASettings;
+    private readonly nameSpace: string;
+    private readonly mock: any;
 
     // @ts-ignore 2564
     private togglesCard: Card;
@@ -13,22 +20,62 @@ export class ETA extends TinyMod {
     private skillTargetCard: TabCard;
     // @ts-ignore 2564
     private globalTargetsCard: Card;
+    private previousTargets: Map<string, Targets>;
+    private skills: Map<string, CurrentSkill>;
 
-    constructor(ctx: any) {
+    constructor(ctx: any, game: Game) {
         super(ctx, 'ETA');
         this.log('Loading...');
         // initialize fields
+        this.nameSpace = 'eta';
+        this.mock = {};
         this.settings = new ETASettings();
+        this.previousTargets = new Map<string, Targets>();
+        this.skills = new Map<string, CurrentSkill>()
+        this.skills.set('Mining', new EtaMining(game.mining));
         // create menu
         this.createSettingsMenu();
         // we made it
         this.log('Loaded!');
     }
 
-    static testup(): ETA {
+    static testup(): any {
         // @ts-ignore 2304
-        const ctx = mod.getDevContext();
-        return new ETA(ctx);
+        const eta = new ETA(mod.getDevContext(), game);
+        // @ts-ignore 2304
+        const mining = eta.timeRemaining(game, game.mining, game.mining.actions.allObjects[0]);
+        return {eta: eta, mining: mining};
+    }
+
+    timeRemaining(game: Game, skill: SkillWithMastery, action: any): any {
+        // get current state of the skill
+        // @ts-ignore
+        const current = this.skills.get(skill.name);
+        if (current === undefined) {
+            this.warn(`Skill ${skill.name} is not implemented in ETA.`);
+            return undefined;
+        }
+        current.init(action, game.modifiers);
+        // check if previous targets were met
+        const previousTargets = this.previousTargets.get(skill.name);
+        if (previousTargets !== undefined) {
+            // TODO check previous targets by comparing `current` and `previousTargets`
+        }
+        // compute the targets and store them as the next previous targets
+        const targets = new Targets(this.settings, skill, action);
+        this.log(targets)
+        this.previousTargets.set(skill.name, targets);
+        // TODO: compute the remaining time for all targets
+        const maxIt = 100;
+        let it = 0;
+        while (!targets.completed(current)) {
+            current.progress();
+            it++;
+            if (it >= maxIt) {
+                break;
+            }
+        }
+        return current;
     }
 
     createSettingsMenu(): void {
