@@ -6,9 +6,8 @@ import {ETASettings} from "./Settings";
 export type currentSkillConstructor = new(skill: any, action: any, modifiers: PlayerModifiers, settings: ETASettings) => CurrentSkill;
 
 export class CurrentSkill {
-    public skill: any;
-    public baseInterval: number;
-    public modifiers: PlayerModifiers;
+    public readonly skill: any;
+    public readonly modifiers: PlayerModifiers;
     public action: any;
     public actions: number;
     public timeMs: number;
@@ -30,7 +29,7 @@ export class CurrentSkill {
         this.action = action;
         this.modifiers = modifiers;
         this.targets = new Targets(settings, skill, action);
-        this.baseInterval = skill.baseInterval ?? 0;
+        this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actions = 0;
         this.timeMs = 0;
         this.skillXp = 0;
@@ -61,7 +60,7 @@ export class CurrentSkill {
     }
 
     get actionInterval() {
-        return this.modifyInterval(this.baseInterval);
+        return this.modifyInterval(this.skill.baseInterval);
     }
 
     // for skills without respawn this is a duplicate of actionInterval
@@ -120,8 +119,6 @@ export class CurrentSkill {
         this.consumables = new Map<string, number>(); // additional consumables e.g. potions, mysterious stones
         // current rates have not yet been computed
         this.currentRatesSet = false;
-        // these are used to track unlocked modifiers
-        this.modifiers.reset();
     }
 
     isPoolTierActive(tier: number) {

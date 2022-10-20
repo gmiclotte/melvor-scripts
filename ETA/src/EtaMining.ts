@@ -7,7 +7,6 @@ export class EtaMining extends CurrentSkill {
     constructor(mining: Mining, action: any, modifiers: PlayerModifiers, settings: ETASettings) {
         console.log(action.id)
         super(mining, action, modifiers, settings);
-        this.baseInterval = mining.baseInterval;
     }
 
     get maxRockHP() {
@@ -44,7 +43,7 @@ export class EtaMining extends CurrentSkill {
         const actionInterval = this.actionInterval;
         // check if rock respawns
         if (!this.action.hasPassiveRegen) {
-            return this.actionInterval;
+            return actionInterval;
         }
         // compute inverse factor for rock hp
         let rockHPDivisor = 1;
