@@ -4,11 +4,12 @@ import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
 import {Targets} from "./Targets";
-import {CurrentSkill} from "./CurrentSkill"
+import {CurrentSkill, currentSkillConstructor} from "./CurrentSkill"
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaMining} from "./EtaMining.js";
 import {EtaDisplayManager} from "./EtaDisplayManager";
+import {PlayerModifiers} from "../../Game-Files/built/modifier";
 
 export class ETA extends TinyMod {
     private readonly settings: ETASettings;
@@ -22,7 +23,7 @@ export class ETA extends TinyMod {
     // @ts-ignore 2564
     private globalTargetsCard: Card;
     private previousTargets: Map<string, Targets>;
-    private skills: Map<string, CurrentSkill>;
+    private skillCalculators: Map<string, Map<string, CurrentSkill>>;
     private displays: EtaDisplayManager;
 
     constructor(ctx: any, game: Game) {
@@ -33,12 +34,11 @@ export class ETA extends TinyMod {
         this.game = game;
         this.settings = new ETASettings();
         this.previousTargets = new Map<string, Targets>();
-        this.skills = new Map<string, CurrentSkill>()
+        this.skillCalculators = new Map<string, Map<string, CurrentSkill>>()
         this.displays = new EtaDisplayManager(this.game, this.settings);
 
         // add skills
-        this.skills.set(game.mining.name, new EtaMining(game.mining));
-        game.mining.actions.forEach((action: any) => this.displays.createDisplay(game.mining, action.id));
+        this.addSkillCalculators(EtaMining, game.mining, game.modifiers);
         // create menu
         this.createSettingsMenu();
         // we made it
@@ -50,35 +50,45 @@ export class ETA extends TinyMod {
         const eta = new ETA(mod.getDevContext(), game);
         // @ts-ignore 2304
         let skill = game.mining;
-        let action = skill.actions.allObjects[0];
-        // @ts-ignore 2304
-        const miningResult = eta.timeRemaining(game, skill, action);
-        eta.displays.injectHTML(miningResult, new Date())
-        return {eta: eta, mining: miningResult};
+        skill.actions.forEach((action: any) => {
+            // @ts-ignore 2304
+            const result = eta.timeRemaining(game, skill, action);
+            eta.displays.injectHTML(result, new Date());
+        });
+        return {eta: eta};
+    }
+
+    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers) {
+        const skillMap = new Map<string, CurrentSkill>();
+        skill.actions.forEach((action: any) => {
+            skillMap.set(action.id, new constructor(skill, action, modifiers, this.settings));
+            this.displays.createDisplay(skill, action.id);
+        });
+        this.skillCalculators.set(skill.name, skillMap);
     }
 
     timeRemaining(game: Game, skill: SkillWithMastery, action: any): any {
         // get current state of the skill
         // @ts-ignore
-        const current = this.skills.get(skill.name);
+        const current = this.skillCalculators.get(skill.name).get(action.id);
         if (current === undefined) {
-            this.warn(`Skill ${skill.name} is not implemented in ETA.`);
+            this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
             return undefined;
         }
-        current.init(action, game.modifiers);
+        current.init();
         // check if previous targets were met
         const previousTargets = this.previousTargets.get(skill.name);
         if (previousTargets !== undefined) {
             // TODO check previous targets by comparing `current` and `previousTargets`
         }
         // compute the targets and store them as the next previous targets
-        const targets = new Targets(this.settings, skill, action);
-        this.log(targets)
-        this.previousTargets.set(skill.name, targets);
+        current.targets = new Targets(this.settings, skill, action);
+        this.log(current.targets)
+        this.previousTargets.set(skill.name, current.targets);
         // TODO: compute the remaining time for all targets
         const maxIt = 100;
         let it = 0;
-        while (!targets.completed(current)) {
+        while (!current.targets.completed(current)) {
             current.progress();
             it++;
             if (it >= maxIt) {

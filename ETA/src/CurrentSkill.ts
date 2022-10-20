@@ -1,5 +1,9 @@
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Rates} from "./Rates";
+import {Targets} from "./Targets";
+import {ETASettings} from "./Settings";
+
+export type currentSkillConstructor = new(skill: any, action: any, modifiers: PlayerModifiers, settings: ETASettings) => CurrentSkill;
 
 export class CurrentSkill {
     public skill: any;
@@ -14,15 +18,19 @@ export class CurrentSkill {
     public materials: Map<string, number>;
     public consumables: Map<string, number>;
     public isCombat: boolean;
+    public isGathering: boolean;
     public currentRatesSet: boolean;
     public currentRates: Rates;
     public initial: Rates;
+    public targets: Targets;
 
-    constructor(skill: any) {
+    constructor(skill: any, action: any, modifiers: PlayerModifiers, settings: ETASettings) {
+        console.log(skill, action, modifiers)
         this.skill = skill;
+        this.action = action;
+        this.modifiers = modifiers;
+        this.targets = new Targets(settings, skill, action);
         this.baseInterval = skill.baseInterval ?? 0;
-        this.modifiers = new PlayerModifiers();
-        this.action = undefined;
         this.actions = 0;
         this.timeMs = 0;
         this.skillXp = 0;
@@ -31,17 +39,18 @@ export class CurrentSkill {
         this.materials = new Map<string, number>();
         this.consumables = new Map<string, number>();
         this.isCombat = false;
+        this.isGathering = false;
         this.currentRatesSet = false;
         this.currentRates = Rates.emptyRates;
         this.initial = Rates.emptyRates;
     }
 
     get currentLevel(): number {
-        return this.xp_to_level(this.skillXp);
+        return this.xpToLevel(this.skillXp);
     }
 
     get currentMastery(): number {
-        return this.xp_to_level(this.masteryXp);
+        return this.xpToLevel(this.masteryXp);
     }
 
     get currentPoolPercent(): number {
@@ -59,9 +68,7 @@ export class CurrentSkill {
         );
     }
 
-    init(action: any, modifiers: PlayerModifiers) {
-        this.action = action;
-        this.modifiers = modifiers;
+    init() {
         // get initial values
         // actions performed
         this.actions = 0;
@@ -84,12 +91,12 @@ export class CurrentSkill {
         this.currentRatesSet = false;
     }
 
-    xp_to_level(xp: number): number {
+    xpToLevel(xp: number): number {
         // @ts-ignore 2304
         return exp.xp_to_level(xp) - 1;
     }
 
-    level_to_xp(level: number): number {
+    levelToXp(level: number): number {
         // @ts-ignore 2304
         return exp.level_to_xp(level);
     }
@@ -115,7 +122,7 @@ export class CurrentSkill {
         this.setCurrentRates(gainsPerAction);
         // TODO: get next checkpoints
         const checkPoints = {
-            xp: this.level_to_xp(this.currentLevel + 1) - this.skillXp,
+            xp: this.levelToXp(this.currentLevel + 1) - this.skillXp,
         }
         // TODO: compute time to nearest checkpoint
         const actionsToCheckpoint = {

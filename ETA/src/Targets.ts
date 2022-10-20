@@ -10,7 +10,18 @@ export class Targets {
     public materials: boolean;
     public consumables: boolean;
 
-    constructor(settings: any, skill: SkillWithMastery, action: any) {
+    constructor(settings: any, skill: SkillWithMastery, action: any = undefined) {
+        if (action === undefined) {
+            this.level = 0;
+            this.skillXp = 0;
+            this.mastery = 0;
+            this.masteryXp = 0;
+            this.poolPercent = 0;
+            this.poolXp = 0;
+            this.materials = false;
+            this.consumables = false;
+            return this;
+        }
         // target level
         this.level = settings.getTargetLevel(skill.name, skill.level);
         this.skillXp = this.level_to_xp(this.level);
