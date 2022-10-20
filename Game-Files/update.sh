@@ -1,5 +1,5 @@
 # directory in the repo that we are interested in
-parent="melvor-test"
+parent="melvor"
 dir="${parent}/assets/js/"
 
 # clean up
