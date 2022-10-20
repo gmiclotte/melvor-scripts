@@ -14,4 +14,7 @@ sed -i 's#import#//#g' test.js
 sed -i 's#class \(\w\w*\) {#\1 = class {#g' test.js
 sed -i 's#class \(\w\w*\) extends#\1 = class extends#g' test.js
 
+# add test command to test.js
+cat testCommand.js >> test.js
+
 { echo "(function(){let style = \`<style>"; cat "${1}"/styles/*.css ; echo "</style>\`;"; echo "document.head.insertAdjacentHTML('beforeend', style);})();";} > test.css.js
