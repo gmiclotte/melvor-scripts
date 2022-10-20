@@ -198,7 +198,7 @@ export class EtaDisplayManager {
         // level tooltip
         if (!flags.noSkill) {
             const finalLevel = result.xpToLevel(result.skillXp)
-            const levelProgress = this.getPercentageInLevel(result, result.currentLevel, "skill");
+            const levelProgress = this.getPercentageInLevel(result, result.skillLevel, "skill");
             tooltip += this.finalLevelElement(
                 'Final Level',
                 this.formatLevel(finalLevel, levelProgress) + ' / 99',

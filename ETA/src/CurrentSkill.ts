@@ -45,20 +45,28 @@ export class CurrentSkill {
         this.initial = Rates.emptyRates;
     }
 
-    get currentLevel(): number {
+    get skillLevel(): number {
         return this.xpToLevel(this.skillXp);
     }
 
-    get currentMastery(): number {
+    get masteryLevel(): number {
         return this.xpToLevel(this.masteryXp);
     }
 
-    get currentPoolPercent(): number {
-        return (100 * this.poolXp) / this.skill.masteryPoolCap;
+    get poolProgress() {
+        let percent = (100 * this.poolXp) / this.skill.baseMasteryPoolCap;
+        percent += this.modifiers.increasedMasteryPoolProgress;
+        // @ts-ignore
+        return clampValue(percent, 0, 100);
     }
 
     get actionInterval() {
-        return this.modifyInterval(this.baseInterval, this.action);
+        return this.modifyInterval(this.baseInterval);
+    }
+
+    // for skills without respawn this is a duplicate of actionInterval
+    get averageActionTime() {
+        return this.actionInterval;
     }
 
     get averageRates(): Rates {
@@ -66,6 +74,28 @@ export class CurrentSkill {
             (this.skillXp - this.initial.xp) / this.timeMs, // xp
             this.timeMs / this.actions, // ms
         );
+    }
+
+    get gainsPerAction() {
+        return new Rates(
+            // TODO: get all rates per action
+            this.xpPerAction(), // xp
+            // TODO: get average action time
+            this.averageActionTime, // ms
+        );
+    }
+
+    get poolTier() {
+        const poolProgress = this.poolProgress;
+        // @ts-ignore
+        let index = masteryCheckpoints.findIndex((checkPoint: number) => checkPoint > poolProgress);
+        if (index === -1) {
+            // none of the checkpoints are larger than the current pool, hence all tiers reached
+            // @ts-ignore
+            index = masteryCheckpoints.length;
+        }
+        // current pool tier is one lower than the index we found
+        return index - 1;
     }
 
     init() {
@@ -88,7 +118,25 @@ export class CurrentSkill {
         // map containing estimated remaining materials or consumables
         this.materials = new Map<string, number>(); // regular crafting materials, e.g. raw fish or ores
         this.consumables = new Map<string, number>(); // additional consumables e.g. potions, mysterious stones
+        // current rates have not yet been computed
         this.currentRatesSet = false;
+        // these are used to track unlocked modifiers
+        this.modifiers.reset();
+    }
+
+    isPoolTierActive(tier: number) {
+        // @ts-ignore
+        return this.poolProgress >= masteryCheckpoints[tier];
+    }
+
+    modifyInterval(interval: number): number {
+        const flatModifier = this.getFlatIntervalModifier();
+        const percentModifier = this.getPercentageIntervalModifier();
+        interval *= 1 + percentModifier / 100;
+        interval += flatModifier;
+        // @ts-ignore
+        interval = roundToTickInterval(interval);
+        return Math.max(interval, 250);
     }
 
     xpToLevel(xp: number): number {
@@ -101,8 +149,11 @@ export class CurrentSkill {
         return exp.level_to_xp(level);
     }
 
-    setCurrentRates(gains: Rates) {
+    setCurrentRates(gains: Rates | undefined = undefined) {
         if (!this.currentRatesSet) {
+            if (gains === undefined) {
+                gains = this.gainsPerAction;
+            }
             this.currentRates = new Rates(
                 gains.xp / gains.ms, // xp
                 gains.ms, // ms
@@ -112,17 +163,12 @@ export class CurrentSkill {
     }
 
     progress(): void {
-        const gainsPerAction = new Rates(
-            // TODO: get all rates per action
-            this.xpPerAction(), // xp
-            // TODO: get average action time
-            this.actionInterval, // ms
-        );
+        const gainsPerAction = this.gainsPerAction;
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         // TODO: get next checkpoints
         const checkPoints = {
-            xp: this.levelToXp(this.currentLevel + 1) - this.skillXp,
+            xp: this.levelToXp(this.skillLevel + 1) - this.skillXp,
         }
         // TODO: compute time to nearest checkpoint
         const actionsToCheckpoint = {
@@ -150,9 +196,12 @@ export class CurrentSkill {
      * @param masteryAction Optional, the action the xp came from
      */
     getXPModifier(masteryAction: any) {
-        let modifier = this.modifiers.increasedGlobalSkillXP - this.modifiers.decreasedGlobalSkillXP;
-        if (!this.isCombat)
-            modifier += this.modifiers.increasedNonCombatSkillXP - this.modifiers.decreasedNonCombatSkillXP;
+        let modifier = this.modifiers.increasedGlobalSkillXP
+            - this.modifiers.decreasedGlobalSkillXP;
+        if (!this.isCombat) {
+            modifier += this.modifiers.increasedNonCombatSkillXP
+                - this.modifiers.decreasedNonCombatSkillXP;
+        }
         modifier += this.getSkillModifierValue('increasedSkillXP');
         modifier -= this.getSkillModifierValue('decreasedSkillXP');
         return modifier;
@@ -163,26 +212,16 @@ export class CurrentSkill {
     }
 
     /** Gets the flat change in [ms] for the given masteryID */
-    getFlatIntervalModifier(_: any) {
-        return (this.getSkillModifierValue('increasedSkillInterval') -
-            this.getSkillModifierValue('decreasedSkillInterval'));
+    getFlatIntervalModifier() {
+        return this.getSkillModifierValue('increasedSkillInterval')
+            - this.getSkillModifierValue('decreasedSkillInterval');
     }
 
     /** Gets the percentage change in interval for the given masteryID */
-    getPercentageIntervalModifier(_: any) {
-        return (this.getSkillModifierValue('increasedSkillIntervalPercent') -
-            this.getSkillModifierValue('decreasedSkillIntervalPercent') +
-            this.modifiers.increasedGlobalSkillIntervalPercent -
-            this.modifiers.decreasedGlobalSkillIntervalPercent);
-    }
-
-    modifyInterval(interval: number, action: any): number {
-        const flatModifier = this.getFlatIntervalModifier(action);
-        const percentModifier = this.getPercentageIntervalModifier(action);
-        interval *= 1 + percentModifier / 100;
-        interval += flatModifier;
-        // @ts-ignore
-        interval = roundToTickInterval(interval);
-        return Math.max(interval, 250);
+    getPercentageIntervalModifier() {
+        return this.getSkillModifierValue('increasedSkillIntervalPercent')
+            - this.getSkillModifierValue('decreasedSkillIntervalPercent')
+            + this.modifiers.increasedGlobalSkillIntervalPercent
+            - this.modifiers.decreasedGlobalSkillIntervalPercent;
     }
 }

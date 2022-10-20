@@ -95,6 +95,7 @@ export class ETA extends TinyMod {
                 break;
             }
         }
+        current.setCurrentRates();
         return current;
     }
 
