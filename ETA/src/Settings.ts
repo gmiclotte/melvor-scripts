@@ -12,7 +12,7 @@ export class ETASettings extends Map<string, any> {
         // true for alternative main display with xp/h, mastery xp/h and action count
         this.set('SHOW_XP_RATE', true);
         // true to show action times
-        this.set('HOW_ACTION_TIME', false);
+        this.set('SHOW_ACTION_TIME', true);
         // true to allow final pool percentage > 100%
         this.set('UNCAP_POOL', true);
         // true will show the current xp/h and mastery xp/h; false shows average if using all resources

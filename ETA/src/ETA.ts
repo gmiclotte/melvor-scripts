@@ -8,11 +8,12 @@ import {CurrentSkill} from "./CurrentSkill"
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaMining} from "./EtaMining.js";
+import {EtaDisplayManager} from "./EtaDisplayManager";
 
 export class ETA extends TinyMod {
     private readonly settings: ETASettings;
     private readonly nameSpace: string;
-    private readonly mock: any;
+    private readonly game: any;
 
     // @ts-ignore 2564
     private togglesCard: Card;
@@ -22,17 +23,22 @@ export class ETA extends TinyMod {
     private globalTargetsCard: Card;
     private previousTargets: Map<string, Targets>;
     private skills: Map<string, CurrentSkill>;
+    private displays: EtaDisplayManager;
 
     constructor(ctx: any, game: Game) {
         super(ctx, 'ETA');
         this.log('Loading...');
         // initialize fields
         this.nameSpace = 'eta';
-        this.mock = {};
+        this.game = game;
         this.settings = new ETASettings();
         this.previousTargets = new Map<string, Targets>();
         this.skills = new Map<string, CurrentSkill>()
-        this.skills.set('Mining', new EtaMining(game.mining));
+        this.displays = new EtaDisplayManager(this.game, this.settings);
+
+        // add skills
+        this.skills.set(game.mining.name, new EtaMining(game.mining));
+        game.mining.actions.forEach((action: any) => this.displays.createDisplay(game.mining, action.id));
         // create menu
         this.createSettingsMenu();
         // we made it
@@ -43,8 +49,12 @@ export class ETA extends TinyMod {
         // @ts-ignore 2304
         const eta = new ETA(mod.getDevContext(), game);
         // @ts-ignore 2304
-        const mining = eta.timeRemaining(game, game.mining, game.mining.actions.allObjects[0]);
-        return {eta: eta, mining: mining};
+        let skill = game.mining;
+        let action = skill.actions.allObjects[0];
+        // @ts-ignore 2304
+        const miningResult = eta.timeRemaining(game, skill, action);
+        eta.displays.injectHTML(miningResult, new Date())
+        return {eta: eta, mining: miningResult};
     }
 
     timeRemaining(game: Game, skill: SkillWithMastery, action: any): any {

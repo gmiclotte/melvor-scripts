@@ -1,4 +1,5 @@
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {Rates} from "./Rates";
 
 export class CurrentSkill {
     public skill: any;
@@ -6,13 +7,16 @@ export class CurrentSkill {
     public modifiers: PlayerModifiers;
     public action: any;
     public actions: number;
-    public timeMS: number;
+    public timeMs: number;
     public skillXp: number;
     public masteryXp: number;
     public poolXp: number;
     public materials: Map<string, number>;
     public consumables: Map<string, number>;
     public isCombat: boolean;
+    public currentRatesSet: boolean;
+    public currentRates: Rates;
+    public initial: Rates;
 
     constructor(skill: any) {
         this.skill = skill;
@@ -20,13 +24,16 @@ export class CurrentSkill {
         this.modifiers = new PlayerModifiers();
         this.action = undefined;
         this.actions = 0;
-        this.timeMS = 0;
+        this.timeMs = 0;
         this.skillXp = 0;
         this.masteryXp = 0;
         this.poolXp = 0;
         this.materials = new Map<string, number>();
         this.consumables = new Map<string, number>();
         this.isCombat = false;
+        this.currentRatesSet = false;
+        this.currentRates = Rates.emptyRates;
+        this.initial = Rates.emptyRates;
     }
 
     get currentLevel(): number {
@@ -45,6 +52,13 @@ export class CurrentSkill {
         return this.modifyInterval(this.baseInterval, this.action);
     }
 
+    get averageRates(): Rates {
+        return new Rates(
+            (this.skillXp - this.initial.xp) / this.timeMs, // xp
+            this.timeMs / this.actions, // ms
+        );
+    }
+
     init(action: any, modifiers: PlayerModifiers) {
         this.action = action;
         this.modifiers = modifiers;
@@ -52,9 +66,14 @@ export class CurrentSkill {
         // actions performed
         this.actions = 0;
         // time taken to perform actions
-        this.timeMS = 0;
+        this.timeMs = 0;
+        // initial
+        this.initial = new Rates(
+            this.skill.xp, // xp
+            0, // ms
+        );
         // current xp
-        this.skillXp = this.skill.xp;
+        this.skillXp = this.initial.xp;
         // current mastery xp
         this.masteryXp = !this.skill.hasMastery ? 0 : this.skill.getMasteryXP(this.action);
         // current pool xp
@@ -62,6 +81,7 @@ export class CurrentSkill {
         // map containing estimated remaining materials or consumables
         this.materials = new Map<string, number>(); // regular crafting materials, e.g. raw fish or ores
         this.consumables = new Map<string, number>(); // additional consumables e.g. potions, mysterious stones
+        this.currentRatesSet = false;
     }
 
     xp_to_level(xp: number): number {
@@ -74,13 +94,25 @@ export class CurrentSkill {
         return exp.level_to_xp(level);
     }
 
-    progress(): void {
-        // TODO: get all rates per action
-        const gainsPerAction = {
-            xp: this.xpPerAction(),
+    setCurrentRates(gains: Rates) {
+        if (!this.currentRatesSet) {
+            this.currentRates = new Rates(
+                gains.xp / gains.ms, // xp
+                gains.ms, // ms
+            );
         }
-        // TODO: get average action time
-        const actionTime = this.actionInterval;
+        this.currentRatesSet = true;
+    }
+
+    progress(): void {
+        const gainsPerAction = new Rates(
+            // TODO: get all rates per action
+            this.xpPerAction(), // xp
+            // TODO: get average action time
+            this.actionInterval, // ms
+        );
+        // if current rates is not set, then we are in the first iteration, and we can set it
+        this.setCurrentRates(gainsPerAction);
         // TODO: get next checkpoints
         const checkPoints = {
             xp: this.level_to_xp(this.currentLevel + 1) - this.skillXp,
@@ -94,7 +126,7 @@ export class CurrentSkill {
         console.log(gainsPerAction.xp, checkPoints.xp, actionsToCheckpoint.xp);
         this.skillXp += gainsPerAction.xp * actions;
         this.actions += actions;
-        this.timeMS += actions * actionTime;
+        this.timeMs += actions * gainsPerAction.ms;
     }
 
     xpPerAction(): number {
