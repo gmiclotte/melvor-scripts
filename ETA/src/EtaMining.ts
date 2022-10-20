@@ -6,7 +6,6 @@ import {Astrology} from "../../Game-Files/built/astrology";
 
 export class EtaMining extends CurrentSkill {
     constructor(mining: Mining, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
-        console.log(action.id)
         super(mining, action, modifiers, astrology, settings);
     }
 

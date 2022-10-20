@@ -80,8 +80,7 @@ export class ETA extends TinyMod {
             // TODO check previous targets by comparing `current` and `previousTargets`
         }
         // compute the targets and store them as the next previous targets
-        current.targets = new Targets(this.settings, skill, action);
-        this.log(current.targets)
+        current.targets = new Targets(current, this.settings, skill, action);
         this.previousTargets.set(skill.name, current.targets);
         current.iterate();
         return current;

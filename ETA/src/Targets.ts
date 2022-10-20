@@ -10,8 +10,10 @@ export class Targets {
     public poolXp: number;
     public materials: boolean;
     public consumables: boolean;
+    private readonly current: CurrentSkill;
 
-    constructor(settings: any, skill: SkillWithMastery, action: any = undefined) {
+    constructor(current: CurrentSkill, settings: any, skill: SkillWithMastery, action: any = undefined) {
+        this.current = current;
         if (action === undefined) {
             this.skillLevel = 0;
             this.skillXp = 0;
@@ -25,12 +27,12 @@ export class Targets {
         }
         // target level
         this.skillLevel = settings.getTargetLevel(skill.name, skill.level);
-        this.skillXp = this.level_to_xp(this.skillLevel);
+        this.skillXp = this.current.levelToXp(this.skillLevel);
         // target mastery
         if (skill.hasMastery) {
             const mastery = skill.getMasteryXP(action);
             this.masteryLevel = settings.getTargetMastery(skill.name, mastery);
-            this.masteryXp = this.level_to_xp(this.masteryLevel);
+            this.masteryXp = this.current.levelToXp(this.masteryLevel);
         } else {
             this.masteryLevel = 0;
             this.masteryXp = 0;
@@ -49,37 +51,29 @@ export class Targets {
         this.consumables = false; // additional consumables e.g. potions, mysterious stones
     }
 
-    level_to_xp(level: number): number {
-        if (level === 0) {
-            return 0;
-        }
-        // @ts-ignore 2304
-        return exp.level_to_xp(this.skillLevel) + 1;
+    skillCompleted(): boolean {
+        return this.skillXp <= this.current.skillXp;
     }
 
-    skillCompleted(current: CurrentSkill): boolean {
-        return this.skillXp <= current.skillXp;
+    masteryCompleted(): boolean {
+        return this.masteryXp <= this.current.masteryXp;
     }
 
-    masteryCompleted(current: CurrentSkill): boolean {
-        return this.masteryXp <= current.masteryXp;
+    poolCompleted(): boolean {
+        return this.poolXp <= this.current.poolXp;
     }
 
-    poolCompleted(current: CurrentSkill): boolean {
-        return this.poolXp <= current.poolXp;
-    }
-
-    completed(current: CurrentSkill): boolean {
+    completed(): boolean {
         // check skill xp
-        if (!this.skillCompleted(current)) {
+        if (!this.skillCompleted()) {
             return false;
         }
         // check mastery xp
-        if (!this.masteryCompleted(current)) {
+        if (!this.masteryCompleted()) {
             return false;
         }
         // check pool xp
-        if (!this.poolCompleted(current)) {
+        if (!this.poolCompleted()) {
             return false;
         }
         // TODO: check for materials and consumables
