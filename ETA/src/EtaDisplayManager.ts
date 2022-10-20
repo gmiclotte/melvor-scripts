@@ -126,16 +126,14 @@ export class EtaDisplayManager {
             return undefined;
         }
         const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
-        let finishedTime = this.addMSToDate(now, result.timeMs);
+        let finishedTime = this.addMSToDate(now, result.timeTaken.ms);
         timeLeftElement.textContent = "";
         if (this.settings.get('SHOW_XP_RATE')) {
             timeLeftElement.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp));
-            /*
-            if (skill.hasMastery) {
-                timeLeftElement.textContent += "\r\nMXp/h: " + formatNumber(Math.floor(results.currentRates.mastery))
-                    + `\r\nPool/h: ${results.currentRates.pool.toFixed(2)}%`
+            if (result.skill.hasMastery) {
+                timeLeftElement.textContent += "\r\nMXp/h: " + this.formatNumber(Math.floor(rates.mastery))
+                    + `\r\nPool/h: ${result.computePoolProgress(rates.pool).toFixed(2)}%`
             }
-             */
         }
         if (this.settings.get('SHOW_ACTION_TIME')) {
             timeLeftElement.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
@@ -203,7 +201,36 @@ export class EtaDisplayManager {
                 'Final Level',
                 this.formatLevel(finalLevel, levelProgress) + ' / 99',
                 'success',
-            ) + this.tooltipSection(result, now, result.timeMs, result.targets.level, new Map<string, number>(), '');
+            ) + this.tooltipSection(result, now, result.timeTaken.xp, result.targets.skillLevel, new Map<string, number>(), '');
+        }
+        // mastery tooltip
+        if (!flags.noMastery) {
+            const finalLevel = result.xpToLevel(result.masteryXp)
+            const levelProgress = this.getPercentageInLevel(result, result.skillLevel, "skill");
+            tooltip += this.finalLevelElement(
+                'Final Level',
+                this.formatLevel(finalLevel, levelProgress) + ' / 99',
+                'success',
+            ) + this.tooltipSection(result, now, result.timeTaken.mastery, result.targets.masteryLevel, new Map<string, number>(), '');
+        }
+        // pool tooltip
+        if (!flags.noPool) {
+            tooltip += this.finalLevelElement(
+                'Final Pool XP',
+                result.poolProgress.toFixed(2) + '%',
+                'warning',
+            )
+            let prepend = ''
+            /* TODO
+            const tokens = Math.round(result.tokens);
+            if (tokens > 0) {
+                prepend += `Final token count: ${tokens}`;
+                if (ms.pool > 0) {
+                    prepend += '<br>';
+                }
+            }
+             */
+            tooltip += this.tooltipSection(result, now, result.timeTaken.pool, `${result.targets.poolPercent}%`, new Map<string, number>(), prepend);
         }
         // wrap and return
         // @ts-ignore
@@ -267,6 +294,7 @@ export class EtaDisplayManager {
     }
 
     resourcesLeftToHTML(result: CurrentSkill, resources: Map<string, number>) {
+        // TODO: update this
         if (this.settings.get('HIDE_REQUIRED') || result.isGathering || resources.size === 0) {
             return '';
         }

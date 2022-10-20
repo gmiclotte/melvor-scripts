@@ -1,40 +1,61 @@
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {Astrology} from "../../Game-Files/built/astrology";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {ETASettings} from "./Settings";
 
-export type currentSkillConstructor = new(skill: any, action: any, modifiers: PlayerModifiers, settings: ETASettings) => CurrentSkill;
+export type currentSkillConstructor = new(
+    skill: any,
+    action: any,
+    modifiers: PlayerModifiers,
+    astrology: Astrology,
+    settings: ETASettings,
+) => CurrentSkill;
 
 export class CurrentSkill {
+    // readonly fields
     public readonly skill: any;
-    public readonly modifiers: PlayerModifiers;
-    public action: any;
-    public actions: number;
-    public timeMs: number;
+    public readonly action: any;
+    public readonly isGathering: boolean;
+    // trackers
     public skillXp: number;
     public masteryXp: number;
     public poolXp: number;
+    public actionsTaken: Rates;
+    public timeTaken: Rates;
     public materials: Map<string, number>;
     public consumables: Map<string, number>;
-    public isCombat: boolean;
-    public isGathering: boolean;
-    public currentRatesSet: boolean;
-    public currentRates: Rates;
+    // initial and target
     public initial: Rates;
     public targets: Targets;
+    // current rates
+    public currentRates: Rates;
+    public skillReached: boolean;
+    public masteryReached: boolean;
+    public poolReached: boolean;
+    protected readonly modifiers: PlayerModifiers;
+    protected readonly masteryCheckpoints: number[];
+    protected readonly astrology: Astrology;
+    protected readonly isCombat: boolean;
+    protected currentRatesSet: boolean;
+    // other
+    protected totalMasteryWithoutAction: number;
+    protected infiniteActions: boolean;
 
-    constructor(skill: any, action: any, modifiers: PlayerModifiers, settings: ETASettings) {
+    constructor(skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
         console.log(skill, action, modifiers)
         this.skill = skill;
         this.action = action;
         this.modifiers = modifiers;
+        this.astrology = astrology;
         this.targets = new Targets(settings, skill, action);
         this.skill.baseInterval = skill.baseInterval ?? 0;
-        this.actions = 0;
-        this.timeMs = 0;
+        this.actionsTaken = Rates.emptyRates;
+        this.timeTaken = Rates.emptyRates;
         this.skillXp = 0;
         this.masteryXp = 0;
         this.poolXp = 0;
+        this.totalMasteryWithoutAction = 0;
         this.materials = new Map<string, number>();
         this.consumables = new Map<string, number>();
         this.isCombat = false;
@@ -42,22 +63,100 @@ export class CurrentSkill {
         this.currentRatesSet = false;
         this.currentRates = Rates.emptyRates;
         this.initial = Rates.emptyRates;
+        // @ts-ignore
+        this.masteryCheckpoints = [...masteryCheckpoints, Infinity];
+        this.infiniteActions = false;
+        // flag to check if target was already reached
+        this.skillReached = false;
+        this.masteryReached = false;
+        this.poolReached = false;
+    }
+
+    /***
+     * Get and set rates
+     */
+
+    get gainsPerAction() {
+        const masteryPerAction = this.masteryPerAction;
+        return new Rates(
+            // TODO: get all rates per action
+            this.xpPerAction,
+            masteryPerAction,
+            this.poolPerAction(masteryPerAction),
+            this.averageActionTime,
+            1, // unit
+        );
+    }
+
+    get averageRates(): Rates {
+        return new Rates(
+            (this.skillXp - this.initial.xp) / this.timeTaken.ms,
+            (this.masteryXp - this.initial.mastery) / this.timeTaken.ms,
+            (this.poolXp - this.initial.pool) / this.timeTaken.ms,
+            this.timeTaken.ms / this.actionsTaken.ms, // ms
+            1, // unit
+        );
     }
 
     get skillLevel(): number {
         return this.xpToLevel(this.skillXp);
     }
 
+    get xpPerAction(): number {
+        return this.modifyXP(this.action.baseExperience);
+    }
+
+    /***
+     * mastery methods
+     */
+
     get masteryLevel(): number {
         return this.xpToLevel(this.masteryXp);
     }
 
-    get poolProgress() {
-        let percent = (100 * this.poolXp) / this.skill.baseMasteryPoolCap;
-        percent += this.modifiers.increasedMasteryPoolProgress;
-        // @ts-ignore
-        return clampValue(percent, 0, 100);
+    get totalCurrentMasteryLevel() {
+        return this.masteryLevel + this.totalMasteryWithoutAction;
     }
+
+    get totalUnlockedMasteryActions() {
+        return this.skill.actions.reduce((previous: number, action: any) => {
+            if (this.skillLevel >= action.level) {
+                previous++;
+            }
+            return previous;
+        }, 0);
+    }
+
+    get masteryPerAction() {
+        const interval = this.masteryModifiedInterval;
+        let xpToAdd = (((this.totalUnlockedMasteryActions * this.totalCurrentMasteryLevel) / this.skill.trueMaxTotalMasteryLevel +
+                    this.masteryLevel * (this.skill.trueTotalMasteryActions / 10)) *
+                (interval / 1000)) /
+            2;
+        xpToAdd *= 1 + this.getMasteryXPModifier() / 100;
+        return xpToAdd;
+    }
+
+    get poolProgress() {
+        return this.computePoolProgress(this.poolXp)
+    }
+
+    get nextPoolCheckpoint() {
+        const poolProgress = this.poolProgress;
+        const checkPoint = this.masteryCheckpoints.find((checkPoint: number) => checkPoint > poolProgress) ?? Infinity;
+        if (poolProgress < this.targets.poolPercent && poolProgress < checkPoint) {
+            return this.targets.poolPercent;
+        }
+        return checkPoint;
+    }
+
+    get nextPoolCheckpointXp() {
+        return this.nextPoolCheckpoint / 100 * this.skill.baseMasteryPoolCap;
+    }
+
+    /***
+     * Interval methods
+     */
 
     get actionInterval() {
         return this.modifyInterval(this.skill.baseInterval);
@@ -68,45 +167,45 @@ export class CurrentSkill {
         return this.actionInterval;
     }
 
-    get averageRates(): Rates {
-        return new Rates(
-            (this.skillXp - this.initial.xp) / this.timeMs, // xp
-            this.timeMs / this.actions, // ms
-        );
+    get masteryModifiedInterval() {
+        return this.actionInterval;
     }
 
-    get gainsPerAction() {
-        return new Rates(
-            // TODO: get all rates per action
-            this.xpPerAction(), // xp
-            // TODO: get average action time
-            this.averageActionTime, // ms
-        );
+    get completed() {
+        return this.infiniteActions || this.targets.completed(this);
     }
 
-    get poolTier() {
-        const poolProgress = this.poolProgress;
-        // @ts-ignore
-        let index = masteryCheckpoints.findIndex((checkPoint: number) => checkPoint > poolProgress);
-        if (index === -1) {
-            // none of the checkpoints are larger than the current pool, hence all tiers reached
-            // @ts-ignore
-            index = masteryCheckpoints.length;
-        }
-        // current pool tier is one lower than the index we found
-        return index - 1;
+    get skillCompleted() {
+        return this.targets.skillCompleted(this);
+    }
+
+    get masteryCompleted() {
+        return this.targets.masteryCompleted(this);
+    }
+
+    get poolCompleted() {
+        return this.targets.poolCompleted(this);
+    }
+
+    computePoolProgress(poolXp: number) {
+        let percent = (100 * poolXp) / this.skill.baseMasteryPoolCap;
+        percent += this.modifiers.increasedMasteryPoolProgress;
+        return percent;
     }
 
     init() {
         // get initial values
         // actions performed
-        this.actions = 0;
+        this.actionsTaken = Rates.emptyRates;
         // time taken to perform actions
-        this.timeMs = 0;
+        this.timeTaken = Rates.emptyRates;
         // initial
         this.initial = new Rates(
-            this.skill.xp, // xp
+            this.skill.xp,
+            this.skill.masteryXp,
+            this.skill.poolXp,
             0, // ms
+            1, // unit
         );
         // current xp
         this.skillXp = this.initial.xp;
@@ -114,27 +213,114 @@ export class CurrentSkill {
         this.masteryXp = !this.skill.hasMastery ? 0 : this.skill.getMasteryXP(this.action);
         // current pool xp
         this.poolXp = !this.skill.hasMastery ? 0 : this.skill.masteryPoolXP;
+        // compute total mastery, excluding current action
+        this.totalMasteryWithoutAction = this.skill.totalCurrentMasteryLevel - this.masteryLevel;
         // map containing estimated remaining materials or consumables
         this.materials = new Map<string, number>(); // regular crafting materials, e.g. raw fish or ores
         this.consumables = new Map<string, number>(); // additional consumables e.g. potions, mysterious stones
         // current rates have not yet been computed
         this.currentRatesSet = false;
+        this.infiniteActions = false;
+        // flag to check if target was already reached
+        this.skillReached = false;
+        this.masteryReached = false;
+        this.poolReached = false;
     }
 
-    isPoolTierActive(tier: number) {
-        // @ts-ignore
-        return this.poolProgress >= masteryCheckpoints[tier];
+    setFinalValues() {
+        // check targets
+        if (!this.skillReached && this.skillCompleted) {
+            this.actionsTaken.xp = this.actionsTaken.ms;
+            this.timeTaken.xp = this.timeTaken.ms;
+            this.skillReached = true;
+        }
+        if (!this.masteryReached && this.masteryCompleted) {
+            this.actionsTaken.mastery = this.actionsTaken.ms;
+            this.timeTaken.mastery = this.timeTaken.ms;
+            this.masteryReached = true;
+        }
+        if (!this.poolReached && this.poolCompleted) {
+            this.actionsTaken.pool = this.actionsTaken.ms;
+            this.timeTaken.pool = this.timeTaken.ms;
+            this.poolReached = true;
+        }
     }
 
-    modifyInterval(interval: number): number {
-        const flatModifier = this.getFlatIntervalModifier();
-        const percentModifier = this.getPercentageIntervalModifier();
-        interval *= 1 + percentModifier / 100;
-        interval += flatModifier;
-        // @ts-ignore
-        interval = roundToTickInterval(interval);
-        return Math.max(interval, 250);
+    iterate(): void {
+        this.init();
+        const maxIt = 1000;
+        let it = 0;
+        this.setFinalValues();
+        while (!this.completed) {
+            this.progress();
+            it++;
+            if (it >= maxIt) {
+                break;
+            }
+        }
+        this.setCurrentRates();
     }
+
+    progress(): void {
+        const gainsPerAction = this.gainsPerAction;
+        // if current rates is not set, then we are in the first iteration, and we can set it
+        this.setCurrentRates(gainsPerAction);
+        // TODO: get next checkpoints
+        const checkPoints = {
+            xp: this.levelToXp(this.skillLevel + 1) - this.skillXp,
+            mastery: this.levelToXp(this.masteryLevel + 1) - this.masteryXp,
+            pool: this.nextPoolCheckpointXp - this.poolXp,
+        }
+        // TODO: compute time to nearest checkpoint
+        const actionsToCheckpoint = {
+            xp: checkPoints.xp / gainsPerAction.xp,
+            mastery: checkPoints.mastery / gainsPerAction.mastery,
+            pool: checkPoints.pool / gainsPerAction.pool,
+        }
+        const actions = Math.ceil(Math.min(
+            actionsToCheckpoint.xp,
+            actionsToCheckpoint.mastery,
+            actionsToCheckpoint.pool,
+        ));
+        console.log(
+            actionsToCheckpoint.xp,
+            actionsToCheckpoint.mastery,
+            actionsToCheckpoint.pool,
+        )
+        // TODO: progress all trackers
+        if (actions === Infinity) {
+            this.infiniteActions = true;
+            return;
+        }
+        this.skillXp += gainsPerAction.xp * actions;
+        this.masteryXp += gainsPerAction.mastery * actions;
+        console.log(this.poolXp, this.nextPoolCheckpointXp, gainsPerAction.pool, actions)
+        this.poolXp += gainsPerAction.pool * actions;
+        console.log(this.poolProgress)
+        this.actionsTaken.ms += actions;
+        this.timeTaken.ms += actions * gainsPerAction.ms;
+        this.setFinalValues();
+    }
+
+    setCurrentRates(gains: Rates | undefined = undefined) {
+        if (!this.currentRatesSet) {
+            if (gains === undefined) {
+                gains = this.gainsPerAction;
+            }
+            this.currentRates = new Rates(
+                gains.xp / gains.ms,
+                gains.mastery / gains.ms,
+                gains.pool / gains.ms,
+                gains.ms,
+                1, // unit
+            );
+        }
+        this.currentRatesSet = true;
+    }
+
+    /***
+     * XP methods
+     */
 
     xpToLevel(xp: number): number {
         // @ts-ignore 2304
@@ -146,53 +332,12 @@ export class CurrentSkill {
         return exp.level_to_xp(level);
     }
 
-    setCurrentRates(gains: Rates | undefined = undefined) {
-        if (!this.currentRatesSet) {
-            if (gains === undefined) {
-                gains = this.gainsPerAction;
-            }
-            this.currentRates = new Rates(
-                gains.xp / gains.ms, // xp
-                gains.ms, // ms
-            );
-        }
-        this.currentRatesSet = true;
-    }
-
-    progress(): void {
-        const gainsPerAction = this.gainsPerAction;
-        // if current rates is not set, then we are in the first iteration, and we can set it
-        this.setCurrentRates(gainsPerAction);
-        // TODO: get next checkpoints
-        const checkPoints = {
-            xp: this.levelToXp(this.skillLevel + 1) - this.skillXp,
-        }
-        // TODO: compute time to nearest checkpoint
-        const actionsToCheckpoint = {
-            xp: checkPoints.xp / gainsPerAction.xp,
-        }
-        const actions = Math.ceil(Math.min(actionsToCheckpoint.xp));
-        // TODO: progress all trackers
-        console.log(gainsPerAction.xp, checkPoints.xp, actionsToCheckpoint.xp);
-        this.skillXp += gainsPerAction.xp * actions;
-        this.actions += actions;
-        this.timeMs += actions * gainsPerAction.ms;
-    }
-
-    xpPerAction(): number {
-        return this.modifyXP(this.action.baseExperience, this.action);
-    }
-
-    modifyXP(amount: number, masteryAction: any) {
-        amount *= 1 + this.getXPModifier(masteryAction) / 100;
+    modifyXP(amount: number) {
+        amount *= 1 + this.getXPModifier() / 100;
         return amount;
     }
 
-    /**
-     * Gets the percentage xp modifier for a skill
-     * @param masteryAction Optional, the action the xp came from
-     */
-    getXPModifier(masteryAction: any) {
+    getXPModifier() {
         let modifier = this.modifiers.increasedGlobalSkillXP
             - this.modifiers.decreasedGlobalSkillXP;
         if (!this.isCombat) {
@@ -208,13 +353,48 @@ export class CurrentSkill {
         return this.modifiers.getSkillModifierValue(modifierID, this.skill);
     }
 
-    /** Gets the flat change in [ms] for the given masteryID */
+    getMasteryXPModifier() {
+        let modifier = this.modifiers.increasedGlobalMasteryXP - this.modifiers.decreasedGlobalMasteryXP;
+        modifier += this.modifiers.getSkillModifierValue('increasedMasteryXP', this);
+        modifier -= this.modifiers.getSkillModifierValue('decreasedMasteryXP', this);
+        this.astrology.masteryXPConstellations.forEach((constellation) => {
+            const modValue = this.modifiers.getSkillModifierValue(constellation.masteryXPModifier, this);
+            if (modValue > 0)
+                modifier += modValue * constellation.maxValueModifiers;
+        });
+        return modifier;
+    }
+
+    /***
+     * Pool methods
+     */
+
+    poolPerAction(masteryXp: number) {
+        if (this.skillLevel >= 99) {
+            return masteryXp / 2;
+        }
+        return masteryXp / 4;
+    }
+
+    isPoolTierActive(tier: number) {
+        return this.poolProgress >= this.masteryCheckpoints[tier];
+    }
+
+    modifyInterval(interval: number): number {
+        const flatModifier = this.getFlatIntervalModifier();
+        const percentModifier = this.getPercentageIntervalModifier();
+        interval *= 1 + percentModifier / 100;
+        interval += flatModifier;
+        // @ts-ignore
+        interval = roundToTickInterval(interval);
+        return Math.max(interval, 250);
+    }
+
     getFlatIntervalModifier() {
         return this.getSkillModifierValue('increasedSkillInterval')
             - this.getSkillModifierValue('decreasedSkillInterval');
     }
 
-    /** Gets the percentage change in interval for the given masteryID */
     getPercentageIntervalModifier() {
         return this.getSkillModifierValue('increasedSkillIntervalPercent')
             - this.getSkillModifierValue('decreasedSkillIntervalPercent')

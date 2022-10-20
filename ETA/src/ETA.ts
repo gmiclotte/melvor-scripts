@@ -10,11 +10,11 @@ import {Game} from "../../Game-Files/built/game";
 import {EtaMining} from "./EtaMining.js";
 import {EtaDisplayManager} from "./EtaDisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {Astrology} from "../../Game-Files/built/astrology";
 
 export class ETA extends TinyMod {
     private readonly settings: ETASettings;
     private readonly nameSpace: string;
-    private readonly game: any;
 
     // @ts-ignore 2564
     private togglesCard: Card;
@@ -24,21 +24,20 @@ export class ETA extends TinyMod {
     private globalTargetsCard: Card;
     private previousTargets: Map<string, Targets>;
     private skillCalculators: Map<string, Map<string, CurrentSkill>>;
-    private displays: EtaDisplayManager;
+    private displayManager: EtaDisplayManager;
 
     constructor(ctx: any, game: Game) {
         super(ctx, 'ETA');
         this.log('Loading...');
         // initialize fields
         this.nameSpace = 'eta';
-        this.game = game;
         this.settings = new ETASettings();
         this.previousTargets = new Map<string, Targets>();
         this.skillCalculators = new Map<string, Map<string, CurrentSkill>>()
-        this.displays = new EtaDisplayManager(this.game, this.settings);
+        this.displayManager = new EtaDisplayManager(game, this.settings);
 
         // add skills
-        this.addSkillCalculators(EtaMining, game.mining, game.modifiers);
+        this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
         // create menu
         this.createSettingsMenu();
         // we made it
@@ -53,16 +52,16 @@ export class ETA extends TinyMod {
         skill.actions.forEach((action: any) => {
             // @ts-ignore 2304
             const result = eta.timeRemaining(game, skill, action);
-            eta.displays.injectHTML(result, new Date());
+            eta.displayManager.injectHTML(result, new Date());
         });
         return {eta: eta};
     }
 
-    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers) {
+    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers, astrology: Astrology) {
         const skillMap = new Map<string, CurrentSkill>();
         skill.actions.forEach((action: any) => {
-            skillMap.set(action.id, new constructor(skill, action, modifiers, this.settings));
-            this.displays.createDisplay(skill, action.id);
+            skillMap.set(action.id, new constructor(skill, action, modifiers, astrology, this.settings));
+            this.displayManager.createDisplay(skill, action.id);
         });
         this.skillCalculators.set(skill.name, skillMap);
     }
@@ -75,7 +74,6 @@ export class ETA extends TinyMod {
             this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
             return undefined;
         }
-        current.init();
         // check if previous targets were met
         const previousTargets = this.previousTargets.get(skill.name);
         if (previousTargets !== undefined) {
@@ -85,17 +83,7 @@ export class ETA extends TinyMod {
         current.targets = new Targets(this.settings, skill, action);
         this.log(current.targets)
         this.previousTargets.set(skill.name, current.targets);
-        // TODO: compute the remaining time for all targets
-        const maxIt = 100;
-        let it = 0;
-        while (!current.targets.completed(current)) {
-            current.progress();
-            it++;
-            if (it >= maxIt) {
-                break;
-            }
-        }
-        current.setCurrentRates();
+        current.iterate();
         return current;
     }
 

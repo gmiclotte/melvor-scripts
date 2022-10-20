@@ -1,9 +1,10 @@
 import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {CurrentSkill} from "./CurrentSkill";
 
 export class Targets {
-    public level: number;
+    public skillLevel: number;
     public skillXp: number;
-    public mastery: number;
+    public masteryLevel: number;
     public masteryXp: number;
     public poolPercent: number;
     public poolXp: number;
@@ -12,9 +13,9 @@ export class Targets {
 
     constructor(settings: any, skill: SkillWithMastery, action: any = undefined) {
         if (action === undefined) {
-            this.level = 0;
+            this.skillLevel = 0;
             this.skillXp = 0;
-            this.mastery = 0;
+            this.masteryLevel = 0;
             this.masteryXp = 0;
             this.poolPercent = 0;
             this.poolXp = 0;
@@ -23,15 +24,15 @@ export class Targets {
             return this;
         }
         // target level
-        this.level = settings.getTargetLevel(skill.name, skill.level);
-        this.skillXp = this.level_to_xp(this.level);
+        this.skillLevel = settings.getTargetLevel(skill.name, skill.level);
+        this.skillXp = this.level_to_xp(this.skillLevel);
         // target mastery
         if (skill.hasMastery) {
             const mastery = skill.getMasteryXP(action);
-            this.mastery = settings.getTargetMastery(skill.name, mastery);
-            this.masteryXp = this.level_to_xp(this.mastery);
+            this.masteryLevel = settings.getTargetMastery(skill.name, mastery);
+            this.masteryXp = this.level_to_xp(this.masteryLevel);
         } else {
-            this.mastery = 0;
+            this.masteryLevel = 0;
             this.masteryXp = 0;
         }
         // target pool percentage
@@ -53,21 +54,32 @@ export class Targets {
             return 0;
         }
         // @ts-ignore 2304
-        return exp.level_to_xp(this.level) + 1;
+        return exp.level_to_xp(this.skillLevel) + 1;
     }
 
-    completed(current: any): boolean {
-        console.log('targets.completed', this.skillXp, current.skillXp, this.skillXp < current.skillXp)
-        if (this.skillXp > current.skillXp) {
+    skillCompleted(current: CurrentSkill): boolean {
+        return this.skillXp <= current.skillXp;
+    }
+
+    masteryCompleted(current: CurrentSkill): boolean {
+        return this.masteryXp <= current.masteryXp;
+    }
+
+    poolCompleted(current: CurrentSkill): boolean {
+        return this.poolXp <= current.poolXp;
+    }
+
+    completed(current: CurrentSkill): boolean {
+        // check skill xp
+        if (!this.skillCompleted(current)) {
             return false;
         }
-        return true;
-        // TODO: check mastery xp
-        if (this.masteryXp > current.masteryXp) {
+        // check mastery xp
+        if (!this.masteryCompleted(current)) {
             return false;
         }
-        // TODO: check pool xp
-        if (this.poolXp > current.poolXp) {
+        // check pool xp
+        if (!this.poolCompleted(current)) {
             return false;
         }
         // TODO: check for materials and consumables

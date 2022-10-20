@@ -2,11 +2,12 @@ import {Mining} from "../../Game-Files/built/rockTicking";
 import {CurrentSkill} from "./CurrentSkill";
 import {ETASettings} from "./Settings";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {Astrology} from "../../Game-Files/built/astrology";
 
 export class EtaMining extends CurrentSkill {
-    constructor(mining: Mining, action: any, modifiers: PlayerModifiers, settings: ETASettings) {
+    constructor(mining: Mining, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
         console.log(action.id)
-        super(mining, action, modifiers, settings);
+        super(mining, action, modifiers, astrology, settings);
     }
 
     get maxRockHP() {
@@ -49,7 +50,7 @@ export class EtaMining extends CurrentSkill {
         let rockHPDivisor = 1;
         // account for rockHPPreserveChance
         rockHPDivisor -= this.rockHPPreserveChance / 100;
-        // rock regens 1 hp every 10s, i.e. every 1e4 ms
+        // rock regenerates 1 hp every 10s, i.e. every 1e4 ms
         rockHPDivisor -= actionInterval / 1e4;
         if (rockHPDivisor <= 0) {
             // rock never dies
@@ -65,6 +66,15 @@ export class EtaMining extends CurrentSkill {
         respawnInterval = roundToTickInterval(respawnInterval);
         // average action time is time for one cycle divided by number of actions during that cycle
         return (actionInterval * effectiveRockHP + respawnInterval) / effectiveRockHP;
+    }
+
+    get totalUnlockedMasteryActions() {
+        return this.skill.actions.reduce((previous: number, action: any) => {
+            if (this.skillLevel >= action.level && this.totalCurrentMasteryLevel > action.totalMasteryRequired) {
+                previous++;
+            }
+            return previous;
+        }, 0);
     }
 
     getFlatIntervalModifier() {
