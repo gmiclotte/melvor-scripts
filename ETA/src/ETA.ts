@@ -44,17 +44,21 @@ export class ETA extends TinyMod {
         this.log('Loaded!');
     }
 
-    static testup(): any {
-        // @ts-ignore 2304
-        const eta = new ETA(mod.getDevContext(), game);
-        // @ts-ignore 2304
+    static testup(mod: any, game: Game): any {
+        const eta = new ETA(mod.getDevContext(), game, 'Dev');
+        // @ts-ignore
+        window.eta = eta;
         let skill = game.mining;
-        skill.actions.forEach((action: any) => {
-            // @ts-ignore 2304
-            const result = eta.timeRemaining(game, skill, action);
-            eta.displayManager.injectHTML(result, new Date());
-        });
-        return {eta: eta};
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            if (!skill.activeRock.isRespawning && skill.activeRock.currentHP > 0) {
+                skill.actionTimer.start(skill.actionInterval);
+                skill.renderQueue.progressBar = true;
+            }
+            eta.recompute(skill);
+        }
+        return eta;
     }
 
     addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers, astrology: Astrology) {
@@ -66,7 +70,15 @@ export class ETA extends TinyMod {
         this.skillCalculators.set(skill.name, skillMap);
     }
 
-    timeRemaining(game: Game, skill: SkillWithMastery, action: any): any {
+    recompute(skill: SkillWithMastery) {
+        setTimeout(() => {
+            skill.actions.forEach((action: any) => {
+                this.displayManager.injectHTML(this.timeRemaining(skill, action), new Date());
+            });
+        });
+    }
+
+    timeRemaining(skill: SkillWithMastery, action: any): any {
         // get current state of the skill
         // @ts-ignore
         const current = this.skillCalculators.get(skill.name).get(action.id);
