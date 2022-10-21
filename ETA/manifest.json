@@ -1,5 +1,6 @@
 {
   "namespace": "ETA",
   "setup": "src/setup.js",
+  "icon": "icons/eta-428.png",
   "load": []
 }
