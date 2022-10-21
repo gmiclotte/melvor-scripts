@@ -1,1 +1,1 @@
-testResult = ETA.testup();
+ETA.testup(mod, game);
