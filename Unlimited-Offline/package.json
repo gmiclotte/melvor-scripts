@@ -1,19 +1,23 @@
 {
-  "name": "melvor_unlimited_offline",
-  "version": "0.1.3",
-  "description": "Removes the offline time limit.",
-  "scripts": {
-    "lint": "cd ./dist && web-ext lint",
-    "build": "node build.js"
-  },
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/gmiclotte/melvor-scripts/issues"
-  },
-  "homepage": "https://github.com/gmiclotte/melvor-scripts",
-  "devDependencies": {
-    "archiver": "^5.3.1",
-    "copy-dir": "^1.3.0",
-    "web-ext": "^7.2.0"
-  }
+    "name": "melvor_unlimited_offline",
+    "version": "0.1.4",
+    "description": "Removes the offline time limit.",
+    "config": {
+        "tinyMod": "../TinyMod"
+    },
+    "scripts": {
+        "build": "node build.js",
+        "dist": "npm run version && npm run build",
+        "version": "cp ${npm_package_config_tinyMod}/scripts/increment-version.js increment-version.js && node increment-version.js && rm increment-version.js"
+    },
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/gmiclotte/melvor-scripts/issues"
+    },
+    "homepage": "https://github.com/gmiclotte/melvor-scripts",
+    "devDependencies": {
+        "archiver": "^5.3.1",
+        "copy-dir": "^1.3.0",
+        "inquirer": "^8.2.4"
+    }
 }
