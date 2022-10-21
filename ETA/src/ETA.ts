@@ -1,5 +1,3 @@
-import {ETASettings} from "./Settings";
-
 import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
@@ -7,10 +5,11 @@ import {Targets} from "./Targets";
 import {CurrentSkill, currentSkillConstructor} from "./CurrentSkill"
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
-import {EtaMining} from "./EtaMining.js";
+import {EtaMining} from "./EtaMining";
 import {EtaDisplayManager} from "./EtaDisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
+import {ETASettings} from "./Settings";
 
 export class ETA extends TinyMod {
     private readonly settings: ETASettings;
@@ -26,20 +25,23 @@ export class ETA extends TinyMod {
     private skillCalculators: Map<string, Map<string, CurrentSkill>>;
     private displayManager: EtaDisplayManager;
 
-    constructor(ctx: any, game: Game) {
-        super(ctx, 'ETA');
+    constructor(ctx: any, game: Game, tag: string = 'ETA') {
+        super(ctx, tag);
         this.log('Loading...');
+
+        // initialize settings
+        this.settings = new ETASettings(this.ctx);
+        this.createSettingsMenu();
+
         // initialize fields
         this.nameSpace = 'eta';
-        this.settings = new ETASettings();
         this.previousTargets = new Map<string, Targets>();
         this.skillCalculators = new Map<string, Map<string, CurrentSkill>>()
         this.displayManager = new EtaDisplayManager(game, this.settings);
 
         // add skills
         this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
-        // create menu
-        this.createSettingsMenu();
+
         // we made it
         this.log('Loaded!');
     }
@@ -150,6 +152,8 @@ export class ETA extends TinyMod {
                 this.settings,
                 globalKey,
                 target.defaultValue,
+                () => this.settings.get(globalKey),
+                (_: any, __: string, result: any) => this.settings.set(globalKey, result),
             );
         });
 
@@ -167,12 +171,24 @@ export class ETA extends TinyMod {
                 {id: 'POOL', label: 'Pool targets (%)'},
             ].forEach(target => {
                 const key = 'TARGET_' + target.id;
+                this.settings.addSkillSetting(key, target.label, skill.name);
                 card.addNumberArrayInput(
                     target.label,
-                    this.settings.get(key),
+                    this.settings,
                     skill.name,
+                    [],
+                    () => this.settings.get(key, skill.name),
+                    (_: any, __: string, result: any) => this.settings.set(key, result, skill.name),
                 );
             });
         });
+    }
+
+    setValToObject(object: any, key: string, val: any): any {
+        if (object.set) {
+            object.set(key, val);
+        } else {
+            object[key] = val;
+        }
     }
 }

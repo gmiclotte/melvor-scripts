@@ -1,55 +1,187 @@
-export class ETASettings extends Map<string, any> {
+export class ETASettings {
+    private readonly ctx: any;
+    private readonly generalSettings: any;
+    private readonly skillSettings: Map<string, any>;
 
-    constructor() {
-        super();
-        /*
-            toggles
-         */
-        // true for 12h clock (AM/PM), false for 24h clock
-        this.set('IS_12H_CLOCK', false);
-        // true for short clock `xxhxxmxxs`, false for long clock `xx hours, xx minutes and xx seconds`
-        this.set('IS_SHORT_CLOCK', true);
-        // true for alternative main display with xp/h, mastery xp/h and action count
-        this.set('SHOW_XP_RATE', true);
-        // true to show action times
-        this.set('SHOW_ACTION_TIME', true);
-        // true to allow final pool percentage > 100%
-        this.set('UNCAP_POOL', true);
-        // true will show the current xp/h and mastery xp/h; false shows average if using all resources
-        // does not affect anything if SHOW_XP_RATE is false
-        this.set('CURRENT_RATES', true);
-        // set to true to include mastery tokens in time until 100% pool
-        this.set('USE_TOKENS', false);
-        // set to true to show partial level progress in the ETA tooltips
-        this.set('SHOW_PARTIAL_LEVELS', false);
-        // set to true to hide the required resources in the ETA tooltips
-        this.set('HIDE_REQUIRED', false);
-        // set to true to include "potential" Summoning exp from created tablets
-        this.set('USE_TABLETS', false);
-        // set to true to play a sound when we run out of resources or reach a target
-        this.set('DING_RESOURCES', true);
-        this.set('DING_LEVEL', true);
-        this.set('DING_MASTERY', true);
-        this.set('DING_POOL', true);
+    constructor(ctx: any) {
+        this.ctx = ctx;
+        try {
+            ctx.settings.type('numberArray', {
+                render: () => ({
+                    value: [], querySelector: () => {
+                    }
+                }),
+                get: (root: any): number[] => root.value,
+                set: (root: any, value: number[]) => root.value = value,
+            });
+        } catch (_: any) {
+            console.warn('Failed to define settings type \'numberArray\'');
+        }
+        // general settings
+        this.generalSettings = ctx.settings.section('General');
+        // toggles
+        this.generalSettings.add([
+            {
+                type: 'switch',
+                name: 'IS_12H_CLOCK',
+                label: 'Use 12h clock',
+                hint: 'Use 12h clock (AM/PM), instead of 24h clock.',
+                default: false,
+            },
+            {
+                type: 'switch',
+                name: 'IS_SHORT_CLOCK',
+                label: 'Use short time format',
+                hint: 'Use short clock `xxhxxmxxs`, instead of long clock `xx hours, xx minutes and xx seconds.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'SHOW_XP_RATE',
+                label: 'Show XP rates',
+                hint: 'Show XP rates.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'SHOW_ACTION_TIME',
+                label: 'Show action times',
+                hint: 'Show action times.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'UNCAP_POOL',
+                label: 'Show pool past 100%',
+                hint: 'Show pool past 100%.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'CURRENT_RATES',
+                label: 'Show current rates',
+                hint: 'Show current rates, instead of average rates until all targets are met.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'USE_TOKENS',
+                label: 'Include tokens in final Pool %',
+                hint: 'Include potential pool XP of Mastery tokens in final Pool %.',
+                default: false,
+            },
+            {
+                type: 'switch',
+                name: 'SHOW_PARTIAL_LEVELS',
+                label: 'Show partial levels',
+                hint: 'Show partial levels in the final level and mastery.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'HIDE_REQUIRED',
+                label: 'Hide required resources',
+                hint: 'Toggle on to hide the required resources in the ETA tooltips.',
+                default: false,
+            },
+            {
+                type: 'switch',
+                name: 'DING_RESOURCES',
+                label: 'Ding when out of resources',
+                hint: 'Play a sound when we run out of resources.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'DING_LEVEL',
+                label: 'Ding on level target',
+                hint: 'Play a sound when we reach a level target.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'DING_MASTERY',
+                label: 'Ding on mastery target',
+                hint: 'Play a sound when we reach a mastery target.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'DING_POOL',
+                label: 'Ding on pool target',
+                hint: 'Play a sound when we reach a pool target.',
+                default: true,
+            },
+            {
+                type: 'switch',
+                name: 'USE_TABLETS',
+                label: '"Use" all created Summoning Tablets',
+                hint: 'Toggle on to include potential Summoning exp from created tablets.',
+                default: false,
+            },
+        ]);
+        //
         // change the ding sound level
-        this.set('DING_VOLUME', 0.1);
+        //this.set('DING_VOLUME', 0.1);
         /*
             targets
          */
         // Default global target level / mastery / pool% is 99 / 99 / 100
-        this.set('GLOBAL_TARGET_LEVEL', [99]);
-        this.set('GLOBAL_TARGET_MASTERY', [99]);
-        this.set('GLOBAL_TARGET_POOL', [100]);
-        // skill specific targets can be defined here, these override the global targets
-        this.set('TARGET_LEVEL', {
-            // 'Firemaking': [120],
+        this.generalSettings.add([
+            {
+                type: 'numberArray',
+                name: 'GLOBAL_TARGET_LEVEL',
+                label: 'Global level targets',
+                hint: 'Global level targets.',
+                default: [99],
+            },
+            {
+                type: 'numberArray',
+                name: 'GLOBAL_TARGET_MASTERY',
+                label: 'Global mastery targets',
+                hint: 'Global mastery targets.',
+                default: [99],
+            },
+            {
+                type: 'numberArray',
+                name: 'GLOBAL_TARGET_POOL',
+                label: 'Global pool targets (%)',
+                hint: 'Global pool targets (%).',
+                default: [100],
+            },
+        ]);
+        // skillSettings
+        this.skillSettings = new Map<string, any>();
+    }
+
+    addSkillSetting(key: string, label: string, skillName: string): string {
+        let skillSettings = this.skillSettings.get(skillName);
+        if (skillSettings === undefined) {
+            skillSettings = this.ctx.settings.section(skillName);
+            this.skillSettings.set(skillName, skillSettings);
+        }
+        skillSettings.add({
+            type: 'numberArray',
+            name: key,
+            label: label,
+            hint: `{target.label} for ${skillName}.`,
+            default: [],
         });
-        this.set('TARGET_MASTERY', {
-            // 'Herblore': [90],
-        });
-        this.set('TARGET_POOL', {
-            // 'Crafting': [25],
-        });
+        return key;
+    }
+
+    get(settingID: string, skillID: string | undefined = undefined): any {
+        if (skillID === undefined) {
+            return this.generalSettings.get(settingID);
+        }
+        return this.skillSettings.get(skillID).get(settingID);
+    }
+
+    set(settingID: string, value: any, skillID: string | undefined = undefined) {
+        if (skillID === undefined) {
+            return this.generalSettings.set(settingID, value);
+        }
+        return this.skillSettings.get(skillID).set(settingID, value);
     }
 
     // returns the appropriate target
@@ -87,55 +219,14 @@ export class ETASettings extends Map<string, any> {
     }
 
     getTargetLevel(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL')[skillName], 99, 170);
+        return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillName), 99, 170);
     }
 
     getTargetMastery(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_MASTERY'), this.get('TARGET_MASTERY')[skillName], 99, 170);
+        return this.getTarget(current, this.get('GLOBAL_TARGET_MASTERY'), this.get('TARGET_MASTERY', skillName), 99, 170);
     }
 
     getTargetPool(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL')[skillName], 100, 100);
+        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillName), 100, 100);
     }
-
-    /*
-        methods
-     */
-
-    // save settings to local storage
-    save() {
-        console.warn('ETASettings do not persist.');
-        window.localStorage['ETASettings'] = window.JSON.stringify(this, replacer);
-    }
-
-    // load settings from local storage
-    load() {
-        console.warn('ETASettings do not persist.');
-        return;
-        const stored = window.JSON.parse(window.localStorage['ETASettings']);
-        Object.getOwnPropertyNames(stored).forEach(x => {
-            // @ts-ignore 7053
-            this.set(x, stored[x]);
-        });
-    }
-}
-
-function replacer(key: string, value: any) {
-    if (value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}
-
-function reviver(key: string, value: any) {
-    if (typeof value === 'object' && value !== null) {
-        if (value.dataType === 'Map') {
-            return new Map(value.value);
-        }
-    }
-    return value;
 }
