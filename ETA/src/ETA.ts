@@ -5,6 +5,7 @@ import {Targets} from "./Targets";
 import {CurrentSkill, currentSkillConstructor} from "./CurrentSkill"
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
+import {EtaFishing} from "./EtaFishing";
 import {EtaMining} from "./EtaMining";
 import {EtaDisplayManager} from "./EtaDisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
@@ -40,6 +41,7 @@ export class ETA extends TinyMod {
         this.displayManager = new EtaDisplayManager(game, this.settings);
 
         // add skills
+        this.addSkillCalculators(EtaFishing, game.fishing, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
 
         // we made it
@@ -50,6 +52,8 @@ export class ETA extends TinyMod {
         const eta = new ETA(mod.getDevContext(), game, 'Dev');
         // @ts-ignore
         window.eta = eta;
+
+        // mining
         let skill = game.mining;
         // initial compute
         eta.recompute(skill);
@@ -60,6 +64,18 @@ export class ETA extends TinyMod {
             }
             eta.recompute(skill);
         }
+
+        // fishing
+        skill = game.fishing;
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            skill.actionTimer.start(skill.actionInterval);
+            skill.renderQueue.progressBar = true;
+            eta.recompute(skill);
+        }
+
+        // return eta object
         return eta;
     }
 
@@ -75,9 +91,36 @@ export class ETA extends TinyMod {
     recompute(skill: SkillWithMastery) {
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
-                this.displayManager.injectHTML(this.timeRemaining(skill, action), new Date());
+                if (!this.skipAction(skill, action)) {
+                    this.displayManager.injectHTML(this.timeRemaining(skill, action), new Date());
+                } else {
+                    this.displayManager.hideHTML(skill, action.id);
+                }
             });
         });
+    }
+
+    skipAction(skill: SkillWithMastery, action: any): boolean {
+        // @ts-ignore
+        const fishing = game.fishing;
+        if (skill.name === fishing.name) {
+            const calculators = this.skillCalculators.get(skill.name);
+            if (calculators === undefined) {
+                return true;
+            }
+            const calculator = calculators.get(action.id);
+            if (calculator === undefined) {
+                return true;
+            }
+            const fish = fishing.selectedAreaFish.get((calculator as EtaFishing).area);
+            if (fish === undefined) {
+                return true;
+            }
+            if (fish.id !== action.id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     timeRemaining(skill: SkillWithMastery, action: any): any {

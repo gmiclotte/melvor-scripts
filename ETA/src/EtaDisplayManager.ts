@@ -4,6 +4,7 @@ import {Game} from "../../Game-Files/built/game";
 import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
 import {CurrentSkill} from "./CurrentSkill";
 import {ETASettings} from "./Settings";
+import {FishingArea} from "../../Game-Files/built/fishing";
 
 export class EtaDisplayManager {
     private displays: Map<string, boolean>;
@@ -37,14 +38,27 @@ export class EtaDisplayManager {
         let node = null;
         const wrapperID = `${displayID}Wrapper`;
         let wrapper = undefined;
+        let index;
         switch (skill.name) {
+            // @ts-ignore
+            case game.fishing.name:
+                node = document.getElementById('fishing-area-menu-container');
+                if (node === null) {
+                    return null;
+                }
+                // @ts-ignore
+                index = game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
+                    area.fish.find((fish: any) => fish.id === id) !== undefined);
+                node = node.children[index].children[0].children[0].children[3].children[0].children[1].children[1];
+                display = node.appendChild(this.displayContainer(displayID));
+                break;
             // @ts-ignore
             case game.mining.name:
                 node = document.getElementById(`mining-ores-container`);
                 if (node === null) {
                     return null;
                 }
-                const index = skill.actions.allObjects.findIndex((action: any) => action.id === id);
+                index = skill.actions.allObjects.findIndex((action: any) => action.id === id);
                 node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
                 const parent = node.parentNode;
                 if (parent === null) {
@@ -120,11 +134,27 @@ export class EtaDisplayManager {
         return date + hours + ':' + minutes + amOrPm;
     }
 
+    hideHTML(skill: SkillWithMastery, actionID: string) {
+        // disable time left element
+        const timeLeftElement = this.createDisplay(skill, actionID);
+        if (timeLeftElement === null) {
+            return undefined;
+        }
+        timeLeftElement.style.display = 'none';
+        // disable item amount element
+        const youHaveElementId = timeLeftElement.id + "-YouHave";
+        const youHaveElement = document.getElementById(youHaveElementId);
+        if (youHaveElement !== null) {
+            youHaveElement.style.display = 'none';
+        }
+    }
+
     injectHTML(result: CurrentSkill, now: Date) {
         const timeLeftElement = this.createDisplay(result.skill, result.action.id);
         if (timeLeftElement === null) {
             return undefined;
         }
+        timeLeftElement.style.display = 'block';
         const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
         let finishedTime = this.addMSToDate(now, result.timeTaken.ms);
         timeLeftElement.textContent = "";
@@ -144,6 +174,7 @@ export class EtaDisplayManager {
         const youHaveElementId = timeLeftElement.id + "-YouHave";
         const youHaveElement = document.getElementById(youHaveElementId);
         if (item !== undefined && youHaveElement !== null) {
+            youHaveElement.style.display = 'block';
             while (youHaveElement.lastChild) {
                 youHaveElement.removeChild(youHaveElement.lastChild);
             }

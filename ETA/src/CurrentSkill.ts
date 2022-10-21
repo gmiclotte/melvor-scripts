@@ -41,6 +41,7 @@ export class CurrentSkill {
     // other
     protected totalMasteryWithoutAction: number;
     protected infiniteActions: boolean;
+    protected readonly TICK_INTERVAL: number;
 
     constructor(skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
         this.skill = skill;
@@ -65,6 +66,8 @@ export class CurrentSkill {
         // @ts-ignore
         this.masteryCheckpoints = [...masteryCheckpoints, Infinity];
         this.infiniteActions = false;
+        // @ts-ignore
+        this.TICK_INTERVAL = TICK_INTERVAL;
         // flag to check if target was already reached
         this.skillReached = false;
         this.masteryReached = false;
