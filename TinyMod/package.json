@@ -1,28 +1,30 @@
 {
-  "name": "tiny_mod",
-  "version": "0.1.0",
-  "description": "Settings UI and utils for Melvor mods",
-  "config": {
-    "tinyMod": "../TinyMod"
-  },
-  "scripts": {
-    "lint": "cd ./dist && web-ext lint",
-    "compile-script": "cp ${npm_package_config_tinyMod}/config/tsconfig.json tsconfig.json && npx tsc",
-    "build-script": "cp ${npm_package_config_tinyMod}/scripts/build.js build.js && node build.js ${npm_package_config_tinyMod}",
-    "test-script": "cp ${npm_package_config_tinyMod}/scripts/test.sh test.sh && bash test.sh ${npm_package_config_tinyMod}",
-    "build": "npm run compile-script; npm run build-script; npm run test-script"
-  },
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/gmiclotte/melvor-scripts/issues"
-  },
-  "homepage": "https://github.com/gmiclotte/melvor-scripts",
-  "devDependencies": {
-    "@types/bootstrap": "^5.2.3",
-    "@types/jquery": "^3.5.14",
-    "archiver": "^5.3.1",
-    "copy-dir": "^1.3.0",
-    "typescript": "^4.7.4",
-    "web-ext": "^7.2.0"
-  }
+    "name": "tiny_mod",
+    "version": "0.1.1",
+    "description": "Settings UI and utils for Melvor mods",
+    "config": {
+        "tinyMod": "../TinyMod"
+    },
+    "scripts": {
+        "build": "npm run webpack; npm run build-script",
+        "build-script": "cp ${npm_package_config_tinyMod}/scripts/build.js build.js && node build.js ${npm_package_config_tinyMod} && rm build.js",
+        "dist": "npm run version; npm run build",
+        "version": "cp ${npm_package_config_tinyMod}/scripts/increment-version.js increment-version.js && node increment-version.js && rm increment-version.js",
+        "webpack": "cp ${npm_package_config_tinyMod}/config/webpack.config.js webpack.config.js && cp ${npm_package_config_tinyMod}/config/tsconfig.json tsconfig.json && webpack && rm webpack.config.js"
+    },
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/gmiclotte/melvor-scripts/issues"
+    },
+    "homepage": "https://github.com/gmiclotte/melvor-scripts",
+    "devDependencies": {
+        "@types/bootstrap": "^5.2.5",
+        "@types/jquery": "^3.5.14",
+        "archiver": "^5.3.1",
+        "copy-dir": "^1.3.0",
+        "inquirer": "^8.2.4",
+        "ts-loader": "^9.4.1",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0"
+    }
 }

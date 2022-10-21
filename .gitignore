@@ -1,11 +1,12 @@
 .idea/
 *.zip
 node_modules/
-.build/
+build/
 dist/
-/*/build.js
-/*/test.sh
-/*/test.js
-/*/test.css.js
+packed/
+/*/tokens.json
 /*/tsconfig.json
+/*/webpack.config.json
+/*/build.js
+/*/increment-version.js
 *.old

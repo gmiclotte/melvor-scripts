@@ -307,11 +307,14 @@ export class Card {
      * @param object
      * @param key
      * @param defaultValue
+     * @param callback
      */
-    addNumberArrayInput(labelText: any, object: any, key: string, defaultValue: any = undefined) {
-        let interval: any = undefined;
+    addNumberArrayInput(labelText: any, object: any, key: string, defaultValue: any = undefined,
+                        get = this.getKeyFromObject, set = this.setValToObject) {
+        let timeout: any = undefined;
         const onInputCallback = (event: any) => {
-            let input = event.currentTarget.value;
+            const rawInput = event.currentTarget.value;
+            const input = rawInput === 'undefined' || rawInput === 'null' ? '' : rawInput;
             let result: any;
             try {
                 // split input into numbers
@@ -330,20 +333,17 @@ export class Card {
             if (result.length === 0) {
                 result = defaultValue;
             }
-            if (input === 'undefined' || input === 'null') {
-                input = '';
+            if (timeout) {
+                clearTimeout(timeout);
             }
-            if (interval) {
-                clearInterval(interval);
-            }
-            if (input !== this.numberArrayToInputString(this.getKeyFromObject(object, key))) {
-                interval = setTimeout(() => {
-                    this.setValToObject(object, key, result)
+            if (input !== this.numberArrayToInputString(get(object, key))) {
+                timeout = setTimeout(() => {
+                    set(object, key, result);
                     event.target.value = this.numberArrayToInputString(result);
                 }, 500);
             }
         }
-        this.addTextInput(labelText, this.numberArrayToInputString(this.getKeyFromObject(object, key)), onInputCallback, labelText + key);
+        this.addTextInput(labelText, this.numberArrayToInputString(get(object, key)), onInputCallback, labelText + key);
     }
 
     getKeyFromObject(object: any, key: string): any {

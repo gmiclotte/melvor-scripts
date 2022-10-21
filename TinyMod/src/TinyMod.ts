@@ -50,10 +50,16 @@ export class TinyMod {
         document.head.appendChild(style);
         const sheet = style.sheet;
         if (sheet) {
-            sheet.insertRule(`#${this.modalID}.show { display: flex !important; }`);
+            sheet.insertRule(`#${this.modalID} .show { display: flex !important; }`);
             sheet.insertRule(`#${this.modalID} .modal-dialog { max-width: 95%; display: inline-block; }`);
         }
-        addMenuItem(`${this.tag} Settings`, this.icon, this.menuItemID, this.modalID);
+        //addMenuItem(`${this.tag} Settings`, this.icon, this.menuItemID, this.modalID);
+        // @ts-ignore
+        sidebar.category('Modding').item('Mod Settings').subitem(this.tag).remove();
+        // @ts-ignore
+        const settingsSideBarItem = sidebar.category('Modding').item('Mod Settings').subitem(this.tag);
+        settingsSideBarItem.rootEl.dataset.toggle = 'modal';
+        settingsSideBarItem.rootEl.dataset.target = '#' + this.modalID;
 
         // log
         this.log('added settings menu!')

@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 export function addModal(title: any, id: any, content: any) {
     // create modal
     const modal = document.createElement('div');
