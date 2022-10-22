@@ -1,10 +1,10 @@
 import {Mining} from "../../Game-Files/built/rockTicking";
-import {CurrentSkill} from "./CurrentSkill";
+import {EtaSkill} from "./EtaSkill";
 import {ETASettings} from "./Settings";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 
-export class EtaMining extends CurrentSkill {
+export class EtaMining extends EtaSkill {
     constructor(mining: Mining, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
         super(mining, action, modifiers, astrology, settings);
     }

@@ -1,5 +1,5 @@
 import {SkillWithMastery} from "../../Game-Files/built/skill";
-import {CurrentSkill} from "./CurrentSkill";
+import {EtaSkill} from "./EtaSkill";
 
 export class Targets {
     public skillLevel: number;
@@ -10,9 +10,9 @@ export class Targets {
     public poolXp: number;
     public materials: boolean;
     public consumables: boolean;
-    private readonly current: CurrentSkill;
+    private readonly current: EtaSkill;
 
-    constructor(current: CurrentSkill, settings: any, skill: SkillWithMastery, action: any = undefined) {
+    constructor(current: EtaSkill, settings: any, skill: SkillWithMastery, action: any = undefined) {
         this.current = current;
         if (action === undefined) {
             this.skillLevel = 0;

@@ -2,7 +2,7 @@ import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
 import {Targets} from "./Targets";
-import {CurrentSkill, currentSkillConstructor} from "./CurrentSkill"
+import {currentSkillConstructor, EtaSkill} from "./EtaSkill"
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaFishing} from "./EtaFishing";
@@ -23,7 +23,7 @@ export class ETA extends TinyMod {
     // @ts-ignore 2564
     private globalTargetsCard: Card;
     private previousTargets: Map<string, Targets>;
-    private skillCalculators: Map<string, Map<string, CurrentSkill>>;
+    private skillCalculators: Map<string, Map<string, EtaSkill>>;
     private displayManager: EtaDisplayManager;
 
     constructor(ctx: any, game: Game, tag: string = 'ETA') {
@@ -37,7 +37,7 @@ export class ETA extends TinyMod {
         // initialize fields
         this.nameSpace = 'eta';
         this.previousTargets = new Map<string, Targets>();
-        this.skillCalculators = new Map<string, Map<string, CurrentSkill>>()
+        this.skillCalculators = new Map<string, Map<string, EtaSkill>>()
         this.displayManager = new EtaDisplayManager(game, this.settings);
 
         // add skills
@@ -80,7 +80,7 @@ export class ETA extends TinyMod {
     }
 
     addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers, astrology: Astrology) {
-        const skillMap = new Map<string, CurrentSkill>();
+        const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
             skillMap.set(action.id, new constructor(skill, action, modifiers, astrology, this.settings));
             this.displayManager.createDisplay(skill, action.id);

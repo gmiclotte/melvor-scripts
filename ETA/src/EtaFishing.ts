@@ -1,10 +1,10 @@
 import {Fish, Fishing, FishingArea} from "../../Game-Files/built/fishing";
-import {CurrentSkill} from "./CurrentSkill";
+import {EtaSkill} from "./EtaSkill";
 import {ETASettings} from "./Settings";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 
-export class EtaFishing extends CurrentSkill {
+export class EtaFishing extends EtaSkill {
     // @ts-ignore
     public area: FishingArea;
 

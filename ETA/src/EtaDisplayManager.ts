@@ -2,7 +2,7 @@ import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Bank} from "../../Game-Files/built/bank2";
 import {Game} from "../../Game-Files/built/game";
 import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
-import {CurrentSkill} from "./CurrentSkill";
+import {EtaSkill} from "./EtaSkill";
 import {ETASettings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
 
@@ -149,7 +149,7 @@ export class EtaDisplayManager {
         }
     }
 
-    injectHTML(result: CurrentSkill, now: Date) {
+    injectHTML(result: EtaSkill, now: Date) {
         const timeLeftElement = this.createDisplay(result.skill, result.action.id);
         if (timeLeftElement === null) {
             return undefined;
@@ -208,7 +208,7 @@ export class EtaDisplayManager {
         return timeLeftElement;
     }
 
-    generateTooltips(result: CurrentSkill, timeLeftElement: HTMLElement, now: Date, flags = {
+    generateTooltips(result: EtaSkill, timeLeftElement: HTMLElement, now: Date, flags = {
         noSkill: false,
         noMastery: false,
         noPool: false
@@ -268,7 +268,7 @@ export class EtaDisplayManager {
         timeLeftElement._tippy.setContent(`<div>${tooltip}</div>`);
     }
 
-    getPercentageInLevel(result: CurrentSkill, level: number, type: string): number {
+    getPercentageInLevel(result: EtaSkill, level: number, type: string): number {
         const currentLevel = level;
         if (currentLevel >= 99 && type === "mastery") {
             // mastery is capped at 99
@@ -280,7 +280,7 @@ export class EtaDisplayManager {
         return (result.skillXp - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100;
     }
 
-    tooltipSection(result: CurrentSkill, now: Date, ms: number, target: number | string, resources: Map<string, number>, prepend = '') {
+    tooltipSection(result: EtaSkill, now: Date, ms: number, target: number | string, resources: Map<string, number>, prepend = '') {
         // final level and time to target level
         if (ms > 0) {
             return this.wrapTimeLeft(
@@ -320,11 +320,11 @@ export class EtaDisplayManager {
             + '</div>';
     }
 
-    timeLeftToHTML(result: CurrentSkill, target: number | string, time: string, finish: string, resources: Map<string, number>) {
+    timeLeftToHTML(result: EtaSkill, target: number | string, time: string, finish: string, resources: Map<string, number>) {
         return `Time to ${target}: ${time}<br>ETA: ${finish}` + this.resourcesLeftToHTML(result, resources);
     }
 
-    resourcesLeftToHTML(result: CurrentSkill, resources: Map<string, number>) {
+    resourcesLeftToHTML(result: EtaSkill, resources: Map<string, number>) {
         // TODO: update this
         if (this.settings.get('HIDE_REQUIRED') || result.isGathering || resources.size === 0) {
             return '';

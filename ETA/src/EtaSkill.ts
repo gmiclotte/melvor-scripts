@@ -10,9 +10,9 @@ export type currentSkillConstructor = new(
     modifiers: PlayerModifiers,
     astrology: Astrology,
     settings: ETASettings,
-) => CurrentSkill;
+) => EtaSkill;
 
-export class CurrentSkill {
+export class EtaSkill {
     // readonly fields
     public readonly skill: any;
     public readonly action: any;
