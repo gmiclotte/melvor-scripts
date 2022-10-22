@@ -3,8 +3,10 @@ import {Astrology} from "../../Game-Files/built/astrology";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {ETASettings} from "./Settings";
+import {Game} from "../../Game-Files/built/game";
 
 export type currentSkillConstructor = new(
+    game: Game,
     skill: any,
     action: any,
     modifiers: PlayerModifiers,
@@ -13,7 +15,6 @@ export type currentSkillConstructor = new(
 ) => EtaSkill;
 
 export class EtaSkill {
-    // readonly fields
     public readonly skill: any;
     public readonly action: any;
     public readonly isGathering: boolean;
@@ -33,6 +34,8 @@ export class EtaSkill {
     public skillReached: boolean;
     public masteryReached: boolean;
     public poolReached: boolean;
+    // readonly fields
+    protected readonly game: Game;
     protected readonly modifiers: PlayerModifiers;
     protected readonly masteryCheckpoints: number[];
     protected readonly astrology: Astrology;
@@ -43,7 +46,8 @@ export class EtaSkill {
     protected infiniteActions: boolean;
     protected readonly TICK_INTERVAL: number;
 
-    constructor(skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
+    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
+        this.game = game;
         this.skill = skill;
         this.action = action;
         this.modifiers = modifiers;
@@ -273,6 +277,17 @@ export class EtaSkill {
 
     progress(): void {
         const gainsPerAction = this.gainsPerAction;
+        const actions = this.actionsToCheckpoint(gainsPerAction);
+        // TODO: progress all trackers
+        if (actions === Infinity) {
+            this.infiniteActions = true;
+            return;
+        }
+        this.addActions(gainsPerAction, actions);
+        this.setFinalValues();
+    }
+
+    actionsToCheckpoint(gainsPerAction: Rates) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         // TODO: get next checkpoints
@@ -287,22 +302,19 @@ export class EtaSkill {
             mastery: requiredForCheckPoint.mastery / gainsPerAction.mastery,
             pool: requiredForCheckPoint.pool / gainsPerAction.pool,
         }
-        const actions = Math.ceil(Math.min(
+        return Math.ceil(Math.min(
             actionsToCheckpoint.xp,
             actionsToCheckpoint.mastery,
             actionsToCheckpoint.pool,
         ));
-        // TODO: progress all trackers
-        if (actions === Infinity) {
-            this.infiniteActions = true;
-            return;
-        }
+    }
+
+    addActions(gainsPerAction: Rates, actions: number) {
         this.skillXp += gainsPerAction.xp * actions;
         this.masteryXp += gainsPerAction.mastery * actions;
         this.poolXp += gainsPerAction.pool * actions;
         this.actionsTaken.ms += actions;
         this.timeTaken.ms += actions * gainsPerAction.ms;
-        this.setFinalValues();
     }
 
     setCurrentRates(gains: Rates | undefined = undefined) {

@@ -5,8 +5,11 @@ import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
 import {EtaSkill} from "./EtaSkill";
 import {ETASettings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
+import {ResourceRates} from "./ResourceRates";
 
 export class EtaDisplayManager {
+    public artisanSkills: SkillWithMastery[];
+    private readonly game: Game;
     private displays: Map<string, boolean>;
     private settings: ETASettings;
     private bank: Bank;
@@ -16,16 +19,39 @@ export class EtaDisplayManager {
     constructor(game: Game, settings: ETASettings) {
         this.displays = new Map<string, boolean>()
         this.settings = settings;
-        this.bank = game.bank;
-        this.items = game.items;
+        this.game = game;
+        this.bank = this.game.bank;
+        this.items = this.game.items;
+        this.artisanSkills = [
+            this.game.smithing,
+            this.game.fletching,
+            this.game.crafting,
+            this.game.runecrafting,
+            this.game.herblore,
+            this.game.summoning,
+        ];
         // @ts-ignore
         this.formatNumber = formatNumber;
     }
 
-    createDisplay(skill: SkillWithMastery, id: string): HTMLElement | null {
+    removeAllDisplays() {
+        this.displays.forEach((_, displayID) => {
+            let display = document.getElementById(displayID);
+            if (display !== null) {
+                display.remove();
+            }
+            display = document.getElementById(displayID + '-YouHave');
+            console.log(displayID + '-YouHave', display)
+            if (display !== null) {
+                display.remove();
+            }
+        });
+    }
+
+    createDisplay(skill: SkillWithMastery, actionID: string): HTMLElement | null {
         let displayID = `etaTime${skill.name}`;
-        if (id !== undefined) {
-            displayID += `-${id}`;
+        if (actionID !== undefined) {
+            displayID += actionID;
         }
         displayID = displayID.replace(' ', '-');
         this.displays.set(displayID, true);
@@ -34,31 +60,52 @@ export class EtaDisplayManager {
             // display already exists
             return display;
         }
+        // standard processing container
+        if (this.artisanSkills.includes(skill)) {
+            const container = document.getElementById(`${skill.name.toLowerCase()}-artisan-container`);
+            if (container === null) {
+                return null;
+            }
+            const parent = container.children[0].children[0].children[0].children[0].children[1];
+            const node = parent.children[0];
+            if (node === null) {
+                return null;
+            }
+            display = parent.insertBefore(this.displayContainer(displayID), node.nextSibling);
+            display = display ? display.firstChild as HTMLElement : null;
+            if (display === null) {
+                return null;
+            }
+            // @ts-ignore
+            console.log(skill.activeRecipe.id, actionID, skill.activeRecipe.id !== actionID)
+            // @ts-ignore
+            if (skill.activeRecipe.id !== actionID) {
+                display.style.display = 'none';
+            }
+            return display;
+        }
         // other containers
         let node = null;
         const wrapperID = `${displayID}Wrapper`;
         let wrapper = undefined;
         let index;
         switch (skill.name) {
-            // @ts-ignore
-            case game.fishing.name:
+            case this.game.fishing.name:
                 node = document.getElementById('fishing-area-menu-container');
                 if (node === null) {
                     return null;
                 }
-                // @ts-ignore
-                index = game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
-                    area.fish.find((fish: any) => fish.id === id) !== undefined);
+                index = this.game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
+                    area.fish.find((fish: any) => fish.id === actionID) !== undefined);
                 node = node.children[index].children[0].children[0].children[3].children[0].children[1].children[1];
                 display = node.appendChild(this.displayContainer(displayID));
                 break;
-            // @ts-ignore
-            case game.mining.name:
+            case this.game.mining.name:
                 node = document.getElementById(`mining-ores-container`);
                 if (node === null) {
                     return null;
                 }
-                index = skill.actions.allObjects.findIndex((action: any) => action.id === id);
+                index = skill.actions.allObjects.findIndex((action: any) => action.id === actionID);
                 node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
                 const parent = node.parentNode;
                 if (parent === null) {
@@ -168,6 +215,17 @@ export class EtaDisplayManager {
         if (this.settings.get('SHOW_ACTION_TIME')) {
             timeLeftElement.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
             timeLeftElement.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
+        }
+        if (this.artisanSkills.includes(result.skill)) {
+            const timeTaken = result.timeTaken as ResourceRates;
+            const actionsTaken = result.actionsTaken as ResourceRates;
+            if (timeTaken.resources === 0) {
+                timeLeftElement.textContent += "\r\nNo resources!";
+            } else {
+                timeLeftElement.textContent += "\r\nActions: " + this.formatNumber(actionsTaken.resources)
+                    + "\r\nTime: " + this.msToHms(timeTaken.resources)
+                    + "\r\nETA: " + this.dateFormat(now, finishedTime);
+            }
         }
         const itemID = result.action.product.id;
         const item = this.items.getObjectByID(itemID);

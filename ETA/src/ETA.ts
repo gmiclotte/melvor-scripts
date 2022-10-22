@@ -11,8 +11,10 @@ import {EtaDisplayManager} from "./EtaDisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {ETASettings} from "./Settings";
+import {EtaCrafting} from "./EtaCrafting";
 
 export class ETA extends TinyMod {
+    private readonly game: Game;
     private readonly settings: ETASettings;
     private readonly nameSpace: string;
 
@@ -28,6 +30,7 @@ export class ETA extends TinyMod {
 
     constructor(ctx: any, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
+        this.game = game;
         this.log('Loading...');
 
         // initialize settings
@@ -43,12 +46,20 @@ export class ETA extends TinyMod {
         // add skills
         this.addSkillCalculators(EtaFishing, game.fishing, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
+        this.addSkillCalculators(EtaCrafting, game.crafting, game.modifiers, game.astrology);
 
         // we made it
         this.log('Loaded!');
     }
 
     static testup(mod: any, game: Game): any {
+        // clean up existing UI elements
+        // @ts-ignore
+        if (window.eta && window.eta.displayManager) {
+            // @ts-ignore
+            window.eta.displayManager.removeAllDisplays();
+        }
+
         const eta = new ETA(mod.getDevContext(), game, 'Dev');
         // @ts-ignore
         window.eta = eta;
@@ -65,15 +76,19 @@ export class ETA extends TinyMod {
             eta.recompute(skill);
         }
 
-        // fishing
-        skill = game.fishing;
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            skill.actionTimer.start(skill.actionInterval);
-            skill.renderQueue.progressBar = true;
+        // skills with generic startActionTimer
+        [
+            game.fishing,
+            game.crafting,
+        ].forEach((skill: any) => {
+            // initial compute
             eta.recompute(skill);
-        }
+            skill.startActionTimer = () => {
+                skill.actionTimer.start(skill.actionInterval);
+                skill.renderQueue.progressBar = true;
+                eta.recompute(skill);
+            }
+        });
 
         // return eta object
         return eta;
@@ -82,7 +97,7 @@ export class ETA extends TinyMod {
     addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers, astrology: Astrology) {
         const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
-            skillMap.set(action.id, new constructor(skill, action, modifiers, astrology, this.settings));
+            skillMap.set(action.id, new constructor(this.game, skill, action, modifiers, astrology, this.settings));
             this.displayManager.createDisplay(skill, action.id);
         });
         this.skillCalculators.set(skill.name, skillMap);
@@ -101,6 +116,12 @@ export class ETA extends TinyMod {
     }
 
     skipAction(skill: SkillWithMastery, action: any): boolean {
+        if (this.displayManager.artisanSkills.includes(skill)) {
+            // @ts-ignore
+            if (skill.activeRecipe.id !== action.id) {
+                return true;
+            }
+        }
         // @ts-ignore
         const fishing = game.fishing;
         if (skill.name === fishing.name) {

@@ -3,10 +3,11 @@ import {EtaSkill} from "./EtaSkill";
 import {ETASettings} from "./Settings";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
+import {Game} from "../../Game-Files/built/game";
 
 export class EtaMining extends EtaSkill {
-    constructor(mining: Mining, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
-        super(mining, action, modifiers, astrology, settings);
+    constructor(game: Game, mining: Mining, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
+        super(game, mining, action, modifiers, astrology, settings);
     }
 
     get maxRockHP() {
