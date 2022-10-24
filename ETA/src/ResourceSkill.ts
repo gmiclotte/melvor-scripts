@@ -109,7 +109,11 @@ export class ResourceSkill extends EtaSkill {
             - this.modifiers.decreasedGlobalPreservationChance;
         +this.modifiers.getSkillModifierValue('increasedSkillPreservationChance', this);
         -this.modifiers.getSkillModifierValue('decreasedSkillPreservationChance', this);
-        return Math.min(chance, this.getPreservationCap());
+        chance = Math.min(chance, this.getPreservationCap());
+        if (chance < 0) {
+            return 0;
+        }
+        return chance;
     }
 
     getPreservationCap() {
