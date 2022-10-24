@@ -1,9 +1,11 @@
-export class ETASettings {
+import {Game} from "../../Game-Files/built/game";
+
+export class Settings {
     private readonly ctx: any;
     private readonly generalSettings: any;
     private readonly skillSettings: Map<string, any>;
 
-    constructor(ctx: any) {
+    constructor(ctx: any, game: Game) {
         this.ctx = ctx;
         try {
             ctx.settings.type('numberArray', {
@@ -152,9 +154,19 @@ export class ETASettings {
         ]);
         // skillSettings
         this.skillSettings = new Map<string, any>();
+        game.skills.filter((skill: any) => skill.actions).forEach((skill: any) => {
+            [
+                {id: 'LEVEL', label: 'Level targets'},
+                {id: 'MASTERY', label: 'Mastery targets'},
+                {id: 'POOL', label: 'Pool targets (%)'},
+            ].forEach(target => {
+                const key = 'TARGET_' + target.id;
+                this.addSkillSetting(key, target.label, skill.name);
+            });
+        });
     }
 
-    addSkillSetting(key: string, label: string, skillName: string): string {
+    private addSkillSetting(key: string, label: string, skillName: string): string {
         let skillSettings = this.skillSettings.get(skillName);
         if (skillSettings === undefined) {
             skillSettings = this.ctx.settings.section(skillName);

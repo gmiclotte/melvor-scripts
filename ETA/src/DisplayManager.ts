@@ -1,6 +1,6 @@
 import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
-import {ETASettings} from "./Settings";
+import {Settings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
 import {Display} from "./Display";
 import {EtaSkill} from "./EtaSkill";
@@ -10,9 +10,9 @@ export class DisplayManager {
     public readonly artisanSkills: SkillWithMastery[];
     private readonly game: Game;
     private readonly displays: Map<string, Display>;
-    private readonly settings: ETASettings;
+    private readonly settings: Settings;
 
-    constructor(game: Game, settings: ETASettings) {
+    constructor(game: Game, settings: Settings) {
         this.displays = new Map<string, Display>()
         this.settings = settings;
         this.game = game;

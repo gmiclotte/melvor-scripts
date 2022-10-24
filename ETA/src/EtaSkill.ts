@@ -2,7 +2,7 @@ import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
-import {ETASettings} from "./Settings";
+import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 import {ActionCounterWrapper} from "./ActionCounter";
 
@@ -12,7 +12,7 @@ export type currentSkillConstructor = new(
     action: any,
     modifiers: PlayerModifiers,
     astrology: Astrology,
-    settings: ETASettings,
+    settings: Settings,
 ) => EtaSkill;
 
 export class EtaSkill {

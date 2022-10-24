@@ -10,12 +10,12 @@ import {EtaMining} from "./EtaMining";
 import {DisplayManager} from "./DisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
-import {ETASettings} from "./Settings";
+import {Settings} from "./Settings";
 import {EtaCrafting} from "./EtaCrafting";
 
 export class ETA extends TinyMod {
     private readonly game: Game;
-    private readonly settings: ETASettings;
+    private readonly settings: Settings;
     private readonly nameSpace: string;
 
     // @ts-ignore 2564
@@ -28,13 +28,13 @@ export class ETA extends TinyMod {
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
     private displayManager: DisplayManager;
 
-    constructor(ctx: any, game: Game, tag: string = 'ETA') {
+    constructor(ctx: any, settings: Settings, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
         this.game = game;
         this.log('Loading...');
 
         // initialize settings
-        this.settings = new ETASettings(this.ctx);
+        this.settings = settings;
         this.createSettingsMenu();
 
         // initialize fields
@@ -59,8 +59,8 @@ export class ETA extends TinyMod {
             // @ts-ignore
             window.eta.displayManager.removeAllDisplays();
         }
-
-        const eta = new ETA(mod.getDevContext(), game, 'Dev');
+        const settings = new Settings(mod.getDevContext(), game);
+        const eta = new ETA(mod.getDevContext(), settings, game, 'Dev');
         // @ts-ignore
         window.eta = eta;
 
@@ -226,7 +226,7 @@ export class ETA extends TinyMod {
     addTargetInputs() {
         this.skillTargetCard = new TabCard('EtaTarget', true, this.tag, this.content, '', '150px', true);
         // @ts-ignore 2304
-        game.skills.allObjects.filter((skill: any) => !skill.isCombat).forEach((skill: any) => {
+        game.skills.filter((skill: any) => skill.actions).forEach((skill: any) => {
             const card = this.skillTargetCard.addTab(skill.name, skill.media, '', '150px', undefined);
             card.addSectionTitle(skill.name + ' Targets');
             [
@@ -235,7 +235,6 @@ export class ETA extends TinyMod {
                 {id: 'POOL', label: 'Pool targets (%)'},
             ].forEach(target => {
                 const key = 'TARGET_' + target.id;
-                this.settings.addSkillSetting(key, target.label, skill.name);
                 card.addNumberArrayInput(
                     target.label,
                     this.settings,

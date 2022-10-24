@@ -1,7 +1,7 @@
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceRates} from "./ResourceRates";
-import {ETASettings} from "./Settings";
+import {Settings} from "./Settings";
 import {EtaSkill} from "./EtaSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
@@ -12,7 +12,7 @@ export class ResourceSkill extends EtaSkill {
     public resourcesReached: boolean;
     public remainingResources: ResourceActionCounter;
 
-    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
+    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
         super(game, skill, action, modifiers, astrology, settings);
         this.actionsTaken = new ResourceActionCounterWrapper();
         this.remainingResources = ResourceActionCounter.emptyCounter;

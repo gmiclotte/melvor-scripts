@@ -1,7 +1,7 @@
 import {EtaSkill} from "./EtaSkill";
 import {ActionCounter} from "./ActionCounter";
 import {DisplayManager} from "./DisplayManager";
-import {ETASettings} from "./Settings";
+import {Settings} from "./Settings";
 import {Bank} from "../../Game-Files/built/bank2";
 import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
 
@@ -9,12 +9,12 @@ export class Display {
     public readonly container!: HTMLElement;
     public readonly element!: HTMLElement;
     protected readonly manager: DisplayManager;
-    protected readonly settings: ETASettings;
+    protected readonly settings: Settings;
     protected readonly bank: Bank;
     protected readonly items: ItemRegistry;
     protected readonly formatNumber: (_: any) => string;
 
-    constructor(manager: DisplayManager, settings: ETASettings, bank: Bank, items: ItemRegistry, id: string) {
+    constructor(manager: DisplayManager, settings: Settings, bank: Bank, items: ItemRegistry, id: string) {
         this.manager = manager;
         this.settings = settings;
         this.bank = bank;
