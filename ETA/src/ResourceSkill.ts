@@ -110,8 +110,8 @@ export class ResourceSkill extends EtaSkill {
     getPreservationChance(chance: number): number {
         chance += this.modifiers.increasedGlobalPreservationChance
             - this.modifiers.decreasedGlobalPreservationChance;
-        +this.modifiers.getSkillModifierValue('increasedSkillPreservationChance', this);
-        -this.modifiers.getSkillModifierValue('decreasedSkillPreservationChance', this);
+        +this.getSkillModifierValue('increasedSkillPreservationChance');
+        -this.getSkillModifierValue('decreasedSkillPreservationChance');
         chance = Math.min(chance, this.getPreservationCap());
         if (chance < 0) {
             return 0;
@@ -122,8 +122,8 @@ export class ResourceSkill extends EtaSkill {
     getPreservationCap() {
         const baseCap = 80;
         return baseCap
-            + this.modifiers.getSkillModifierValue('increasedSkillPreservationCap', this)
-            - this.modifiers.getSkillModifierValue('decreasedSkillPreservationCap', this);
+            + this.getSkillModifierValue('increasedSkillPreservationCap')
+            - this.getSkillModifierValue('decreasedSkillPreservationCap');
     }
 
     getRecipeCosts() {

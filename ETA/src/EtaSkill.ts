@@ -349,10 +349,10 @@ export class EtaSkill {
 
     getMasteryXPModifier() {
         let modifier = this.modifiers.increasedGlobalMasteryXP - this.modifiers.decreasedGlobalMasteryXP;
-        modifier += this.modifiers.getSkillModifierValue('increasedMasteryXP', this);
-        modifier -= this.modifiers.getSkillModifierValue('decreasedMasteryXP', this);
+        modifier += this.getSkillModifierValue('increasedMasteryXP');
+        modifier -= this.getSkillModifierValue('decreasedMasteryXP');
         this.astrology.masteryXPConstellations.forEach((constellation) => {
-            const modValue = this.modifiers.getSkillModifierValue(constellation.masteryXPModifier, this);
+            const modValue = this.getSkillModifierValue(constellation.masteryXPModifier);
             if (modValue > 0)
                 modifier += modValue * constellation.maxValueModifiers;
         });
