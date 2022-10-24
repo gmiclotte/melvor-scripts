@@ -25,4 +25,20 @@ export class EtaCrafting extends ResourceSkill {
         }
         return super.getPreservationChance(chance);
     }
+
+    getFlatIntervalModifier() {
+        let modifier = super.getFlatIntervalModifier();
+        if (this.isPoolTierActive(2)) {
+            modifier -= 200;
+        }
+        return modifier;
+    }
+
+    getMasteryXPModifier() {
+        let modifier = super.getMasteryXPModifier();
+        if (this.isPoolTierActive(0)) {
+            modifier += 5;
+        }
+        return modifier;
+    }
 }
