@@ -5,47 +5,50 @@ import {Settings} from "./Settings";
 import {EtaSkill} from "./EtaSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
+import {Costs} from "../../Game-Files/built/skill";
 import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 
 export class ResourceSkill extends EtaSkill {
     public actionsTaken: ResourceActionCounterWrapper;
     public resourcesReached: boolean;
     public remainingResources: ResourceActionCounter;
+    protected costs: Costs;
+    protected costQuantityArray: { item: Item, quantity: number }[];
 
     constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
         super(game, skill, action, modifiers, astrology, settings);
         this.actionsTaken = new ResourceActionCounterWrapper();
         this.remainingResources = ResourceActionCounter.emptyCounter;
         this.resourcesReached = false;
+        this.costs = new Costs(undefined);
+        this.costQuantityArray = [];
     }
 
-    get itemCosts() {
-        return this.action.itemCosts;
+    get completed() {
+        return super.completed && this.noResourceCheckpointLeft;
     }
 
-    get gpCost() {
-        return this.action.gpCost;
-    }
-
-    get scCost() {
-        return this.action.scCost;
+    get noResourceCheckpointLeft() {
+        return this.actionsToResourceCheckpoint() <= 0;
     }
 
     get resourcesCompleted() {
-        return !this.resourcesReached && this.actionsToResourceCheckpoint() <= 0;
+        return !this.resourcesReached && this.noResourceCheckpointLeft;
     }
 
     init(game: Game) {
         super.init(game);
+        this.costs = this.getRecipeCosts();
+        this.costQuantityArray = this.costs.getItemQuantityArray();
         // actions performed
         this.actionsTaken.reset();
-        this.actionsTaken.active.items = this.itemCosts.map((cost: { item: Item, quantity: number }) =>
+        this.actionsTaken.active.items = this.costQuantityArray.map((cost: { item: Item, quantity: number }) =>
             ({item: cost.item, quantity: 0}));
         // set up remaining resources
         this.remainingResources = ResourceActionCounter.emptyCounter;
         this.remainingResources.gp = game.gp.amount;
         this.remainingResources.sc = game.slayerCoins.amount
-        this.remainingResources.items = this.itemCosts.map((cost: { item: Item, quantity: number }) =>
+        this.remainingResources.items = this.costQuantityArray.map((cost: { item: Item, quantity: number }) =>
             ({item: cost.item, quantity: game.bank.getQty(cost.item)}));
         // flag to check if target was already reached
         this.resourcesReached = false;
@@ -64,14 +67,14 @@ export class ResourceSkill extends EtaSkill {
     }
 
     actionsToResourceCheckpoint() {
-        const actionsToCheckpoint = this.itemCosts.map((cost: { item: Item, quantity: number }, idx: number) =>
+        const actionsToCheckpoint = this.costQuantityArray.map((cost: { item: Item, quantity: number }, idx: number) =>
             this.remainingResources.items[idx].quantity / cost.quantity
         );
-        if (this.gpCost) {
-            actionsToCheckpoint.push(this.remainingResources.gp / this.gpCost);
+        if (this.costs.gp) {
+            actionsToCheckpoint.push(this.remainingResources.gp / this.costs.gp);
         }
-        if (this.scCost) {
-            actionsToCheckpoint.push(this.remainingResources.sc / this.scCost);
+        if (this.costs.sc) {
+            actionsToCheckpoint.push(this.remainingResources.sc / this.costs.sc);
         }
         const resourceSets = Math.min(...actionsToCheckpoint);
         if (resourceSets <= 0) {
@@ -89,11 +92,11 @@ export class ResourceSkill extends EtaSkill {
 
     addCost(counter: ResourceActionCounter, actions: number) {
         const resourceSetsUsed = actions * (1 - this.getPreservationChance(0) / 100);
-        this.itemCosts.forEach((cost: { item: Item, quantity: number }, idx: number) => {
+        this.costQuantityArray.forEach((cost: { item: Item, quantity: number }, idx: number) => {
             counter.items[idx].quantity += cost.quantity * resourceSetsUsed;
         });
-        counter.gp += this.gpCost * resourceSetsUsed;
-        counter.sc += this.scCost * resourceSetsUsed;
+        counter.gp += this.costs.gp * resourceSetsUsed;
+        counter.sc += this.costs.sc * resourceSetsUsed;
     }
 
     setFinalValues() {
@@ -121,5 +124,34 @@ export class ResourceSkill extends EtaSkill {
         return baseCap
             + this.modifiers.getSkillModifierValue('increasedSkillPreservationCap', this)
             - this.modifiers.getSkillModifierValue('decreasedSkillPreservationCap', this);
+    }
+
+    getRecipeCosts() {
+        const costs = new Costs(undefined);
+        this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
+            const quantity = this.modifyItemCost(cost.item, cost.quantity);
+            if (quantity > 0) {
+                costs.addItem(cost.item, cost.quantity);
+            }
+        });
+        if (this.action.gpCost > 0) {
+            costs.addGP(this.modifyGPCost());
+        }
+        if (this.action.scCost > 0) {
+            costs.addSlayerCoins(this.modifySCCost());
+        }
+        return costs;
+    }
+
+    modifyItemCost(_: Item, quantity: number) {
+        return quantity;
+    }
+
+    modifyGPCost() {
+        return this.action.gpCost;
+    }
+
+    modifySCCost() {
+        return this.action.scCost;
     }
 }

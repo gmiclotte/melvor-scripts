@@ -86,7 +86,7 @@ export class Display {
         return this.element;
     }
 
-    injectProductCountElement(result:EtaSkill) {
+    injectProductCountElement(result: EtaSkill) {
         const youHaveElementId = this.element.id + "-YouHave";
         const youHaveElement = document.getElementById(youHaveElementId);
         if (result.action.product !== undefined && youHaveElement !== null) {

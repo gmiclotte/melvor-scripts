@@ -18,9 +18,6 @@ export type currentSkillConstructor = new(
 export class EtaSkill {
     public readonly skill: any;
     public readonly action: any;
-    protected readonly modifiers: PlayerModifiers;
-    protected readonly masteryCheckpoints: number[];
-    protected readonly astrology: Astrology;
     // trackers
     public skillXp: number;
     public masteryXp: number;
@@ -31,11 +28,14 @@ export class EtaSkill {
     public targets: Targets;
     // current rates
     public currentRates: Rates;
-    protected currentRatesSet: boolean;
     // targets reached
     public skillReached: boolean;
     public masteryReached: boolean;
     public poolReached: boolean;
+    protected readonly modifiers: PlayerModifiers;
+    protected readonly masteryCheckpoints: number[];
+    protected readonly astrology: Astrology;
+    protected currentRatesSet: boolean;
     // other
     protected totalMasteryWithoutAction: number;
     protected infiniteActions: boolean;
@@ -242,6 +242,7 @@ export class EtaSkill {
             this.progress();
             it++;
             if (it >= maxIt) {
+                console.error(`ETA skill ${this.skill.name} ran out of iterations for action ${this.action.name} !`);
                 break;
             }
         }

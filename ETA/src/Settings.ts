@@ -166,22 +166,6 @@ export class Settings {
         });
     }
 
-    private addSkillSetting(key: string, label: string, skillName: string): string {
-        let skillSettings = this.skillSettings.get(skillName);
-        if (skillSettings === undefined) {
-            skillSettings = this.ctx.settings.section(skillName);
-            this.skillSettings.set(skillName, skillSettings);
-        }
-        skillSettings.add({
-            type: 'numberArray',
-            name: key,
-            label: label,
-            hint: `{target.label} for ${skillName}.`,
-            default: [],
-        });
-        return key;
-    }
-
     get(settingID: string, skillID: string | undefined = undefined): any {
         if (skillID === undefined) {
             return this.generalSettings.get(settingID);
@@ -240,5 +224,21 @@ export class Settings {
 
     getTargetPool(skillName: string, current: number) {
         return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillName), 100, 100);
+    }
+
+    private addSkillSetting(key: string, label: string, skillName: string): string {
+        let skillSettings = this.skillSettings.get(skillName);
+        if (skillSettings === undefined) {
+            skillSettings = this.ctx.settings.section(skillName);
+            this.skillSettings.set(skillName, skillSettings);
+        }
+        skillSettings.add({
+            type: 'numberArray',
+            name: key,
+            label: label,
+            hint: `{target.label} for ${skillName}.`,
+            default: [],
+        });
+        return key;
     }
 }

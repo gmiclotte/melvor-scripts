@@ -54,7 +54,8 @@ export class ResourceDisplay extends Display {
     }
 
 
-    injectProductCountElement(_:EtaSkill) {}
+    injectProductCountElement(_: EtaSkill) {
+    }
 
     tooltipSection(resources: ResourceActionCounter, now: Date, target: number | string, prepend = '') {
         // final level and time to target level
