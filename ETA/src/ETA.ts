@@ -12,6 +12,7 @@ import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {Settings} from "./Settings";
 import {EtaCrafting} from "./EtaCrafting";
+import {EtaSmithing} from "./EtaSmithing";
 import {EtaFletching} from "./EtaFletching";
 
 export class ETA extends TinyMod {
@@ -47,6 +48,7 @@ export class ETA extends TinyMod {
         // add skills
         this.addSkillCalculators(EtaFishing, game.fishing, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
+        this.addSkillCalculators(EtaSmithing, game.smithing, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaFletching, game.fletching, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaCrafting, game.crafting, game.modifiers, game.astrology);
 
@@ -81,6 +83,7 @@ export class ETA extends TinyMod {
         // skills with generic startActionTimer
         [
             game.fishing,
+            game.smithing,
             game.fletching,
             game.crafting,
         ].forEach((skill: any) => {
