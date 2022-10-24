@@ -16,6 +16,7 @@ import {EtaSmithing} from "./EtaSmithing";
 import {EtaFletching} from "./EtaFletching";
 import {EtaRunecrafting} from "./EtaRunecrafting";
 import {EtaHerblore} from "./EtaHerblore";
+import {EtaSummoning} from "./EtaSummoning";
 
 export class ETA extends TinyMod {
     private readonly game: Game;
@@ -55,6 +56,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaCrafting, game.crafting, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting, game.modifiers, game.astrology);
         this.addSkillCalculators(EtaHerblore, game.herblore, game.modifiers, game.astrology);
+        this.addSkillCalculators(EtaSummoning, game.summoning, game.modifiers, game.astrology);
 
         // we made it
         this.log('Loaded!');
@@ -92,6 +94,7 @@ export class ETA extends TinyMod {
             game.crafting,
             game.runecrafting,
             game.herblore,
+            game.summoning,
         ].forEach((skill: any) => {
             // initial compute
             eta.recompute(skill);
