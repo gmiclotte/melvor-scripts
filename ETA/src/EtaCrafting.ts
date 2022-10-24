@@ -10,6 +10,10 @@ export class EtaCrafting extends ResourceSkill {
         super(game, crafting, action, modifiers, astrology, settings);
     }
 
+    get masteryModifiedInterval() {
+        return 1650;
+    }
+
     getPreservationChance(chance: number): number {
         const masteryLevel = this.masteryLevel;
         chance += (masteryLevel - 1) * 0.2;
