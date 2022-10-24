@@ -77,25 +77,33 @@ export class Display {
             this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
             this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
         }
-        const itemID = result.action.product.id;
-        const item = this.items.getObjectByID(itemID);
+        this.injectProductCountElement(result);
+        this.element.style.display = "block";
+        if (this.element.textContent.length === 0) {
+            this.element.textContent = "Melvor ETA";
+        }
+        this.generateTooltips(result, now);
+        return this.element;
+    }
+
+    injectProductCountElement(result:EtaSkill) {
         const youHaveElementId = this.element.id + "-YouHave";
         const youHaveElement = document.getElementById(youHaveElementId);
-        if (item !== undefined && youHaveElement !== null) {
+        if (result.action.product !== undefined && youHaveElement !== null) {
             youHaveElement.style.display = 'block';
             while (youHaveElement.lastChild) {
                 youHaveElement.removeChild(youHaveElement.lastChild);
             }
             const span = document.createElement('span');
-            span.textContent = `You have: ${this.formatNumber(this.bank.getQty(item))}`;
+            span.textContent = `You have: ${this.formatNumber(this.bank.getQty(result.action.product))}`;
             youHaveElement.appendChild(span);
             const img = document.createElement('img');
             img.classList.add('skill-icon-xs');
             img.classList.add('mr-2');
-            img.src = item.media;
+            img.src = result.action.product.media;
             youHaveElement.appendChild(img);
             // add perfect item for cooking // TODO refactor
-            const perfectID = itemID + '_Perfect';
+            const perfectID = result.action.product.id + '_Perfect';
             const perfectItem = this.items.getObjectByID(perfectID);
             if (perfectItem !== undefined) {
                 const perfectSpan = document.createElement('span');
@@ -108,12 +116,6 @@ export class Display {
                 youHaveElement.appendChild(perfectImg);
             }
         }
-        this.element.style.display = "block";
-        if (this.element.textContent.length === 0) {
-            this.element.textContent = "Melvor ETA";
-        }
-        this.generateTooltips(result, now);
-        return this.element;
     }
 
     generateTooltips(result: EtaSkill, now: Date, flags = {

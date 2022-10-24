@@ -12,7 +12,7 @@ export class ActionCounterWrapper {
     }
 
     get empty() {
-        return ActionCounter.emptyCounter
+        return ActionCounter.emptyCounter;
     }
 
     reset() {

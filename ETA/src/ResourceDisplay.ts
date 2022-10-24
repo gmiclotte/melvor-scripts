@@ -1,6 +1,7 @@
 import {Display} from "./Display";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkill} from "./ResourceSkill";
+import {EtaSkill} from "./EtaSkill";
 
 export class ResourceDisplay extends Display {
 
@@ -43,37 +44,7 @@ export class ResourceDisplay extends Display {
         //////////////////
         // product part //
         //////////////////
-        const itemID = result.action.product.id;
-        const item = this.items.getObjectByID(itemID);
-        const youHaveElementId = this.element.id + "-YouHave";
-        const youHaveElement = document.getElementById(youHaveElementId);
-        if (item !== undefined && youHaveElement !== null) {
-            youHaveElement.style.display = 'block';
-            while (youHaveElement.lastChild) {
-                youHaveElement.removeChild(youHaveElement.lastChild);
-            }
-            const span = document.createElement('span');
-            span.textContent = `You have: ${this.formatNumber(this.bank.getQty(item))}`;
-            youHaveElement.appendChild(span);
-            const img = document.createElement('img');
-            img.classList.add('skill-icon-xs');
-            img.classList.add('mr-2');
-            img.src = item.media;
-            youHaveElement.appendChild(img);
-            // add perfect item for cooking // TODO refactor
-            const perfectID = itemID + '_Perfect';
-            const perfectItem = this.items.getObjectByID(perfectID);
-            if (perfectItem !== undefined) {
-                const perfectSpan = document.createElement('span');
-                perfectSpan.textContent = `You have: ${this.formatNumber(this.bank.getQty(perfectItem))}`;
-                youHaveElement.appendChild(perfectSpan);
-                const perfectImg = document.createElement('img');
-                img.classList.add('skill-icon-xs');
-                img.classList.add('mr-2');
-                perfectImg.src = perfectItem.media;
-                youHaveElement.appendChild(perfectImg);
-            }
-        }
+        this.injectProductCountElement(result);
         this.element.style.display = "block";
         if (this.element.textContent.length === 0) {
             this.element.textContent = "Melvor ETA";
@@ -81,6 +52,9 @@ export class ResourceDisplay extends Display {
         this.generateTooltips(result, now);
         return this.element;
     }
+
+
+    injectProductCountElement(_:EtaSkill) {}
 
     tooltipSection(resources: ResourceActionCounter, now: Date, target: number | string, prepend = '') {
         // final level and time to target level

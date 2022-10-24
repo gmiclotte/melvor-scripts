@@ -18,34 +18,30 @@ export type currentSkillConstructor = new(
 export class EtaSkill {
     public readonly skill: any;
     public readonly action: any;
-    public readonly isGathering: boolean;
+    protected readonly modifiers: PlayerModifiers;
+    protected readonly masteryCheckpoints: number[];
+    protected readonly astrology: Astrology;
     // trackers
     public skillXp: number;
     public masteryXp: number;
     public poolXp: number;
     public actionsTaken: ActionCounterWrapper;
-    public materials: Map<string, number>;
-    public consumables: Map<string, number>;
     // initial and target
     public initial: Rates;
     public targets: Targets;
     // current rates
     public currentRates: Rates;
+    protected currentRatesSet: boolean;
+    // targets reached
     public skillReached: boolean;
     public masteryReached: boolean;
     public poolReached: boolean;
-    // readonly fields
-    protected readonly modifiers: PlayerModifiers;
-    protected readonly masteryCheckpoints: number[];
-    protected readonly astrology: Astrology;
-    protected readonly isCombat: boolean;
-    protected currentRatesSet: boolean;
     // other
     protected totalMasteryWithoutAction: number;
     protected infiniteActions: boolean;
     protected readonly TICK_INTERVAL: number;
 
-    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
+    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
         this.skill = skill;
         this.action = action;
         this.modifiers = modifiers;
@@ -57,10 +53,6 @@ export class EtaSkill {
         this.masteryXp = 0;
         this.poolXp = 0;
         this.totalMasteryWithoutAction = 0;
-        this.materials = new Map<string, number>();
-        this.consumables = new Map<string, number>();
-        this.isCombat = false;
-        this.isGathering = false;
         this.currentRatesSet = false;
         this.currentRates = Rates.emptyRates;
         this.initial = Rates.emptyRates;
@@ -216,9 +208,6 @@ export class EtaSkill {
         );
         // compute total mastery, excluding current action
         this.totalMasteryWithoutAction = this.skill.totalCurrentMasteryLevel - this.masteryLevel;
-        // map containing estimated remaining materials or consumables
-        this.materials = new Map<string, number>(); // regular crafting materials, e.g. raw fish or ores
-        this.consumables = new Map<string, number>(); // additional consumables e.g. potions, mysterious stones
         // current rates have not yet been computed
         this.currentRatesSet = false;
         this.infiniteActions = false;

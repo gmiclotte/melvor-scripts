@@ -14,10 +14,11 @@ export class ResourceActionCounterWrapper extends ActionCounterWrapper {
     }
 
     get empty() {
-        return ResourceActionCounter.emptyCounter
+        return ResourceActionCounter.emptyCounter;
     }
 
     reset() {
+        super.reset();
         this.resources = this.empty;
     }
 }
