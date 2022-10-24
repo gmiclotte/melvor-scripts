@@ -6,9 +6,9 @@
         "tinyMod": "../TinyMod"
     },
     "scripts": {
-        "build": "npm run webpack; npm run build-script",
+        "build": "npm run webpack && npm run build-script",
         "build-script": "cp ${npm_package_config_tinyMod}/scripts/build.js build.js && node build.js ${npm_package_config_tinyMod} && rm build.js",
-        "dist": "npm run version; npm run build",
+        "dist": "npm run version && npm run build",
         "version": "cp ${npm_package_config_tinyMod}/scripts/increment-version.js increment-version.js && node increment-version.js && rm increment-version.js",
         "webpack": "cp ${npm_package_config_tinyMod}/config/webpack.config.js webpack.config.js && cp ${npm_package_config_tinyMod}/config/tsconfig.json tsconfig.json && webpack && rm webpack.config.js"
     },
