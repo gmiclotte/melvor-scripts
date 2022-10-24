@@ -58,16 +58,12 @@ export class DisplayManager {
         // disable time left element
         const display = this.getDisplay(skill, actionID);
         display.container.style.display = 'none';
-        // disable item amount element
-        const youHaveElementId = display.container.id + "-YouHave";
-        const youHaveElement = document.getElementById(youHaveElementId);
-        if (youHaveElement !== null) {
-            youHaveElement.style.display = 'none';
-        }
     }
 
     injectHTML(result: EtaSkill, now: Date) {
-        return this.getDisplay(result.skill, result.action.id).injectHTML(result, now);
+        const display = this.getDisplay(result.skill, result.action.id);
+        display.container.style.display = 'block';
+        display.injectHTML(result, now);
     }
 
     private createArtisanDisplay(skill: SkillWithMastery, actionID: string) {

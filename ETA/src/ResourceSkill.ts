@@ -5,17 +5,17 @@ import {ETASettings} from "./Settings";
 import {EtaSkill} from "./EtaSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
-import {ResourceActionCounterWrapper} from "./ActionCounter";
+import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 
 export class ResourceSkill extends EtaSkill {
     public actionsTaken: ResourceActionCounterWrapper;
     public resourcesReached: boolean;
-    public remainingResources: ResourceRates;
+    public remainingResources: ResourceActionCounter;
 
     constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
         super(game, skill, action, modifiers, astrology, settings);
         this.actionsTaken = new ResourceActionCounterWrapper();
-        this.remainingResources = ResourceRates.emptyRates;
+        this.remainingResources = ResourceActionCounter.emptyCounter;
         this.resourcesReached = false;
     }
 
@@ -32,15 +32,17 @@ export class ResourceSkill extends EtaSkill {
     }
 
     get resourcesCompleted() {
-        return !this.resourcesReached && this.actionsToResourceCheckpoint() === 0;
+        return !this.resourcesReached && this.actionsToResourceCheckpoint() <= 0;
     }
 
     init(game: Game) {
         super.init(game);
         // actions performed
         this.actionsTaken.reset();
+        this.actionsTaken.active.items = this.itemCosts.map((cost: { item: Item, quantity: number }) =>
+            ({item: cost.item, quantity: 0}));
         // set up remaining resources
-        this.remainingResources = ResourceRates.emptyRates;
+        this.remainingResources = ResourceActionCounter.emptyCounter;
         this.remainingResources.gp = game.gp.amount;
         this.remainingResources.sc = game.slayerCoins.amount
         this.remainingResources.items = this.itemCosts.map((cost: { item: Item, quantity: number }) =>
@@ -81,12 +83,17 @@ export class ResourceSkill extends EtaSkill {
 
     addActions(gainsPerAction: ResourceRates, actions: number) {
         super.addActions(gainsPerAction, actions);
+        this.addCost(this.remainingResources, -actions);
+        this.addCost(this.actionsTaken.active, actions);
+    }
+
+    addCost(counter: ResourceActionCounter, actions: number) {
         const resourceSetsUsed = actions * (1 - this.getPreservationChance(0) / 100);
-        this.itemCosts.map((cost: { item: Item, quantity: number }, idx: number) =>
-            this.remainingResources.items[idx].quantity -= cost.quantity * resourceSetsUsed
-        );
-        this.remainingResources.gp -= this.gpCost * resourceSetsUsed;
-        this.remainingResources.sc -= this.scCost * resourceSetsUsed;
+        this.itemCosts.forEach((cost: { item: Item, quantity: number }, idx: number) => {
+            counter.items[idx].quantity += cost.quantity * resourceSetsUsed;
+        });
+        counter.gp += this.gpCost * resourceSetsUsed;
+        counter.sc += this.scCost * resourceSetsUsed;
     }
 
     setFinalValues() {

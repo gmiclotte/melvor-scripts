@@ -23,23 +23,6 @@ export class ActionCounterWrapper {
     }
 }
 
-export class ResourceActionCounterWrapper extends ActionCounterWrapper {
-    public resources: ActionCounter;
-
-    constructor() {
-        super();
-        this.resources = this.empty;
-    }
-
-    get empty() {
-        return ResourceActionCounter.emptyCounter
-    }
-
-    reset() {
-        this.resources = this.empty;
-    }
-}
-
 export class ActionCounter {
     public ms: number;
     public actions: number;
@@ -56,27 +39,5 @@ export class ActionCounter {
 
     clone(): ActionCounter {
         return new ActionCounter(this.ms, this.actions, this.unit);
-    }
-}
-
-export class ResourceActionCounter extends ActionCounter {
-    public items: { item: string, quantity: number }[];
-    public gp: number;
-    public sc: number;
-
-    constructor(items: { item: string, quantity: number }[], gp: number, sc: number,
-                ms: number, actions: number, unit: number) {
-        super(ms, actions, unit);
-        this.items = items;
-        this.gp = gp;
-        this.sc = sc;
-    }
-
-    static get emptyCounter(): ResourceActionCounter {
-        return new ResourceActionCounter([], 0, 0, 0, 0, 1);
-    }
-
-    clone(): ActionCounter {
-        return new ResourceActionCounter(this.items, this.gp, this.sc, this.ms, this.actions, this.unit);
     }
 }

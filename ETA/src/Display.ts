@@ -135,7 +135,7 @@ export class Display {
         // level tooltip
         if (!flags.noSkill) {
             const finalLevel = result.xpToLevel(result.skillXp)
-            const levelProgress = this.getPercentageInLevel(result, result.skillLevel, "skill");
+            const levelProgress = this.getPercentageInLevel(result, result.skillXp, result.skillLevel, "skill");
             tooltip += this.finalLevelElement(
                 'Final Level',
                 this.formatLevel(finalLevel, levelProgress) + ' / 99',
@@ -145,9 +145,9 @@ export class Display {
         // mastery tooltip
         if (!flags.noMastery) {
             const finalLevel = result.xpToLevel(result.masteryXp)
-            const levelProgress = this.getPercentageInLevel(result, result.skillLevel, "skill");
+            const levelProgress = this.getPercentageInLevel(result, result.masteryXp, result.masteryLevel, "mastery");
             tooltip += this.finalLevelElement(
-                'Final Level',
+                'Final Mastery',
                 this.formatLevel(finalLevel, levelProgress) + ' / 99',
                 'success',
             ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
@@ -176,7 +176,7 @@ export class Display {
         this.element._tippy.setContent(`<div>${tooltip}</div>`);
     }
 
-    getPercentageInLevel(result: EtaSkill, level: number, type: string): number {
+    getPercentageInLevel(result: EtaSkill, currentXp: number, level: number, type: string): number {
         const currentLevel = level;
         if (currentLevel >= 99 && type === "mastery") {
             // mastery is capped at 99
@@ -185,7 +185,7 @@ export class Display {
         const currentLevelXp = result.levelToXp(currentLevel);
         const nextLevelXp = result.levelToXp(currentLevel + 1);
         // progress towards next level
-        return (result.skillXp - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100;
+        return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100;
     }
 
     tooltipSection(resources: ActionCounter, now: Date, target: number | string, prepend = '') {

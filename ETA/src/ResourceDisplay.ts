@@ -1,5 +1,5 @@
 import {Display} from "./Display";
-import {ResourceActionCounter} from "./ActionCounter";
+import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkill} from "./ResourceSkill";
 
 export class ResourceDisplay extends Display {
@@ -111,11 +111,7 @@ export class ResourceDisplay extends Display {
         }
         let req = '';
         resources.items.forEach(used => {
-                const item = this.items.getObjectByID(used.item);
-                if (item === undefined) {
-                    return;
-                }
-                req += `<span>${this.formatNumber(Math.ceil(used.quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
+                req += `<span>${this.formatNumber(Math.ceil(used.quantity))}</span><img class="skill-icon-xs mr-2" src="${used.item.media}">`;
             }
         )
         if (resources.sc > 0) {
