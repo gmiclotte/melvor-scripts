@@ -10,8 +10,6 @@ export type currentSkillConstructor = new(
     game: Game,
     skill: any,
     action: any,
-    modifiers: PlayerModifiers,
-    astrology: Astrology,
     settings: Settings,
 ) => EtaSkill;
 
@@ -41,11 +39,11 @@ export class EtaSkill {
     protected infiniteActions: boolean;
     protected readonly TICK_INTERVAL: number;
 
-    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
+    constructor(game: Game, skill: any, action: any, settings: Settings) {
         this.skill = skill;
         this.action = action;
-        this.modifiers = modifiers;
-        this.astrology = astrology;
+        this.modifiers = game.modifiers;
+        this.astrology = game.astrology;
         this.targets = new Targets(this, settings, skill, action);
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();

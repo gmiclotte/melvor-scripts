@@ -8,8 +8,6 @@ import {Game} from "../../Game-Files/built/game";
 import {EtaFishing} from "./EtaFishing";
 import {EtaMining} from "./EtaMining";
 import {DisplayManager} from "./DisplayManager";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {Settings} from "./Settings";
 import {EtaCrafting} from "./EtaCrafting";
 import {EtaSmithing} from "./EtaSmithing";
@@ -17,18 +15,16 @@ import {EtaFletching} from "./EtaFletching";
 import {EtaRunecrafting} from "./EtaRunecrafting";
 import {EtaHerblore} from "./EtaHerblore";
 import {EtaSummoning} from "./EtaSummoning";
+import {EtaFiremaking} from "./EtaFiremaking";
 
 export class ETA extends TinyMod {
+    public readonly artisanSkills: SkillWithMastery[];
     private readonly game: Game;
     private readonly settings: Settings;
     private readonly nameSpace: string;
-
-    // @ts-ignore 2564
-    private togglesCard: Card;
-    // @ts-ignore 2564
-    private skillTargetCard: TabCard;
-    // @ts-ignore 2564
-    private globalTargetsCard: Card;
+    private togglesCard!: Card;
+    private skillTargetCard!: TabCard;
+    private globalTargetsCard!: Card;
     private previousTargets: Map<string, Targets>;
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
     private displayManager: DisplayManager;
@@ -47,16 +43,35 @@ export class ETA extends TinyMod {
         this.previousTargets = new Map<string, Targets>();
         this.skillCalculators = new Map<string, Map<string, EtaSkill>>()
         this.displayManager = new DisplayManager(game, this.settings);
+        this.artisanSkills = [
+            this.game.firemaking,
+            this.game.cooking,
+            this.game.smithing,
+            this.game.fletching,
+            this.game.crafting,
+            this.game.runecrafting,
+            this.game.herblore,
+            this.game.summoning,
+        ];
 
         // add skills
-        this.addSkillCalculators(EtaFishing, game.fishing, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaMining, game.mining, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaSmithing, game.smithing, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaFletching, game.fletching, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaCrafting, game.crafting, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaRunecrafting, game.runecrafting, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaHerblore, game.herblore, game.modifiers, game.astrology);
-        this.addSkillCalculators(EtaSummoning, game.summoning, game.modifiers, game.astrology);
+        // TODO this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
+        this.addSkillCalculators(EtaFishing, game.fishing);
+        this.addSkillCalculators(EtaFiremaking, game.firemaking);
+        // TODO this.addSkillCalculators(EtaCooking, game.cooking);
+        this.addSkillCalculators(EtaMining, game.mining);
+        this.addSkillCalculators(EtaSmithing, game.smithing);
+        // TODO this.addSkillCalculators(EtaThieving, game.thieving);
+        // Farming not included
+        this.addSkillCalculators(EtaFletching, game.fletching);
+        this.addSkillCalculators(EtaCrafting, game.crafting);
+        this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
+        this.addSkillCalculators(EtaHerblore, game.herblore);
+        // TODO this.addSkillCalculators(EtaAgility, game.agility);
+        this.addSkillCalculators(EtaSummoning, game.summoning);
+        // TODO this.addSkillCalculators(EtaAstrology, game.astrology);
+        // Township not included
+        // TODO this.addSkillCalculators(EtaMagic, game.magic);
 
         // we made it
         this.log('Loaded!');
@@ -86,15 +101,25 @@ export class ETA extends TinyMod {
             eta.recompute(skill);
         }
 
+        // thieving
+
         // skills with generic startActionTimer
         [
+            // game.woodcutting,
             game.fishing,
+            game.firemaking,
+            // game.cooking,
+            // mining is handled separately
             game.smithing,
+            // thieving is handled separately
             game.fletching,
             game.crafting,
             game.runecrafting,
             game.herblore,
+            // game.agility,
             game.summoning,
+            // game.astrology,
+            // game.altMagic,
         ].forEach((skill: any) => {
             // initial compute
             eta.recompute(skill);
@@ -109,10 +134,10 @@ export class ETA extends TinyMod {
         return eta;
     }
 
-    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery, modifiers: PlayerModifiers, astrology: Astrology) {
+    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery) {
         const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
-            skillMap.set(action.id, new constructor(this.game, skill, action, modifiers, astrology, this.settings));
+            skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
             this.displayManager.getDisplay(skill, action.id);
         });
         this.skillCalculators.set(skill.name, skillMap);
@@ -131,9 +156,9 @@ export class ETA extends TinyMod {
     }
 
     skipAction(skill: SkillWithMastery, action: any): boolean {
-        if (this.displayManager.artisanSkills.includes(skill)) {
+        if (this.artisanSkills.includes(skill)) {
             // @ts-ignore
-            if (skill.activeRecipe.id !== action.id) {
+            if (!skill.activeRecipe || skill.activeRecipe.id !== action.id) {
                 return true;
             }
         }
@@ -194,19 +219,10 @@ export class ETA extends TinyMod {
         this.togglesCard = new Card(this.tag, this.content, '', '150px', true);
         const titles = new Map<string, string>()
         titles.set('IS_12H_CLOCK', 'Use 12h clock');
-        titles.set('IS_SHORT_CLOCK', 'Use short time format');
         titles.set('SHOW_XP_RATE', 'Show XP rates');
         titles.set('SHOW_ACTION_TIME', 'Show action times');
         titles.set('UNCAP_POOL', 'Show pool past 100%');
         titles.set('CURRENT_RATES', 'Show current rates');
-        titles.set('USE_TOKENS', '"Use" Mastery tokens for final Pool %');
-        titles.set('SHOW_PARTIAL_LEVELS', 'Show partial levels');
-        titles.set('HIDE_REQUIRED', 'Hide required resources');
-        titles.set('DING_RESOURCES', 'Ding when out of resources');
-        titles.set('DING_LEVEL', 'Ding on level target');
-        titles.set('DING_MASTERY', 'Ding on mastery target');
-        titles.set('DING_POOL', 'Ding on pool target');
-        titles.set('USE_TABLETS', '"Use" all created Summoning Tablets');
         titles.forEach((value, key) => {
             this.togglesCard.addToggleRadio(
                 value,
@@ -240,8 +256,7 @@ export class ETA extends TinyMod {
 
     addTargetInputs() {
         this.skillTargetCard = new TabCard('EtaTarget', true, this.tag, this.content, '', '150px', true);
-        // @ts-ignore 2304
-        game.skills.filter((skill: any) => skill.actions).forEach((skill: any) => {
+        this.settings.skillList.forEach((skill: SkillWithMastery) => {
             const card = this.skillTargetCard.addTab(skill.name, skill.media, '', '150px', undefined);
             card.addSectionTitle(skill.name + ' Targets');
             [

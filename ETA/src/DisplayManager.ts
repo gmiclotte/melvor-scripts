@@ -7,7 +7,6 @@ import {EtaSkill} from "./EtaSkill";
 import {ResourceDisplay} from "./ResourceDisplay";
 
 export class DisplayManager {
-    public readonly artisanSkills: SkillWithMastery[];
     private readonly game: Game;
     private readonly displays: Map<string, Display>;
     private readonly settings: Settings;
@@ -16,14 +15,6 @@ export class DisplayManager {
         this.displays = new Map<string, Display>()
         this.settings = settings;
         this.game = game;
-        this.artisanSkills = [
-            this.game.smithing,
-            this.game.fletching,
-            this.game.crafting,
-            this.game.runecrafting,
-            this.game.herblore,
-            this.game.summoning,
-        ];
     }
 
     removeAllDisplays() {
@@ -66,10 +57,10 @@ export class DisplayManager {
         display.injectHTML(result, now);
     }
 
-    private createArtisanDisplay(skill: SkillWithMastery, actionID: string) {
+    private createArtisanDisplay(skill: SkillWithMastery, actionID: string, eltID: string) {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
-        const container = document.getElementById(`${skill.name.toLowerCase()}-artisan-container`);
+        const container = document.getElementById(eltID);
         if (container === null) {
             return display;
         }
@@ -86,44 +77,97 @@ export class DisplayManager {
         return display;
     }
 
+    private createFishingDisplay(skill: SkillWithMastery, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementById('fishing-area-menu-container');
+        if (node === null) {
+            return display;
+        }
+        const index = this.game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
+            area.fish.find((fish: any) => fish.id === actionID) !== undefined);
+        node = node.children[index].children[0].children[0].children[3].children[0].children[1].children[1];
+        node.appendChild(display.container);
+        return display;
+    }
+
+    private createMiningDisplay(skill: SkillWithMastery, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementById(`mining-ores-container`);
+        if (node === null) {
+            return display;
+        }
+        const index = skill.actions.allObjects.findIndex((action: any) => action.id === actionID);
+        node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
+        const parent = node.parentNode;
+        if (parent === null) {
+            return display;
+        }
+        parent.insertBefore(display.container, node);
+        return display;
+    }
+
+    private createFiremakingDisplay(skill: SkillWithMastery, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementById('firemaking-bonfire-button');
+        if (node === null) {
+            return display;
+        }
+        node = node.parentNode;
+        if (node === null) {
+            return display;
+        }
+        node = node.parentNode
+        if (node === null) {
+            return display;
+        }
+        const parent = node.parentNode
+        if (parent === null) {
+            return display;
+        }
+        parent.appendChild(display.container);
+        // @ts-ignore
+        if (skill.activeRecipe.id !== actionID) {
+            display.container.style.display = 'none';
+        }
+        return display;
+    }
+
     private createDisplay(skill: SkillWithMastery, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         // create new display
         // standard processing container
-        if (this.artisanSkills.includes(skill)) {
-            return this.createArtisanDisplay(skill, actionID);
+        if ([
+            this.game.smithing,
+            this.game.fletching,
+            this.game.crafting,
+            this.game.runecrafting,
+            this.game.herblore,
+        ].includes(skill)) {
+            return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-artisan-container`);
         }
-        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
         // other containers
-        let node = null;
-        const wrapperID = `${displayID}Wrapper`;
-        let wrapper = undefined;
-        let index;
         switch (skill.name) {
+            // case this.game.woodcutting.name:
             case this.game.fishing.name:
-                node = document.getElementById('fishing-area-menu-container');
-                if (node === null) {
-                    return display;
-                }
-                index = this.game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
-                    area.fish.find((fish: any) => fish.id === actionID) !== undefined);
-                node = node.children[index].children[0].children[0].children[3].children[0].children[1].children[1];
-                node.appendChild(display.container);
-                break;
+                return this.createFishingDisplay(skill, actionID);
+            case this.game.firemaking.name:
+                return this.createFiremakingDisplay(skill, actionID);
+            // case this.game.cooking.name:
             case this.game.mining.name:
-                node = document.getElementById(`mining-ores-container`);
-                if (node === null) {
-                    return display;
-                }
-                index = skill.actions.allObjects.findIndex((action: any) => action.id === actionID);
-                node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
-                const parent = node.parentNode;
-                if (parent === null) {
-                    return display;
-                }
-                parent.insertBefore(display.container, node);
-                break;
+                return this.createMiningDisplay(skill, actionID);
+            // case this.game.thieving.name:
+            // case this.game.agility.name:
+            case this.game.summoning.name:
+                return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);
+            // case this.game.astrology.name:
+            // case this.game.altMagic.name:
         }
-        return display;
+        return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
     }
 }

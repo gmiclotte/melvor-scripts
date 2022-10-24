@@ -1,13 +1,11 @@
 import {Smithing} from "../../Game-Files/built/smithing";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceSkill} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 
 export class EtaSmithing extends ResourceSkill {
-    constructor(game: Game, smithing: Smithing, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, smithing, action, modifiers, astrology, settings);
+    constructor(game: Game, smithing: Smithing, action: any, settings: Settings) {
+        super(game, smithing, action, settings);
     }
 
     get masteryModifiedInterval() {

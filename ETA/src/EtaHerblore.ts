@@ -1,13 +1,11 @@
 import {Herblore} from "../../Game-Files/built/herblore";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceSkill} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 
 export class EtaHerblore extends ResourceSkill {
-    constructor(game: Game, herblore: Herblore, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, herblore, action, modifiers, astrology, settings);
+    constructor(game: Game, herblore: Herblore, action: any, settings: Settings) {
+        super(game, herblore, action, settings);
     }
 
     get masteryModifiedInterval() {

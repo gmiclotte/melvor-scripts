@@ -81,9 +81,6 @@ export class ResourceDisplay extends Display {
     }
 
     resourcesLeftToHTML(resources: ResourceActionCounter) {
-        if (this.settings.get('HIDE_REQUIRED')) {
-            return '';
-        }
         let req = '';
         resources.items.forEach(used => {
                 req += `<span>${this.formatNumber(Math.ceil(used.quantity))}</span><img class="skill-icon-xs mr-2" src="${used.item.media}">`;

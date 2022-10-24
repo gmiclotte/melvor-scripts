@@ -1,5 +1,3 @@
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceRates} from "./ResourceRates";
 import {Settings} from "./Settings";
 import {EtaSkill} from "./EtaSkill";
@@ -15,8 +13,8 @@ export class ResourceSkill extends EtaSkill {
     protected costs: Costs;
     protected costQuantityArray: { item: Item, quantity: number }[];
 
-    constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, skill, action, modifiers, astrology, settings);
+    constructor(game: Game, skill: any, action: any, settings: Settings) {
+        super(game, skill, action, settings);
         this.actionsTaken = new ResourceActionCounterWrapper();
         this.remainingResources = ResourceActionCounter.emptyCounter;
         this.resourcesReached = false;

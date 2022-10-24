@@ -1,14 +1,12 @@
 import {Fletching} from "../../Game-Files/built/fletching";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceSkill} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {EquipmentItem, Item} from "../../Game-Files/built/item";
 
 export class EtaFletching extends ResourceSkill {
-    constructor(game: Game, fletching: Fletching, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, fletching, action, modifiers, astrology, settings);
+    constructor(game: Game, fletching: Fletching, action: any, settings: Settings) {
+        super(game, fletching, action, settings);
     }
 
     get masteryModifiedInterval() {

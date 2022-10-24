@@ -1,17 +1,16 @@
 import {Summoning} from "../../Game-Files/built/summoning";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceSkill} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
 import {Player} from "../../Game-Files/built/player";
+import {Costs} from "../../Game-Files/built/skill";
 
 export class EtaSummoning extends ResourceSkill {
     private readonly player: Player;
 
-    constructor(game: Game, summoning: Summoning, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, summoning, action, modifiers, astrology, settings);
+    constructor(game: Game, summoning: Summoning, action: any, settings: Settings) {
+        super(game, summoning, action, settings);
         this.player = game.combat.player;
     }
 
@@ -93,5 +92,26 @@ export class EtaSummoning extends ResourceSkill {
             modifier += 5;
         }
         return modifier;
+    }
+
+    addNonShardCosts(altID: number, costs: Costs) {
+        const item = this.action.nonShardItemCosts[altID];
+        const salePrice = Math.max(20, item.sellsFor);
+        const itemValueRequired = Summoning.recipeGPCost * (1 - this.getNonShardCostReductionModifier() / 100);
+        const qtyToAdd = Math.max(1, Math.floor(itemValueRequired / salePrice));
+        costs.addItem(item, qtyToAdd);
+    }
+
+    getAltRecipeCosts() {
+        const altID = this.skill.setAltRecipes.get(this.action);
+        const costs = super.getRecipeCosts();
+        if (this.action.nonShardItemCosts.length > 0) {
+            this.addNonShardCosts(altID, costs);
+        }
+        return costs;
+    }
+
+    getRecipeCosts() {
+        return this.getAltRecipeCosts();
     }
 }

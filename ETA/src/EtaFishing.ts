@@ -1,16 +1,14 @@
 import {Fish, Fishing, FishingArea} from "../../Game-Files/built/fishing";
 import {EtaSkill} from "./EtaSkill";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {Game} from "../../Game-Files/built/game";
 
 export class EtaFishing extends EtaSkill {
     // @ts-ignore
     public area: FishingArea;
 
-    constructor(game: Game, fishing: Fishing, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, fishing, action, modifiers, astrology, settings);
+    constructor(game: Game, fishing: Fishing, action: any, settings: Settings) {
+        super(game, fishing, action, settings);
         this.skill.areas.forEach((area: FishingArea) => {
             area.fish.forEach((fish: Fish) => {
                 if (fish === action) {

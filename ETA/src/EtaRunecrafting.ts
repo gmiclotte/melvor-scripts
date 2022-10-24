@@ -1,14 +1,12 @@
 import {Runecrafting} from "../../Game-Files/built/runecrafting";
 import {Settings} from "./Settings";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {ResourceSkill} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {EquipmentItem, Item} from "../../Game-Files/built/item";
 
 export class EtaRunecrafting extends ResourceSkill {
-    constructor(game: Game, runecrafting: Runecrafting, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: Settings) {
-        super(game, runecrafting, action, modifiers, astrology, settings);
+    constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
+        super(game, runecrafting, action, settings);
     }
 
     get masteryModifiedInterval() {

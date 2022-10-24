@@ -1,6 +1,8 @@
 import {Game} from "../../Game-Files/built/game";
+import {SkillWithMastery} from "../../Game-Files/built/skill";
 
 export class Settings {
+    public readonly skillList: SkillWithMastery[];
     private readonly ctx: any;
     private readonly generalSettings: any;
     private readonly skillSettings: Map<string, any>;
@@ -32,13 +34,6 @@ export class Settings {
             },
             {
                 type: 'switch',
-                name: 'IS_SHORT_CLOCK',
-                label: 'Use short time format',
-                hint: 'Use short clock `xxhxxmxxs`, instead of long clock `xx hours, xx minutes and xx seconds.',
-                default: true,
-            },
-            {
-                type: 'switch',
                 name: 'SHOW_XP_RATE',
                 label: 'Show XP rates',
                 hint: 'Show XP rates.',
@@ -65,66 +60,7 @@ export class Settings {
                 hint: 'Show current rates, instead of average rates until all targets are met.',
                 default: true,
             },
-            {
-                type: 'switch',
-                name: 'USE_TOKENS',
-                label: 'Include tokens in final Pool %',
-                hint: 'Include potential pool XP of Mastery tokens in final Pool %.',
-                default: false,
-            },
-            {
-                type: 'switch',
-                name: 'SHOW_PARTIAL_LEVELS',
-                label: 'Show partial levels',
-                hint: 'Show partial levels in the final level and mastery.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'HIDE_REQUIRED',
-                label: 'Hide required resources',
-                hint: 'Toggle on to hide the required resources in the ETA tooltips.',
-                default: false,
-            },
-            {
-                type: 'switch',
-                name: 'DING_RESOURCES',
-                label: 'Ding when out of resources',
-                hint: 'Play a sound when we run out of resources.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'DING_LEVEL',
-                label: 'Ding on level target',
-                hint: 'Play a sound when we reach a level target.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'DING_MASTERY',
-                label: 'Ding on mastery target',
-                hint: 'Play a sound when we reach a mastery target.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'DING_POOL',
-                label: 'Ding on pool target',
-                hint: 'Play a sound when we reach a pool target.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'USE_TABLETS',
-                label: '"Use" all created Summoning Tablets',
-                hint: 'Toggle on to include potential Summoning exp from created tablets.',
-                default: false,
-            },
         ]);
-        //
-        // change the ding sound level
-        //this.set('DING_VOLUME', 0.1);
         /*
             targets
          */
@@ -153,8 +89,12 @@ export class Settings {
             },
         ]);
         // skillSettings
+        this.skillList = game.skills.filter((skill: SkillWithMastery) => skill.actions)
+            // @ts-ignore
+            .filter((skill: SkillWithMastery) => !['melvorD:Magic', 'melvorD:Farming'].includes(skill.id));
+        this.skillList.push(game.altMagic);
         this.skillSettings = new Map<string, any>();
-        game.skills.filter((skill: any) => skill.actions).forEach((skill: any) => {
+        this.skillList.forEach((skill: SkillWithMastery) => {
             [
                 {id: 'LEVEL', label: 'Level targets'},
                 {id: 'MASTERY', label: 'Mastery targets'},

@@ -243,9 +243,6 @@ export class Display {
     }
 
     formatLevel(level: number, progress: number) {
-        if (!this.settings.get('SHOW_PARTIAL_LEVELS')) {
-            return level;
-        }
         progress = Math.floor(progress);
         if (progress !== 0) {
             return (level + progress / 100).toFixed(2);
@@ -254,77 +251,28 @@ export class Display {
     }
 
     // Convert milliseconds to hours/minutes/seconds and format them
-    msToHms(ms: number, isShortClock = this.settings.get('IS_SHORT_CLOCK')) {
+    msToHms(ms: number) {
         let seconds = Number(ms / 1000);
         // split seconds in days, hours, minutes and seconds
         let d = Math.floor(seconds / 86400)
         let h = Math.floor(seconds % 86400 / 3600);
         let m = Math.floor(seconds % 3600 / 60);
         let s = Math.floor(seconds % 60);
-        // no comma in short form
-        // ` and ` if hours and minutes or hours and seconds
-        // `, ` if hours and minutes and seconds
-        let dDisplayComma = " ";
-        if (!isShortClock && d > 0) {
-            let count = 0;
-            if (h > 0) {
-                count++;
-            }
-            if (m > 0) {
-                count++;
-            }
-            if (s > 0) {
-                count++;
-            }
-            if (count === 1) {
-                dDisplayComma = " and ";
-            } else if (count > 1) {
-                dDisplayComma = ", ";
-            }
-        }
-        let hDisplayComma = " ";
-        if (!isShortClock && h > 0) {
-            let count = 0;
-            if (m > 0) {
-                count++;
-            }
-            if (s > 0) {
-                count++;
-            }
-            if (count === 1) {
-                hDisplayComma = " and ";
-            } else if (count > 1) {
-                hDisplayComma = ", ";
-            }
-        }
-        // no comma in short form
-        // ` and ` if minutes and seconds
-        let mDisplayComma = " ";
-        if (!isShortClock && m > 0) {
-            if (s > 0) {
-                mDisplayComma = " and ";
-            }
-        }
-        // append h/hour/hours etc depending on isShortClock, then concat and return
-        return this.appendName(d, "day", isShortClock) + dDisplayComma
-            + this.appendName(h, "hour", isShortClock) + hDisplayComma
-            + this.appendName(m, "minute", isShortClock) + mDisplayComma
-            + this.appendName(s, "second", isShortClock);
+        // append h/hour/hours etc depending, then concat and return
+        return [
+            this.appendName(d, "day"),
+            this.appendName(h, "hour"),
+            this.appendName(m, "minute"),
+            this.appendName(s, "second"),
+        ].filter(x => x.length).join(' ');
     }
 
     // help function for time display
-    appendName(t: number, name: string, isShortClock: boolean) {
+    appendName(t: number, name: string) {
         if (t === 0) {
             return "";
         }
-        if (isShortClock) {
-            return t + name[0];
-        }
-        let result = t + " " + name;
-        if (t === 1) {
-            return result;
-        }
-        return result + "s";
+        return t + name[0];
     }
 
     private displayContainer(id: string) {
