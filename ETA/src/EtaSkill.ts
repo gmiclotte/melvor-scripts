@@ -4,6 +4,7 @@ import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {ETASettings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
+import {ActionCounterWrapper} from "./ActionCounter";
 
 export type currentSkillConstructor = new(
     game: Game,
@@ -22,8 +23,7 @@ export class EtaSkill {
     public skillXp: number;
     public masteryXp: number;
     public poolXp: number;
-    public actionsTaken: Rates;
-    public timeTaken: Rates;
+    public actionsTaken: ActionCounterWrapper;
     public materials: Map<string, number>;
     public consumables: Map<string, number>;
     // initial and target
@@ -35,7 +35,6 @@ export class EtaSkill {
     public masteryReached: boolean;
     public poolReached: boolean;
     // readonly fields
-    protected readonly game: Game;
     protected readonly modifiers: PlayerModifiers;
     protected readonly masteryCheckpoints: number[];
     protected readonly astrology: Astrology;
@@ -47,15 +46,13 @@ export class EtaSkill {
     protected readonly TICK_INTERVAL: number;
 
     constructor(game: Game, skill: any, action: any, modifiers: PlayerModifiers, astrology: Astrology, settings: ETASettings) {
-        this.game = game;
         this.skill = skill;
         this.action = action;
         this.modifiers = modifiers;
         this.astrology = astrology;
         this.targets = new Targets(this, settings, skill, action);
         this.skill.baseInterval = skill.baseInterval ?? 0;
-        this.actionsTaken = Rates.emptyRates;
-        this.timeTaken = Rates.emptyRates;
+        this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
         this.masteryXp = 0;
         this.poolXp = 0;
@@ -96,10 +93,10 @@ export class EtaSkill {
 
     get averageRates(): Rates {
         return new Rates(
-            (this.skillXp - this.initial.xp) / this.timeTaken.ms,
-            (this.masteryXp - this.initial.mastery) / this.timeTaken.ms,
-            (this.poolXp - this.initial.pool) / this.timeTaken.ms,
-            this.timeTaken.ms / this.actionsTaken.ms, // ms
+            (this.skillXp - this.initial.xp) / this.actionsTaken.active.ms,
+            (this.masteryXp - this.initial.mastery) / this.actionsTaken.active.ms,
+            (this.poolXp - this.initial.pool) / this.actionsTaken.active.ms,
+            this.actionsTaken.active.ms / this.actionsTaken.active.actions, // ms per action
             1, // unit
         );
     }
@@ -182,15 +179,15 @@ export class EtaSkill {
     }
 
     get skillCompleted() {
-        return this.targets.skillCompleted();
+        return !this.skillReached && this.targets.skillCompleted();
     }
 
     get masteryCompleted() {
-        return this.targets.masteryCompleted();
+        return !this.masteryReached && this.targets.masteryCompleted();
     }
 
     get poolCompleted() {
-        return this.targets.poolCompleted();
+        return !this.poolReached && this.targets.poolCompleted();
     }
 
     computePoolProgress(poolXp: number) {
@@ -199,12 +196,10 @@ export class EtaSkill {
         return percent;
     }
 
-    init() {
+    init(game: Game) {
         // get initial values
         // actions performed
-        this.actionsTaken = Rates.emptyRates;
-        // time taken to perform actions
-        this.timeTaken = Rates.emptyRates;
+        this.actionsTaken.reset();
         // current xp
         this.skillXp = this.skill.xp;
         // current mastery xp
@@ -235,25 +230,22 @@ export class EtaSkill {
 
     setFinalValues() {
         // check targets
-        if (!this.skillReached && this.skillCompleted) {
-            this.actionsTaken.xp = this.actionsTaken.ms;
-            this.timeTaken.xp = this.timeTaken.ms;
+        if (this.skillCompleted) {
+            this.actionsTaken.skill = this.actionsTaken.active.clone();
             this.skillReached = true;
         }
-        if (!this.masteryReached && this.masteryCompleted) {
-            this.actionsTaken.mastery = this.actionsTaken.ms;
-            this.timeTaken.mastery = this.timeTaken.ms;
+        if (this.masteryCompleted) {
+            this.actionsTaken.mastery = this.actionsTaken.active.clone();
             this.masteryReached = true;
         }
-        if (!this.poolReached && this.poolCompleted) {
-            this.actionsTaken.pool = this.actionsTaken.ms;
-            this.timeTaken.pool = this.timeTaken.ms;
+        if (this.poolCompleted) {
+            this.actionsTaken.pool = this.actionsTaken.active.clone();
             this.poolReached = true;
         }
     }
 
-    iterate(): void {
-        this.init();
+    iterate(game: Game): void {
+        this.init(game);
         const maxIt = 1000;
         let it = 0;
         this.setFinalValues();
@@ -313,8 +305,8 @@ export class EtaSkill {
         this.skillXp += gainsPerAction.xp * actions;
         this.masteryXp += gainsPerAction.mastery * actions;
         this.poolXp += gainsPerAction.pool * actions;
-        this.actionsTaken.ms += actions;
-        this.timeTaken.ms += actions * gainsPerAction.ms;
+        this.actionsTaken.active.actions += actions;
+        this.actionsTaken.active.ms += actions * gainsPerAction.ms;
     }
 
     setCurrentRates(gains: Rates | undefined = undefined) {
@@ -353,15 +345,12 @@ export class EtaSkill {
     }
 
     getXPModifier() {
-        let modifier = this.modifiers.increasedGlobalSkillXP
-            - this.modifiers.decreasedGlobalSkillXP;
-        if (!this.isCombat) {
-            modifier += this.modifiers.increasedNonCombatSkillXP
-                - this.modifiers.decreasedNonCombatSkillXP;
-        }
-        modifier += this.getSkillModifierValue('increasedSkillXP');
-        modifier -= this.getSkillModifierValue('decreasedSkillXP');
-        return modifier;
+        return this.modifiers.increasedGlobalSkillXP
+            - this.modifiers.decreasedGlobalSkillXP
+            + this.modifiers.increasedNonCombatSkillXP
+            - this.modifiers.decreasedNonCombatSkillXP
+            + this.getSkillModifierValue('increasedSkillXP')
+            - this.getSkillModifierValue('decreasedSkillXP');
     }
 
     getSkillModifierValue(modifierID: string): number {

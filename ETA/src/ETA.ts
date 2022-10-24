@@ -7,7 +7,7 @@ import {SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaFishing} from "./EtaFishing";
 import {EtaMining} from "./EtaMining";
-import {EtaDisplayManager} from "./EtaDisplayManager";
+import {DisplayManager} from "./DisplayManager";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {ETASettings} from "./Settings";
@@ -26,7 +26,7 @@ export class ETA extends TinyMod {
     private globalTargetsCard: Card;
     private previousTargets: Map<string, Targets>;
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
-    private displayManager: EtaDisplayManager;
+    private displayManager: DisplayManager;
 
     constructor(ctx: any, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
@@ -41,7 +41,7 @@ export class ETA extends TinyMod {
         this.nameSpace = 'eta';
         this.previousTargets = new Map<string, Targets>();
         this.skillCalculators = new Map<string, Map<string, EtaSkill>>()
-        this.displayManager = new EtaDisplayManager(game, this.settings);
+        this.displayManager = new DisplayManager(game, this.settings);
 
         // add skills
         this.addSkillCalculators(EtaFishing, game.fishing, game.modifiers, game.astrology);
@@ -98,7 +98,7 @@ export class ETA extends TinyMod {
         const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
             skillMap.set(action.id, new constructor(this.game, skill, action, modifiers, astrology, this.settings));
-            this.displayManager.createDisplay(skill, action.id);
+            this.displayManager.getDisplay(skill, action.id);
         });
         this.skillCalculators.set(skill.name, skillMap);
     }
@@ -160,7 +160,7 @@ export class ETA extends TinyMod {
         // compute the targets and store them as the next previous targets
         current.targets = new Targets(current, this.settings, skill, action);
         this.previousTargets.set(skill.name, current.targets);
-        current.iterate();
+        current.iterate(this.game);
         return current;
     }
 

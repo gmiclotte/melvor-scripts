@@ -4,7 +4,6 @@ export class ResourceRates extends Rates {
     public items: { item: string, quantity: number }[];
     public gp: number;
     public sc: number;
-    public resources: number;
 
     constructor(xp: number, mastery: number, pool: number,
                 items: { item: string, quantity: number }[], gp: number, sc: number,
@@ -13,7 +12,6 @@ export class ResourceRates extends Rates {
         this.items = items;
         this.gp = gp;
         this.sc = sc;
-        this.resources = 0;
     }
 
     static get emptyRates(): ResourceRates {
