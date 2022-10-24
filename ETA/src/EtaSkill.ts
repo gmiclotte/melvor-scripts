@@ -75,7 +75,7 @@ export class EtaSkill {
         const masteryPerAction = this.masteryPerAction;
         return new Rates(
             // TODO: get all rates per action
-            this.xpPerAction,
+            this.actionXP,
             masteryPerAction,
             this.poolPerAction(masteryPerAction),
             this.averageActionTime,
@@ -97,7 +97,7 @@ export class EtaSkill {
         return this.xpToLevel(this.skillXp);
     }
 
-    get xpPerAction(): number {
+    get actionXP(): number {
         return this.modifyXP(this.action.baseExperience);
     }
 
