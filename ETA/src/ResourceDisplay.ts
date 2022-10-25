@@ -1,7 +1,6 @@
 import {Display} from "./Display";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkill} from "./ResourceSkill";
-import {EtaSkill} from "./EtaSkill";
 
 export class ResourceDisplay extends Display {
 
@@ -9,29 +8,13 @@ export class ResourceDisplay extends Display {
         if (this.element === null) {
             return undefined;
         }
-        this.element.style.display = 'block';
+        this.injectRateElement(result);
+        this.injectResourceTimeElement(result, now);
+        this.generateTooltips(result, now);
+        this.showElement();
+    }
 
-        ////////////////
-        // rates part //
-        ////////////////
-
-        const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
-        this.element.textContent = "";
-        if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp));
-            if (result.skill.hasMastery) {
-                this.element.textContent += "\r\nMXp/h: " + this.formatNumber(Math.floor(rates.mastery))
-                    + `\r\nPool/h: ${result.computePoolProgress(rates.pool).toFixed(2)}%`
-            }
-        }
-        if (this.settings.get('SHOW_ACTION_TIME')) {
-            this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
-            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
-        }
-
-        ///////////////////
-        // resource part //
-        ///////////////////
+    injectResourceTimeElement(result: ResourceSkill, now: Date) {
         const resourceActionsTaken = result.actionsTaken.resources;
         if (resourceActionsTaken.actions === 0) {
             this.element.textContent += "\r\nNo resources!";
@@ -40,40 +23,6 @@ export class ResourceDisplay extends Display {
                 + "\r\nTime: " + this.msToHms(resourceActionsTaken.ms)
                 + "\r\nETA: " + this.dateFormat(now, this.addMSToDate(now, resourceActionsTaken.ms));
         }
-
-        //////////////////
-        // product part //
-        //////////////////
-        this.injectProductCountElement(result);
-        this.element.style.display = "block";
-        if (this.element.textContent.length === 0) {
-            this.element.textContent = "Melvor ETA";
-        }
-        this.generateTooltips(result, now);
-        return this.element;
-    }
-
-
-    injectProductCountElement(_: EtaSkill) {
-    }
-
-    tooltipSection(resources: ResourceActionCounter, now: Date, target: number | string, prepend = '') {
-        // final level and time to target level
-        if (resources.ms > 0) {
-            return this.wrapTimeLeft(
-                prepend + this.timeLeftToHTML(
-                    resources,
-                    target,
-                    this.msToHms(resources.ms),
-                    this.dateFormat(now, this.addMSToDate(now, resources.ms)),
-                ),
-            );
-        } else if (prepend !== '') {
-            return this.wrapTimeLeft(
-                prepend,
-            );
-        }
-        return '';
     }
 
     timeLeftToHTML(resources: ResourceActionCounter, target: number | string, time: string, finish: string) {

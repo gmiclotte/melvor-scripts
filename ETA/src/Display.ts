@@ -63,6 +63,21 @@ export class Display {
         if (this.element === null) {
             return undefined;
         }
+        this.injectRateElement(result);
+        this.injectProductCountElement(result);
+        this.generateTooltips(result, now);
+        this.showElement();
+    }
+
+    showElement() {
+
+        this.element.style.display = "block";
+        if (this.element.textContent!.length === 0) {
+            this.element.textContent = "Melvor ETA";
+        }
+    }
+
+    injectRateElement(result: EtaSkill) {
         this.element.style.display = 'block';
         const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
         this.element.textContent = "";
@@ -77,13 +92,6 @@ export class Display {
             this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
             this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
         }
-        this.injectProductCountElement(result);
-        this.element.style.display = "block";
-        if (this.element.textContent.length === 0) {
-            this.element.textContent = "Melvor ETA";
-        }
-        this.generateTooltips(result, now);
-        return this.element;
     }
 
     injectProductCountElement(result: EtaSkill) {
