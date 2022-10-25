@@ -17,6 +17,7 @@ import {EtaHerblore} from "./EtaHerblore";
 import {EtaSummoning} from "./EtaSummoning";
 import {EtaFiremaking} from "./EtaFiremaking";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
+import {EtaWoodcutting} from "./EtaWoodcutting";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -56,7 +57,7 @@ export class ETA extends TinyMod {
         ];
 
         // add skills
-        // TODO this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
+        this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
         this.addSkillCalculators(EtaFishing, game.fishing);
         this.addSkillCalculators(EtaFiremaking, game.firemaking);
         // TODO this.addSkillCalculators(EtaCooking, game.cooking);
@@ -106,7 +107,7 @@ export class ETA extends TinyMod {
 
         // skills with generic startActionTimer
         [
-            // game.woodcutting,
+            game.woodcutting,
             game.fishing,
             game.firemaking,
             // game.cooking,

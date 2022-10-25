@@ -78,6 +78,20 @@ export class DisplayManager {
         return display;
     }
 
+    private createWoodcuttingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementsByClassName('progress-bar bg-woodcutting');
+        if (node === null) {
+            return display;
+        }
+        const index = this.game.woodcutting.actions.allObjects.findIndex((action: any) => action.id === actionID);
+        node = node[index + 1].parentNode;
+        node!.parentNode!.insertBefore(display.container, node!.nextSibling);
+        return display;
+    }
+
     private createFishingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
@@ -104,10 +118,7 @@ export class DisplayManager {
         const index = skill.actions.allObjects.findIndex((action: any) => action.id === actionID);
         node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
         const parent = node.parentNode;
-        if (parent === null) {
-            return display;
-        }
-        parent.insertBefore(display.container, node);
+        parent!.insertBefore(display.container, node);
         return display;
     }
 
@@ -119,19 +130,7 @@ export class DisplayManager {
         if (node === null) {
             return display;
         }
-        node = node.parentNode;
-        if (node === null) {
-            return display;
-        }
-        node = node.parentNode
-        if (node === null) {
-            return display;
-        }
-        const parent = node.parentNode
-        if (parent === null) {
-            return display;
-        }
-        parent.appendChild(display.container);
+        node.parentNode!.parentNode!.parentNode!.appendChild(display.container);
         // @ts-ignore
         if (skill.activeRecipe.id !== actionID) {
             display.container.style.display = 'none';
@@ -154,7 +153,8 @@ export class DisplayManager {
         }
         // other containers
         switch (skill.name) {
-            // case this.game.woodcutting.name:
+            case this.game.woodcutting.name:
+                return this.createWoodcuttingDisplay(skill, actionID);
             case this.game.fishing.name:
                 return this.createFishingDisplay(skill, actionID);
             case this.game.firemaking.name:

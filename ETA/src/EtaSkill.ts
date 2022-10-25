@@ -71,7 +71,7 @@ export class EtaSkill {
      */
 
     get gainsPerAction() {
-        const masteryPerAction = this.masteryPerAction;
+        const masteryPerAction = this.getMasteryXPToAddForAction;
         return new Rates(
             // TODO: get all rates per action
             this.actionXP,
@@ -121,7 +121,7 @@ export class EtaSkill {
         }, 0);
     }
 
-    get masteryPerAction() {
+    get getMasteryXPToAddForAction() {
         const interval = this.masteryModifiedInterval;
         let xpToAdd = (((this.totalUnlockedMasteryActions * this.totalCurrentMasteryLevel) / this.skill.trueMaxTotalMasteryLevel +
                     this.masteryLevel * (this.skill.trueTotalMasteryActions / 10)) *
