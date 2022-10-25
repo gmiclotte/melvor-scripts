@@ -1,8 +1,8 @@
-import {Display} from "./Display";
+import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkill} from "./ResourceSkill";
 
-export class ResourceDisplay extends Display {
+export class ResourceDisplay extends DisplayWithMastery {
 
     injectHTML(result: ResourceSkill, now: Date) {
         if (this.element === null) {

@@ -1,12 +1,12 @@
 import {ResourceRates} from "./ResourceRates";
 import {Settings} from "./Settings";
-import {EtaSkill} from "./EtaSkill";
+import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
 import {Costs} from "../../Game-Files/built/skill";
 import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 
-export class ResourceSkill extends EtaSkill {
+export class ResourceSkill extends EtaSkillWithMastery {
     public actionsTaken: ResourceActionCounterWrapper;
     public resourcesReached: boolean;
     public remainingResources: ResourceActionCounter;

@@ -1,7 +1,6 @@
 import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
-import {Targets} from "./Targets";
 import {currentSkillConstructor, EtaSkill} from "./EtaSkill"
 import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
@@ -21,6 +20,7 @@ import {ThievingArea, ThievingNPC} from "../../Game-Files/built/thieving2";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
+import {Targets} from "./Targets";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -234,7 +234,7 @@ export class ETA extends TinyMod {
             // TODO check previous targets by comparing `current` and `previousTargets`
         }
         // compute the targets and store them as the next previous targets
-        current.targets = new Targets(current, this.settings, skill, action);
+        current.targets = current.getTargets(this.settings);
         this.previousTargets.set(skill.name, current.targets);
         current.iterate(this.game);
         return current;

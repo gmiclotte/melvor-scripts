@@ -1,6 +1,6 @@
-import {Rates} from "./Rates";
+import {RatesWithMastery} from "./RatesWithMastery";
 
-export class ResourceRates extends Rates {
+export class ResourceRates extends RatesWithMastery {
     public items: { item: string, quantity: number }[];
     public gp: number;
     public sc: number;
@@ -18,7 +18,7 @@ export class ResourceRates extends Rates {
         return new ResourceRates(0, 0, 0, [], 0, 0, 0, 1);
     }
 
-    scaledRates(unit: number): Rates {
+    scaledRates(unit: number): RatesWithMastery {
         const factor = unit / this.unit;
         return new ResourceRates(
             this.xp * factor,

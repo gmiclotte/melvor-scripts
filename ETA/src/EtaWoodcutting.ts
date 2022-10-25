@@ -1,9 +1,9 @@
 import {Woodcutting} from "../../Game-Files/built/woodcutting";
-import {EtaSkill} from "./EtaSkill";
+import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 
-export class EtaWoodcutting extends EtaSkill {
+export class EtaWoodcutting extends EtaSkillWithMastery {
     constructor(game: Game, woodcutting: Woodcutting, action: any, settings: Settings) {
         super(game, woodcutting, action, settings);
     }

@@ -70,7 +70,6 @@ export class Display {
     }
 
     showElement() {
-
         this.element.style.display = "block";
         if (this.element.textContent!.length === 0) {
             this.element.textContent = "Melvor ETA";
@@ -83,10 +82,6 @@ export class Display {
         this.element.textContent = "";
         if (this.settings.get('SHOW_XP_RATE')) {
             this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp));
-            if (result.skill.hasMastery) {
-                this.element.textContent += "\r\nMXp/h: " + this.formatNumber(Math.floor(rates.mastery))
-                    + `\r\nPool/h: ${result.computePoolProgress(rates.pool).toFixed(2)}%`
-            }
         }
         if (this.settings.get('SHOW_ACTION_TIME')) {
             this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
@@ -141,57 +136,27 @@ export class Display {
                 animation: false,
             });
         }
-        let tooltip = '';
-        // level tooltip
-        if (!flags.noSkill) {
-            const finalLevel = result.xpToLevel(result.skillXp)
-            const levelProgress = this.getPercentageInLevel(result, result.skillXp, result.skillLevel, "skill");
-            tooltip += this.finalLevelElement(
-                'Final Level',
-                this.formatLevel(finalLevel, levelProgress) + ' / 99',
-                'success',
-            ) + this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
-        }
-        // mastery tooltip
-        if (!flags.noMastery) {
-            const finalLevel = result.xpToLevel(result.masteryXp)
-            const levelProgress = this.getPercentageInLevel(result, result.masteryXp, result.masteryLevel, "mastery");
-            tooltip += this.finalLevelElement(
-                'Final Mastery',
-                this.formatLevel(finalLevel, levelProgress) + ' / 99',
-                'success',
-            ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
-        }
-        // pool tooltip
-        if (!flags.noPool) {
-            tooltip += this.finalLevelElement(
-                'Final Pool XP',
-                result.poolProgress.toFixed(2) + '%',
-                'warning',
-            )
-            let prepend = ''
-            /* TODO
-            const tokens = Math.round(result.tokens);
-            if (tokens > 0) {
-                prepend += `Final token count: ${tokens}`;
-                if (ms.pool > 0) {
-                    prepend += '<br>';
-                }
-            }
-             */
-            tooltip += this.tooltipSection(result.actionsTaken.pool, now, `${result.targets.poolPercent}%`, prepend);
-        }
         // wrap and return
         // @ts-ignore
-        this.element._tippy.setContent(`<div>${tooltip}</div>`);
+        this.element._tippy.setContent(`<div>${this.tooltipContent(result, now)}</div>`);
+    }
+
+    tooltipContent(result: EtaSkill, now: Date) {
+        return this.skillToolTip(result, now);
+    }
+
+    skillToolTip(result: EtaSkill, now: Date) {
+        const finalLevel = result.xpToLevel(result.skillXp)
+        const levelProgress = this.getPercentageInLevel(result, result.skillXp, result.skillLevel, "skill");
+        return this.finalLevelElement(
+            'Final Level',
+            this.formatLevel(finalLevel, levelProgress) + ' / 99',
+            'success',
+        ) + this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
     }
 
     getPercentageInLevel(result: EtaSkill, currentXp: number, level: number, type: string): number {
         const currentLevel = level;
-        if (currentLevel >= 99 && type === "mastery") {
-            // mastery is capped at 99
-            return 0;
-        }
         const currentLevelXp = result.levelToXp(currentLevel);
         const nextLevelXp = result.levelToXp(currentLevel + 1);
         // progress towards next level

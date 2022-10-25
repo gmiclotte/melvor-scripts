@@ -2,8 +2,9 @@ import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {Settings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
+import {DisplayWithMastery} from "./DisplayWithMastery";
 import {Display} from "./Display";
-import {EtaSkill} from "./EtaSkill";
+import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {ResourceDisplay} from "./ResourceDisplay";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {CookingCategory} from "../../Game-Files/built/cooking";
@@ -56,7 +57,7 @@ export class DisplayManager {
         display.container.style.display = 'none';
     }
 
-    injectHTML(result: EtaSkill, now: Date) {
+    injectHTML(result: EtaSkillWithMastery, now: Date) {
         const display = this.getDisplay(result.skill, result.action.id);
         display.container.style.display = 'block';
         display.injectHTML(result, now);
@@ -82,9 +83,9 @@ export class DisplayManager {
         return display;
     }
 
-    private createWoodcuttingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createWoodcuttingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
         node = document.getElementsByClassName('progress-bar bg-woodcutting');
         if (node === null) {
@@ -96,9 +97,9 @@ export class DisplayManager {
         return display;
     }
 
-    private createFishingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createFishingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
         node = document.getElementById('fishing-area-menu-container');
         if (node === null) {
@@ -111,9 +112,9 @@ export class DisplayManager {
         return display;
     }
 
-    private createMiningDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createMiningDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
         node = document.getElementById(`mining-ores-container`);
         if (node === null) {
@@ -126,7 +127,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createFiremakingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createFiremakingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
@@ -142,7 +143,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createCookingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createCookingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
         const category = this.game.cooking.actions.getObjectByID(actionID).category;
@@ -156,9 +157,9 @@ export class DisplayManager {
         return display;
     }
 
-    private createThievingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+    private createThievingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const area = this.npcAreaMap.get(actionID);
         // @ts-ignore
         const node = document.getElementById(`thieving-area-panel-${area!.id}`)!.firstChild!.firstChild!.childNodes[2].firstChild!;

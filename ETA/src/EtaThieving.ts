@@ -1,9 +1,9 @@
 import {Thieving} from "../../Game-Files/built/thieving2";
-import {EtaSkill} from "./EtaSkill";
+import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 
-export class EtaThieving extends EtaSkill {
+export class EtaThieving extends EtaSkillWithMastery {
     constructor(game: Game, thieving: Thieving, action: any, settings: Settings) {
         super(game, thieving, action, settings);
     }
