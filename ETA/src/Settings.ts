@@ -1,6 +1,5 @@
 import {Game} from "../../Game-Files/built/game";
-import {SkillWithMastery} from "../../Game-Files/built/skill";
-import {MasterySkillData} from "../../Game-Files/built/skill";
+import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 
 export class Settings {

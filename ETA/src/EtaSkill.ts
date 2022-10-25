@@ -1,11 +1,10 @@
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {PlayerModifiers, SkillModifierObject} from "../../Game-Files/built/modifier";
 import {Astrology} from "../../Game-Files/built/astrology";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 import {ActionCounterWrapper} from "./ActionCounter";
-import {SkillModifierObject} from "../../Game-Files/built/modifier"
 
 export type currentSkillConstructor = new(
     game: Game,
