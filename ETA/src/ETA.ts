@@ -17,8 +17,10 @@ import {EtaHerblore} from "./EtaHerblore";
 import {EtaSummoning} from "./EtaSummoning";
 import {EtaFiremaking} from "./EtaFiremaking";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
+import {ThievingArea, ThievingNPC} from "../../Game-Files/built/thieving2";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 import {EtaCooking} from "./EtaCooking";
+import {EtaThieving} from "./EtaThieving";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -31,6 +33,7 @@ export class ETA extends TinyMod {
     private previousTargets: Map<string, Targets>;
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
     private displayManager: DisplayManager;
+    private npcAreaMap: Map<string, ThievingArea>;
 
     constructor(ctx: any, settings: Settings, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
@@ -45,7 +48,12 @@ export class ETA extends TinyMod {
         this.nameSpace = 'eta';
         this.previousTargets = new Map<string, Targets>();
         this.skillCalculators = new Map<string, Map<string, EtaSkill>>()
-        this.displayManager = new DisplayManager(game, this.settings);
+        this.npcAreaMap = new Map<string, ThievingArea>();
+        game.thieving.areas.forEach((area: ThievingArea) =>
+            // @ts-ignore
+            area.npcs.map((npc: ThievingNPC) => this.npcAreaMap.set(npc.id, area))
+        );
+        this.displayManager = new DisplayManager(game, this.settings, this.npcAreaMap);
         this.artisanSkills = [
             this.game.firemaking,
             this.game.cooking,
@@ -64,7 +72,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
-        // TODO this.addSkillCalculators(EtaThieving, game.thieving);
+        this.addSkillCalculators(EtaThieving, game.thieving);
         // Farming not included
         this.addSkillCalculators(EtaFletching, game.fletching);
         this.addSkillCalculators(EtaCrafting, game.crafting);
@@ -105,6 +113,17 @@ export class ETA extends TinyMod {
         }
 
         // thieving
+        skill = game.thieving;
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            // Override to prevent action timer starting when stunned
+            if (!(skill.stunState === 1 /* ThievingStunState.Stunned */)) {
+                skill.actionTimer.start(skill.actionInterval);
+                skill.renderQueue.progressBar = true;
+            }
+            eta.recompute(skill);
+        }
 
         // skills with generic startActionTimer
         [
@@ -165,6 +184,12 @@ export class ETA extends TinyMod {
             this.game.mining.name,
         ].includes(skill.name)) {
             return false;
+        }
+        // only compute selected actions for thieving
+        if (skill.name === this.game.thieving.name) {
+            const area = this.npcAreaMap.get(action.id);
+            // @ts-ignore
+            return thievingMenu.areaPanels.get(area).selectedNPC !== action;
         }
         // only compute selected actions for cooking
         if (skill.name === this.game.cooking.name) {

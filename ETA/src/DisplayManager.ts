@@ -7,16 +7,19 @@ import {EtaSkill} from "./EtaSkill";
 import {ResourceDisplay} from "./ResourceDisplay";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {CookingCategory} from "../../Game-Files/built/cooking";
+import {ThievingArea} from "../../Game-Files/built/thieving2";
 
 export class DisplayManager {
     private readonly game: Game;
     private readonly displays: Map<string, Display>;
     private readonly settings: Settings;
+    private readonly npcAreaMap: Map<string, ThievingArea>;
 
-    constructor(game: Game, settings: Settings) {
+    constructor(game: Game, settings: Settings, npcAreaMap: Map<string, ThievingArea>) {
         this.displays = new Map<string, Display>()
         this.settings = settings;
         this.game = game;
+        this.npcAreaMap = npcAreaMap;
     }
 
     removeAllDisplays() {
@@ -153,6 +156,21 @@ export class DisplayManager {
         return display;
     }
 
+    private createThievingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+        const area = this.npcAreaMap.get(actionID);
+        // @ts-ignore
+        const node = document.getElementById(`thieving-area-panel-${area!.id}`)!.firstChild!.firstChild!.childNodes[2].firstChild!;
+        node.insertBefore(display.container, node.childNodes[1]);
+        // @ts-ignore
+        const selectedNPC = thievingMenu.areaPanels.get(area).selectedNPC;
+        if (selectedNPC.id !== actionID) {
+            display.container.style.display = 'none';
+        }
+        return display;
+    }
+
     private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         // create new display
@@ -178,7 +196,8 @@ export class DisplayManager {
                 return this.createCookingDisplay(skill, actionID);
             case this.game.mining.name:
                 return this.createMiningDisplay(skill, actionID);
-            // case this.game.thieving.name:
+            case this.game.thieving.name:
+                return this.createThievingDisplay(skill, actionID);
             // case this.game.agility.name:
             case this.game.summoning.name:
                 return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);

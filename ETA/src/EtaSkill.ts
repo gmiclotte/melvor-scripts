@@ -122,10 +122,8 @@ export class EtaSkill {
 
     get getMasteryXPToAddForAction() {
         const interval = this.masteryModifiedInterval;
-        let xpToAdd = (((this.totalUnlockedMasteryActions * this.totalCurrentMasteryLevel) / this.skill.trueMaxTotalMasteryLevel +
-                    this.masteryLevel * (this.skill.trueTotalMasteryActions / 10)) *
-                (interval / 1000)) /
-            2;
+        let xpToAdd = (((this.totalUnlockedMasteryActions * this.totalCurrentMasteryLevel) / this.skill.trueMaxTotalMasteryLevel
+            + this.masteryLevel * (this.skill.trueTotalMasteryActions / 10)) * (interval / 1000)) / 2;
         xpToAdd *= 1 + this.getMasteryXPModifier() / 100;
         return xpToAdd;
     }
