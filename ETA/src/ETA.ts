@@ -101,28 +101,32 @@ export class ETA extends TinyMod {
         window.eta = eta;
 
         // mining
-        let skill = game.mining;
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            if (!skill.activeRock.isRespawning && skill.activeRock.currentHP > 0) {
-                skill.actionTimer.start(skill.actionInterval);
-                skill.renderQueue.progressBar = true;
-            }
+        {
+            let skill = game.mining;
+            // initial compute
             eta.recompute(skill);
+            skill.startActionTimer = () => {
+                if (!skill.activeRock.isRespawning && skill.activeRock.currentHP > 0) {
+                    skill.actionTimer.start(skill.actionInterval);
+                    skill.renderQueue.progressBar = true;
+                }
+                eta.recompute(skill);
+            }
         }
 
         // thieving
-        skill = game.thieving;
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            // Override to prevent action timer starting when stunned
-            if (!(skill.stunState === 1 /* ThievingStunState.Stunned */)) {
-                skill.actionTimer.start(skill.actionInterval);
-                skill.renderQueue.progressBar = true;
-            }
+        {
+            let skill = game.thieving;
+            // initial compute
             eta.recompute(skill);
+            skill.startActionTimer = () => {
+                // Override to prevent action timer starting when stunned
+                if (!(skill.stunState === 1 /* ThievingStunState.Stunned */)) {
+                    skill.actionTimer.start(skill.actionInterval);
+                    skill.renderQueue.progressBar = true;
+                }
+                eta.recompute(skill);
+            }
         }
 
         // skills with generic startActionTimer
