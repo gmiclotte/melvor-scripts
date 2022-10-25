@@ -50,4 +50,14 @@ module.exports = {
     },
     clean: true,
   },
+  externals: [
+    function ({ context, request }, callback) {
+      if (/^.*Game-Files.*$/.test(request)) {
+        // Externalize to a commonjs module using the request path
+        return callback(null,'Game-Files');
+      }
+      // Continue without externalizing the import
+      callback();
+    },
+  ],
 };

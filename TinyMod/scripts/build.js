@@ -40,6 +40,7 @@ const lineReader = readline.createInterface({
                 writeLinesTest = false;
             }
         }
+        line = line.replace('external_Game_Files_namespaceObject.', '');
         if (writeLines) {
             fs.appendFileSync(buildFile, line + '\n', () => {
             });
