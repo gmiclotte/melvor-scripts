@@ -3,7 +3,7 @@ import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
 import {Targets} from "./Targets";
 import {currentSkillConstructor, EtaSkill} from "./EtaSkill"
-import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaFishing} from "./EtaFishing";
 import {EtaMining} from "./EtaMining";
@@ -16,9 +16,10 @@ import {EtaRunecrafting} from "./EtaRunecrafting";
 import {EtaHerblore} from "./EtaHerblore";
 import {EtaSummoning} from "./EtaSummoning";
 import {EtaFiremaking} from "./EtaFiremaking";
+import {MasteryAction} from "../../Game-Files/built/mastery2";
 
 export class ETA extends TinyMod {
-    public readonly artisanSkills: SkillWithMastery[];
+    public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
     private readonly game: Game;
     private readonly settings: Settings;
     private readonly nameSpace: string;
@@ -134,7 +135,7 @@ export class ETA extends TinyMod {
         return eta;
     }
 
-    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery) {
+    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
             skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
@@ -143,7 +144,7 @@ export class ETA extends TinyMod {
         this.skillCalculators.set(skill.name, skillMap);
     }
 
-    recompute(skill: SkillWithMastery) {
+    recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
                 if (!this.skipAction(skill, action)) {
@@ -155,7 +156,7 @@ export class ETA extends TinyMod {
         });
     }
 
-    skipAction(skill: SkillWithMastery, action: any): boolean {
+    skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
         if (this.artisanSkills.includes(skill)) {
             // @ts-ignore
             if (!skill.activeRecipe || skill.activeRecipe.id !== action.id) {
@@ -184,7 +185,7 @@ export class ETA extends TinyMod {
         return false;
     }
 
-    timeRemaining(skill: SkillWithMastery, action: any): any {
+    timeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): any {
         // get current state of the skill
         // @ts-ignore
         const current = this.skillCalculators.get(skill.name).get(action.id);
@@ -256,7 +257,7 @@ export class ETA extends TinyMod {
 
     addTargetInputs() {
         this.skillTargetCard = new TabCard('EtaTarget', true, this.tag, this.content, '', '150px', true);
-        this.settings.skillList.forEach((skill: SkillWithMastery) => {
+        this.settings.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
             const card = this.skillTargetCard.addTab(skill.name, skill.media, '', '150px', undefined);
             card.addSectionTitle(skill.name + ' Targets');
             [

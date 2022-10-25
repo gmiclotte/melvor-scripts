@@ -1,10 +1,11 @@
-import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {Settings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
 import {Display} from "./Display";
 import {EtaSkill} from "./EtaSkill";
 import {ResourceDisplay} from "./ResourceDisplay";
+import {MasteryAction} from "../../Game-Files/built/mastery2";
 
 export class DisplayManager {
     private readonly game: Game;
@@ -24,7 +25,7 @@ export class DisplayManager {
         this.displays.clear();
     }
 
-    public getDisplay(skill: SkillWithMastery, actionID: string): Display {
+    public getDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         let display = this.displays.get(displayID);
         if (display) {
@@ -37,7 +38,7 @@ export class DisplayManager {
         return display;
     }
 
-    public getDisplayID(skill: SkillWithMastery, actionID: string): string {
+    public getDisplayID(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): string {
         let displayID = `etaTime${skill.name}`;
         if (actionID !== undefined) {
             displayID += actionID;
@@ -45,7 +46,7 @@ export class DisplayManager {
         return displayID.replace(' ', '-');
     }
 
-    hideHTML(skill: SkillWithMastery, actionID: string) {
+    hideHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string) {
         // disable time left element
         const display = this.getDisplay(skill, actionID);
         display.container.style.display = 'none';
@@ -57,7 +58,7 @@ export class DisplayManager {
         display.injectHTML(result, now);
     }
 
-    private createArtisanDisplay(skill: SkillWithMastery, actionID: string, eltID: string) {
+    private createArtisanDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string, eltID: string) {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
         const container = document.getElementById(eltID);
@@ -77,7 +78,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createFishingDisplay(skill: SkillWithMastery, actionID: string): Display {
+    private createFishingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
@@ -92,7 +93,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createMiningDisplay(skill: SkillWithMastery, actionID: string): Display {
+    private createMiningDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new Display(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
@@ -110,7 +111,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createFiremakingDisplay(skill: SkillWithMastery, actionID: string): Display {
+    private createFiremakingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
@@ -138,7 +139,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createDisplay(skill: SkillWithMastery, actionID: string): Display {
+    private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         // create new display
         // standard processing container

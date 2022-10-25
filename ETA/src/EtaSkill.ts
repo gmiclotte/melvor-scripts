@@ -5,6 +5,7 @@ import {Targets} from "./Targets";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 import {ActionCounterWrapper} from "./ActionCounter";
+import {SkillModifierObject} from "../../Game-Files/built/modifier"
 
 export type currentSkillConstructor = new(
     game: Game,
@@ -342,7 +343,7 @@ export class EtaSkill {
     }
 
     getSkillModifierValue(modifierID: string): number {
-        return this.modifiers.getSkillModifierValue(modifierID, this.skill);
+        return this.modifiers.getSkillModifierValue(modifierID as keyof SkillModifierObject<any>, this.skill);
     }
 
     getMasteryXPModifier() {

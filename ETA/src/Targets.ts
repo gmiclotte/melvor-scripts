@@ -1,5 +1,6 @@
-import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {EtaSkill} from "./EtaSkill";
+import {MasteryAction} from "../../Game-Files/built/mastery2";
 
 export class Targets {
     public skillLevel: number;
@@ -12,7 +13,7 @@ export class Targets {
     public consumables: boolean;
     private readonly current: EtaSkill;
 
-    constructor(current: EtaSkill, settings: any, skill: SkillWithMastery, action: any = undefined) {
+    constructor(current: EtaSkill, settings: any, skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any = undefined) {
         this.current = current;
         if (action === undefined) {
             this.skillLevel = 0;

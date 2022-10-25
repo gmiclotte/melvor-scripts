@@ -1,8 +1,10 @@
 import {Game} from "../../Game-Files/built/game";
 import {SkillWithMastery} from "../../Game-Files/built/skill";
+import {MasterySkillData} from "../../Game-Files/built/skill";
+import {MasteryAction} from "../../Game-Files/built/mastery2";
 
 export class Settings {
-    public readonly skillList: SkillWithMastery[];
+    public readonly skillList: SkillWithMastery<MasteryAction, MasterySkillData>[];
     private readonly ctx: any;
     private readonly generalSettings: any;
     private readonly skillSettings: Map<string, any>;
@@ -89,12 +91,12 @@ export class Settings {
             },
         ]);
         // skillSettings
-        this.skillList = game.skills.filter((skill: SkillWithMastery) => skill.actions)
+        this.skillList = game.skills.filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => skill.actions)
             // @ts-ignore
-            .filter((skill: SkillWithMastery) => !['melvorD:Magic', 'melvorD:Farming'].includes(skill.id));
+            .filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => !['melvorD:Magic', 'melvorD:Farming'].includes(skill.id));
         this.skillList.push(game.altMagic);
         this.skillSettings = new Map<string, any>();
-        this.skillList.forEach((skill: SkillWithMastery) => {
+        this.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
             [
                 {id: 'LEVEL', label: 'Level targets'},
                 {id: 'MASTERY', label: 'Mastery targets'},
