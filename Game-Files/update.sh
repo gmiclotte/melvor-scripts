@@ -3,7 +3,7 @@ parent="melvor"
 dir="${parent}/assets/js/"
 
 # clean up
-rm -r game built lib
+rm -rf game built lib src
 
 # download game files through git, clean up afterwards
 git init
@@ -29,5 +29,25 @@ sed -i 's/^class/export class/g' ./**/*.js
 sed -i 's/^function/export function/g' ./**/*.js
 sed -i 's/^const/export const/g' ./**/*.js
 
+
+# download game types through git, clean up afterwards
+git init
+git remote add -f origin git@github.com:coolrox95/Melvor-Typing-Project.git
+git config core.sparseCheckout true
+echo "src" >> .git/info/sparse-checkout
+git pull origin main
+rm -rf .git
+
+# add exports
+sed -i 's/^declare/export declare/g' ./src/gameTypes/*.ts
+sed -i 's/^interface/export interface/g' ./src/gameTypes/*.ts
+sed -i 's/^namespace/export namespace/g' ./src/gameTypes/*.ts
+sed -i 's/^type/export type/g' ./src/gameTypes/*.ts
+
+# mv declarations to source files
+mv src/gameTypes/*.d.ts built/
+mv src/libraryTypes/*.d.ts lib/
+rm -rf src
+
 # create declarations
-npm run declarations
+# npm run declarations
