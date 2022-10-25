@@ -6,6 +6,7 @@ import {Display} from "./Display";
 import {EtaSkill} from "./EtaSkill";
 import {ResourceDisplay} from "./ResourceDisplay";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
+import {CookingCategory} from "../../Game-Files/built/cooking";
 
 export class DisplayManager {
     private readonly game: Game;
@@ -138,6 +139,20 @@ export class DisplayManager {
         return display;
     }
 
+    private createCookingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
+        const category = this.game.cooking.actions.getObjectByID(actionID).category;
+        const index = this.game.cooking.categories.allObjects.findIndex((c: CookingCategory) => c === category);
+        const node = document.getElementById(`cooking-menu-container`)!.children[index].firstChild!.firstChild!.firstChild!.firstChild!.childNodes[2].firstChild!;
+        node.insertBefore(display.container, node.childNodes[1]);
+        // @ts-ignore
+        if (skill.selectedRecipes.get(category) !== actionID) {
+            display.container.style.display = 'none';
+        }
+        return display;
+    }
+
     private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         // create new display
@@ -159,7 +174,8 @@ export class DisplayManager {
                 return this.createFishingDisplay(skill, actionID);
             case this.game.firemaking.name:
                 return this.createFiremakingDisplay(skill, actionID);
-            // case this.game.cooking.name:
+            case this.game.cooking.name:
+                return this.createCookingDisplay(skill, actionID);
             case this.game.mining.name:
                 return this.createMiningDisplay(skill, actionID);
             // case this.game.thieving.name:

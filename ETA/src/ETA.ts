@@ -18,6 +18,7 @@ import {EtaSummoning} from "./EtaSummoning";
 import {EtaFiremaking} from "./EtaFiremaking";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {EtaWoodcutting} from "./EtaWoodcutting";
+import {EtaCooking} from "./EtaCooking";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -60,7 +61,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
         this.addSkillCalculators(EtaFishing, game.fishing);
         this.addSkillCalculators(EtaFiremaking, game.firemaking);
-        // TODO this.addSkillCalculators(EtaCooking, game.cooking);
+        this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
         // TODO this.addSkillCalculators(EtaThieving, game.thieving);
@@ -110,7 +111,7 @@ export class ETA extends TinyMod {
             game.woodcutting,
             game.fishing,
             game.firemaking,
-            // game.cooking,
+            game.cooking,
             // mining is handled separately
             game.smithing,
             // thieving is handled separately
@@ -158,15 +159,19 @@ export class ETA extends TinyMod {
     }
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
-        if (this.artisanSkills.includes(skill)) {
-            // @ts-ignore
-            if (!skill.activeRecipe || skill.activeRecipe.id !== action.id) {
-                return true;
-            }
+        // compute all actions for woodcutting and mining
+        if ([
+            this.game.woodcutting.name,
+            this.game.mining.name,
+        ].includes(skill.name)) {
+            return false;
         }
-        // @ts-ignore
-        const fishing = game.fishing;
-        if (skill.name === fishing.name) {
+        // only compute selected actions for cooking
+        if (skill.name === this.game.cooking.name) {
+            return this.game.cooking.selectedRecipes.get(action.category) !== action;
+        }
+        // only compute selected actions for fishing
+        if (skill.name === this.game.fishing.name) {
             const calculators = this.skillCalculators.get(skill.name);
             if (calculators === undefined) {
                 return true;
@@ -175,15 +180,19 @@ export class ETA extends TinyMod {
             if (calculator === undefined) {
                 return true;
             }
-            const fish = fishing.selectedAreaFish.get((calculator as EtaFishing).area);
+            const fish = this.game.fishing.selectedAreaFish.get((calculator as EtaFishing).area);
             if (fish === undefined) {
                 return true;
             }
-            if (fish.id !== action.id) {
-                return true;
-            }
+            return fish.id !== action.id;
         }
-        return false;
+        // remainder of artisan skills
+        if (this.artisanSkills.includes(skill)) {
+            // @ts-ignore
+            return !skill.activeRecipe || skill.activeRecipe.id !== action.id;
+        }
+        // unknown skill, skip
+        return true;
     }
 
     timeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): any {
