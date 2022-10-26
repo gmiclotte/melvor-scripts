@@ -25,9 +25,6 @@ export class Targets {
 
     completed(): boolean {
         // check skill xp
-        if (!this.skillCompleted()) {
-            return false;
-        }
-        return true;
+        return this.skillCompleted();
     }
 }

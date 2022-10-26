@@ -9,6 +9,7 @@ import {ResourceDisplayWithMastery, ResourceDisplayWithoutMastery} from "./Resou
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {CookingCategory} from "../../Game-Files/built/cooking";
 import {ThievingArea} from "../../Game-Files/built/thieving2";
+import {DisplayWithPool} from "./DisplayWithPool";
 
 export class DisplayManager {
     private readonly game: Game;
@@ -30,30 +31,31 @@ export class DisplayManager {
         this.displays.clear();
     }
 
-    public getDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
-        const displayID = this.getDisplayID(skill, actionID);
+    public getDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display {
+        const displayID = this.getDisplayID(skill, ...actionIDs);
         let display = this.displays.get(displayID);
         if (display) {
             // display already exists
             return display;
         }
         // create new display
-        display = this.createDisplay(skill, actionID);
+        if (actionIDs.length === 1) {
+            display = this.createDisplay(skill, actionIDs[0]);
+        } else {
+            display = this.createMultiDisplay(skill, ...actionIDs);
+        }
         this.displays.set(displayID, display);
         return display;
     }
 
-    public getDisplayID(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): string {
-        let displayID = `etaTime${skill.name}`;
-        if (actionID !== undefined) {
-            displayID += actionID;
-        }
-        return displayID.replace(' ', '-');
+    public getDisplayID(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): string {
+        return `etaTime${skill.name}${actionIDs.sort().join('-')}`
+            .replace(' ', '-');
     }
 
-    hideHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string) {
+    hideHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]) {
         // disable time left element
-        const display = this.getDisplay(skill, actionID);
+        const display = this.getDisplay(skill, ...actionIDs);
         display.container.style.display = 'none';
     }
 
@@ -184,7 +186,6 @@ export class DisplayManager {
     }
 
     private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
-        const displayID = this.getDisplayID(skill, actionID);
         // create new display
         // standard processing container
         if ([
@@ -217,6 +218,30 @@ export class DisplayManager {
             case this.game.altMagic.name:
                 return this.createMagicDisplay(skill, actionID);
         }
+        const displayID = this.getDisplayID(skill, actionID);
+        return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
+    }
+
+    private createWoodcuttingMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionIDs: string[]): Display {
+        const displayID = this.getDisplayID(skill);
+        console.log('creating', displayID)
+        const display = new DisplayWithPool(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementsByClassName('progress-bar bg-woodcutting');
+        if (node === null) {
+            return display;
+        }
+        node = node[0].parentNode;
+        node!.parentNode!.insertBefore(display.container, node!.nextSibling);
+        return display;
+    }
+
+    private createMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display {
+        switch (skill.name) {
+            case this.game.woodcutting.name:
+                return this.createWoodcuttingMultiDisplay(skill, actionIDs);
+        }
+        const displayID = this.getDisplayID(skill, ...actionIDs);
         return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
     }
 }

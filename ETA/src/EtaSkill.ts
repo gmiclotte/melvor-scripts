@@ -53,7 +53,6 @@ export class EtaSkill {
 
     get gainsPerAction() {
         return new Rates(
-            // TODO: get all rates per action
             this.actionXP,
             this.averageActionTime,
             1, // unit
@@ -141,7 +140,7 @@ export class EtaSkill {
                 break;
             }
         }
-        this.setCurrentRates();
+        this.setCurrentRates(this.gainsPerAction);
     }
 
     xpToNextLevel(level: number, xp: number): number {
@@ -155,7 +154,6 @@ export class EtaSkill {
     progress(): void {
         const gainsPerAction = this.gainsPerAction;
         const actions = this.actionsToCheckpoint(gainsPerAction);
-        // TODO: progress all trackers
         if (actions === Infinity) {
             this.infiniteActions = true;
             return;
@@ -167,15 +165,9 @@ export class EtaSkill {
     actionsToCheckpoint(gainsPerAction: Rates) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
-        const requiredForCheckPoint = {
-            xp: this.xpToNextLevel(this.skillLevel, this.skillXp),
-        }
-        const actionsToCheckpoint = {
-            xp: requiredForCheckPoint.xp / gainsPerAction.xp,
-        }
-        return Math.ceil(Math.min(
-            actionsToCheckpoint.xp,
-        ));
+        const requiredForXPCheckPoint = this.xpToNextLevel(this.skillLevel, this.skillXp);
+        const actionsToXPCheckpoint = requiredForXPCheckPoint / gainsPerAction.xp;
+        return Math.ceil(actionsToXPCheckpoint);
     }
 
     addActions(gainsPerAction: Rates, actions: number) {
@@ -184,18 +176,19 @@ export class EtaSkill {
         this.actionsTaken.active.ms += actions * gainsPerAction.ms;
     }
 
-    setCurrentRates(gains: Rates | undefined = undefined) {
+    setCurrentRates(gains: Rates) {
         if (!this.currentRatesSet) {
-            if (gains === undefined) {
-                gains = this.gainsPerAction;
-            }
-            this.currentRates = new Rates(
-                gains.xp / gains.ms,
-                gains.ms,
-                1, // unit
-            );
+            this.setCurrentRatesNoCheck(gains);
         }
         this.currentRatesSet = true;
+    }
+
+    setCurrentRatesNoCheck(gains: Rates): Rates {
+        return this.currentRates = new Rates(
+            gains.xp / gains.ms,
+            gains.ms,
+            1, // unit
+        );
     }
 
     /***

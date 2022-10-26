@@ -20,8 +20,9 @@ import {ThievingArea, ThievingNPC} from "../../Game-Files/built/thieving2";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
-import {Targets} from "./Targets";
 import {EtaMagic} from "./EtaMagic";
+import {MultiActionSkill} from "./MultiActionSkill";
+import {WoodcuttingMultiAction} from "./WoodcuttingMultiAction";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -31,8 +32,8 @@ export class ETA extends TinyMod {
     private togglesCard!: Card;
     private skillTargetCard!: TabCard;
     private globalTargetsCard!: Card;
-    private previousTargets: Map<string, Targets>;
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
+    private skillMultiCalculators: Map<string, MultiActionSkill>;
     private displayManager: DisplayManager;
     private npcAreaMap: Map<string, ThievingArea>;
 
@@ -47,8 +48,8 @@ export class ETA extends TinyMod {
 
         // initialize fields
         this.nameSpace = 'eta';
-        this.previousTargets = new Map<string, Targets>();
-        this.skillCalculators = new Map<string, Map<string, EtaSkill>>()
+        this.skillCalculators = new Map<string, Map<string, EtaSkill>>();
+        this.skillMultiCalculators = new Map<string, MultiActionSkill>();
         this.npcAreaMap = new Map<string, ThievingArea>();
         game.thieving.areas.forEach((area: ThievingArea) =>
             // @ts-ignore
@@ -179,6 +180,15 @@ export class ETA extends TinyMod {
                     this.displayManager.hideHTML(skill, action.id);
                 }
             });
+            if (skill.name === this.game.woodcutting.name) {
+                const actions = [...this.game.woodcutting.activeTrees];
+                if (!this.skipMultiAction(skill, actions)) {
+                    this.displayManager.getDisplay(skill);
+                    this.displayManager.injectHTML(this.multiTimeRemaining(skill, actions), new Date());
+                } else {
+                    this.displayManager.hideHTML(skill);
+                }
+            }
         });
     }
 
@@ -229,6 +239,13 @@ export class ETA extends TinyMod {
         return true;
     }
 
+    skipMultiAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]): boolean {
+        if (skill.name === this.game.woodcutting.name) {
+            return actions.length < 2;
+        }
+        return true;
+    }
+
     timeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): any {
         // get current state of the skill
         // @ts-ignore
@@ -237,14 +254,23 @@ export class ETA extends TinyMod {
             this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
             return undefined;
         }
-        // check if previous targets were met
-        const previousTargets = this.previousTargets.get(skill.name);
-        if (previousTargets !== undefined) {
-            // TODO check previous targets by comparing `current` and `previousTargets`
-        }
-        // compute the targets and store them as the next previous targets
+        // compute the targets
         current.targets = current.getTargets(this.settings);
-        this.previousTargets.set(skill.name, current.targets);
+        current.iterate(this.game);
+        return current;
+    }
+
+    multiTimeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]): any {
+        // get current state of the skill
+        let current;
+        if (skill.name === this.game.woodcutting.name) {
+            current = new WoodcuttingMultiAction(this.game, this.game.woodcutting, actions, this.settings);
+        } else {
+            return;
+        }
+        this.skillMultiCalculators.set(skill.name, current);
+        // compute the targets
+        current.targets = current.getTargets(this.settings);
         current.iterate(this.game);
         return current;
     }

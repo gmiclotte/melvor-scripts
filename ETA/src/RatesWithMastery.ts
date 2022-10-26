@@ -1,13 +1,12 @@
 import {Rates} from "./Rates";
+import {RatesWithPool} from "./RatesWithPool";
 
-export class RatesWithMastery extends Rates {
+export class RatesWithMastery extends RatesWithPool {
     public mastery: number;
-    public pool: number;
 
     constructor(xp: number, mastery: number, pool: number, ms: number, unit: number) {
-        super(xp, ms, unit);
+        super(xp, pool, ms, unit);
         this.mastery = mastery;
-        this.pool = pool;
     }
 
     static get emptyRates(): RatesWithMastery {
@@ -16,6 +15,16 @@ export class RatesWithMastery extends Rates {
 
     get hourlyRates() {
         return this.scaledRates(Rates.hourUnit)
+    }
+
+    static addMasteryToRates(rates: RatesWithPool, mastery: number): RatesWithMastery {
+        return new RatesWithMastery(
+            rates.xp,
+            mastery,
+            rates.pool,
+            rates.ms,
+            rates.unit,
+        );
     }
 
     scaledRates(unit: number): RatesWithMastery {

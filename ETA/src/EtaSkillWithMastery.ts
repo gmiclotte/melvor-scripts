@@ -2,12 +2,11 @@ import {RatesWithMastery} from "./RatesWithMastery";
 import {TargetsWithMastery} from "./TargetsWithMastery";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
-import {EtaSkill} from "./EtaSkill";
+import {EtaSkillWithPool} from "./EtaSkillWithPool";
 
-export class EtaSkillWithMastery extends EtaSkill {
+export class EtaSkillWithMastery extends EtaSkillWithPool {
     // trackers
     public masteryXp: number;
-    public poolXp: number;
     // initial and target
     public initial: RatesWithMastery;
     public targets: TargetsWithMastery;
@@ -15,8 +14,6 @@ export class EtaSkillWithMastery extends EtaSkill {
     public currentRates: RatesWithMastery;
     // targets reached
     public masteryReached: boolean;
-    public poolReached: boolean;
-    protected readonly masteryCheckpoints: number[];
     // other
     protected totalMasteryWithoutAction: number;
 
@@ -25,15 +22,11 @@ export class EtaSkillWithMastery extends EtaSkill {
         super(...args);
         this.targets = new TargetsWithMastery(this, settings, skill, action);
         this.masteryXp = 0;
-        this.poolXp = 0;
         this.totalMasteryWithoutAction = 0;
         this.currentRates = RatesWithMastery.emptyRates;
         this.initial = RatesWithMastery.emptyRates;
-        // @ts-ignore
-        this.masteryCheckpoints = [...masteryCheckpoints, Infinity];
         // flag to check if target was already reached
         this.masteryReached = false;
-        this.poolReached = false;
     }
 
     /***
@@ -41,24 +34,18 @@ export class EtaSkillWithMastery extends EtaSkill {
      */
 
     get gainsPerAction() {
-        const masteryPerAction = this.getMasteryXPToAddForAction;
-        return new RatesWithMastery(
-            // TODO: get all rates per action
-            this.actionXP,
-            masteryPerAction,
-            this.poolPerAction(masteryPerAction),
-            this.averageActionTime,
-            1, // unit
+        const gains = RatesWithMastery.addMasteryToRates(
+            super.gainsPerAction,
+            this.getMasteryXPToAddForAction,
         );
+        gains.pool = this.poolPerAction(gains.mastery);
+        return gains;
     }
 
     get averageRates(): RatesWithMastery {
-        return new RatesWithMastery(
-            (this.skillXp - this.initial.xp) / this.actionsTaken.active.ms,
+        return RatesWithMastery.addMasteryToRates(
+            super.averageRates,
             (this.masteryXp - this.initial.mastery) / this.actionsTaken.active.ms,
-            (this.poolXp - this.initial.pool) / this.actionsTaken.active.ms,
-            this.actionsTaken.active.ms / this.actionsTaken.active.actions, // ms per action
-            1, // unit
         );
     }
 
@@ -91,23 +78,6 @@ export class EtaSkillWithMastery extends EtaSkill {
         return xpToAdd;
     }
 
-    get poolProgress() {
-        return this.computePoolProgress(this.poolXp)
-    }
-
-    get nextPoolCheckpoint() {
-        const poolProgress = this.poolProgress;
-        const checkPoint = this.masteryCheckpoints.find((checkPoint: number) => checkPoint > poolProgress) ?? Infinity;
-        if (poolProgress < this.targets.poolPercent && poolProgress < checkPoint) {
-            return this.targets.poolPercent;
-        }
-        return checkPoint;
-    }
-
-    get nextPoolCheckpointXp() {
-        return this.nextPoolCheckpoint / 100 * this.skill.baseMasteryPoolCap;
-    }
-
     /***
      * Interval methods
      */
@@ -120,18 +90,8 @@ export class EtaSkillWithMastery extends EtaSkill {
         return !this.masteryReached && this.targets.masteryCompleted();
     }
 
-    get poolCompleted() {
-        return !this.poolReached && this.targets.poolCompleted();
-    }
-
     getTargets(settings: Settings) {
         return new TargetsWithMastery(this, settings, this.skill, this.action);
-    }
-
-    computePoolProgress(poolXp: number) {
-        let percent = (100 * poolXp) / this.skill.baseMasteryPoolCap;
-        percent += this.modifiers.increasedMasteryPoolProgress;
-        return percent;
     }
 
     init(game: Game) {
@@ -139,21 +99,15 @@ export class EtaSkillWithMastery extends EtaSkill {
         // get initial values
         // current mastery xp
         this.masteryXp = this.skill.getMasteryXP(this.action);
-        // current pool xp
-        this.poolXp = this.skill.masteryPoolXP;
         // initial
-        this.initial = new RatesWithMastery(
-            this.skillXp,
+        this.initial = RatesWithMastery.addMasteryToRates(
+            this.initial,
             this.masteryXp,
-            this.poolXp,
-            0, // ms
-            1, // unit
         );
         // compute total mastery, excluding current action
         this.totalMasteryWithoutAction = this.skill.totalCurrentMasteryLevel - this.masteryLevel;
         // flag to check if target was already reached
         this.masteryReached = false;
-        this.poolReached = false;
     }
 
     setFinalValues() {
@@ -162,50 +116,29 @@ export class EtaSkillWithMastery extends EtaSkill {
             this.actionsTaken.mastery = this.actionsTaken.active.clone();
             this.masteryReached = true;
         }
-        if (this.poolCompleted) {
-            this.actionsTaken.pool = this.actionsTaken.active.clone();
-            this.poolReached = true;
-        }
     }
 
     actionsToCheckpoint(gainsPerAction: RatesWithMastery) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
-        const requiredForCheckPoint = {
-            mastery: this.xpToNextLevel(this.masteryLevel, this.masteryXp),
-            pool: this.nextPoolCheckpointXp - this.poolXp,
-        }
-        const actionsToCheckpoint = {
-            mastery: requiredForCheckPoint.mastery / gainsPerAction.mastery,
-            pool: requiredForCheckPoint.pool / gainsPerAction.pool,
-        }
+        const requiredForMasteryCheckPoint = this.xpToNextLevel(this.masteryLevel, this.masteryXp);
+        const actionsToMasteryCheckpoint = requiredForMasteryCheckPoint / gainsPerAction.mastery;
         return Math.ceil(Math.min(
             super.actionsToCheckpoint(gainsPerAction),
-            actionsToCheckpoint.mastery,
-            actionsToCheckpoint.pool,
+            actionsToMasteryCheckpoint,
         ));
     }
 
     addActions(gainsPerAction: RatesWithMastery, actions: number) {
         super.addActions(gainsPerAction, actions);
         this.masteryXp += gainsPerAction.mastery * actions;
-        this.poolXp += gainsPerAction.pool * actions;
     }
 
-    setCurrentRates(gains: RatesWithMastery | undefined = undefined) {
-        if (!this.currentRatesSet) {
-            if (gains === undefined) {
-                gains = this.gainsPerAction;
-            }
-            this.currentRates = new RatesWithMastery(
-                gains.xp / gains.ms,
-                gains.mastery / gains.ms,
-                gains.pool / gains.ms,
-                gains.ms,
-                1, // unit
-            );
-        }
-        this.currentRatesSet = true;
+    setCurrentRatesNoCheck(gains: RatesWithMastery): RatesWithMastery {
+        return this.currentRates = RatesWithMastery.addMasteryToRates(
+            super.setCurrentRatesNoCheck(gains),
+            gains.mastery / gains.ms,
+        );
     }
 
     getMasteryXPModifier() {
@@ -214,24 +147,10 @@ export class EtaSkillWithMastery extends EtaSkill {
         modifier -= this.getSkillModifierValue('decreasedMasteryXP');
         this.astrology.masteryXPConstellations.forEach((constellation) => {
             const modValue = this.getSkillModifierValue(constellation.masteryXPModifier);
-            if (modValue > 0)
+            if (modValue > 0) {
                 modifier += modValue * constellation.maxValueModifiers;
+            }
         });
         return modifier;
-    }
-
-    /***
-     * Pool methods
-     */
-
-    poolPerAction(masteryXp: number) {
-        if (this.skillLevel >= 99) {
-            return masteryXp / 2;
-        }
-        return masteryXp / 4;
-    }
-
-    isPoolTierActive(tier: number) {
-        return this.poolProgress >= this.masteryCheckpoints[tier];
     }
 }
