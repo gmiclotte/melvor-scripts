@@ -1,10 +1,10 @@
 import {Fletching} from "../../Game-Files/built/fletching";
 import {Settings} from "./Settings";
-import {ResourceSkill} from "./ResourceSkill";
+import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {EquipmentItem, Item} from "../../Game-Files/built/item";
 
-export class EtaFletching extends ResourceSkill {
+export class EtaFletching extends ResourceSkillWithMastery {
     constructor(game: Game, fletching: Fletching, action: any, settings: Settings) {
         super(game, fletching, action, settings);
     }

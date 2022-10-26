@@ -6,12 +6,7 @@ import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 import {ActionCounterWrapper} from "./ActionCounter";
 
-export type currentSkillConstructor = new(
-    game: Game,
-    skill: any,
-    action: any,
-    settings: Settings,
-) => EtaSkill;
+export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
 
 export class EtaSkill {
     public readonly skill: any;
@@ -33,7 +28,7 @@ export class EtaSkill {
     protected infiniteActions: boolean;
     protected readonly TICK_INTERVAL: number;
 
-    constructor(game: Game, skill: any, action: any, settings: Settings) {
+    constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         this.skill = skill;
         this.action = action;
         this.modifiers = game.modifiers;

@@ -5,6 +5,8 @@ import {Settings} from "./Settings";
 import {Bank} from "../../Game-Files/built/bank2";
 import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
 
+export type displayConstructor<BaseDisplay = Display> = new(...args: any[]) => Display;
+
 export class Display {
     public readonly container!: HTMLElement;
     public readonly element!: HTMLElement;
@@ -14,7 +16,8 @@ export class Display {
     protected readonly items: ItemRegistry;
     protected readonly formatNumber: (_: any) => string;
 
-    constructor(manager: DisplayManager, settings: Settings, bank: Bank, items: ItemRegistry, id: string) {
+    constructor(...[manager, settings, bank, items, id]:
+                    [DisplayManager, Settings, Bank, ItemRegistry, string]) {
         this.manager = manager;
         this.settings = settings;
         this.bank = bank;

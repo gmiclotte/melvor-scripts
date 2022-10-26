@@ -20,8 +20,9 @@ export class EtaSkillWithMastery extends EtaSkill {
     // other
     protected totalMasteryWithoutAction: number;
 
-    constructor(game: Game, skill: any, action: any, settings: Settings) {
-        super(game, skill, action, settings);
+    constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
+        const args: [Game, any, any, Settings] = [game, skill, action, settings];
+        super(...args);
         this.targets = new TargetsWithMastery(this, settings, skill, action);
         this.masteryXp = 0;
         this.poolXp = 0;

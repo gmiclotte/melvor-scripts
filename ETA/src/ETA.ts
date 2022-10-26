@@ -1,7 +1,7 @@
 import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
-import {currentSkillConstructor, EtaSkill} from "./EtaSkill"
+import {EtaSkill, etaSkillConstructor} from "./EtaSkill"
 import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
 import {Game} from "../../Game-Files/built/game";
 import {EtaFishing} from "./EtaFishing";
@@ -21,6 +21,7 @@ import {EtaWoodcutting} from "./EtaWoodcutting";
 import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
 import {Targets} from "./Targets";
+import {EtaMagic} from "./EtaMagic";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -82,7 +83,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaSummoning, game.summoning);
         // TODO this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
-        // TODO this.addSkillCalculators(EtaMagic, game.magic);
+        this.addSkillCalculators(EtaMagic, game.altMagic);
 
         // we made it
         this.log('Loaded!');
@@ -145,7 +146,7 @@ export class ETA extends TinyMod {
             // game.agility,
             game.summoning,
             // game.astrology,
-            // game.altMagic,
+            game.altMagic,
         ].forEach((skill: any) => {
             // initial compute
             eta.recompute(skill);
@@ -160,7 +161,7 @@ export class ETA extends TinyMod {
         return eta;
     }
 
-    addSkillCalculators(constructor: currentSkillConstructor, skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+    addSkillCalculators(constructor: etaSkillConstructor, skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         const skillMap = new Map<string, EtaSkill>();
         skill.actions.forEach((action: any) => {
             skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
@@ -188,6 +189,10 @@ export class ETA extends TinyMod {
             this.game.mining.name,
         ].includes(skill.name)) {
             return false;
+        }
+        // only compute selected spell for magic
+        if (skill.name === this.game.altMagic.name) {
+            return this.game.altMagic.activeSpell !== action;
         }
         // only compute selected actions for thieving
         if (skill.name === this.game.thieving.name) {

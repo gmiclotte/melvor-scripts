@@ -1,10 +1,10 @@
 import {Firemaking} from "../../Game-Files/built/firemakingTicks";
 import {Settings} from "./Settings";
-import {ResourceSkill} from "./ResourceSkill";
+import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Costs} from "../../Game-Files/built/skill";
 
-export class EtaFiremaking extends ResourceSkill {
+export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
         super(game, firemaking, action, settings);
     }

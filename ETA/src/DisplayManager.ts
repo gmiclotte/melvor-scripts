@@ -5,7 +5,7 @@ import {FishingArea} from "../../Game-Files/built/fishing";
 import {DisplayWithMastery} from "./DisplayWithMastery";
 import {Display} from "./Display";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
-import {ResourceDisplay} from "./ResourceDisplay";
+import {ResourceDisplayWithMastery, ResourceDisplayWithoutMastery} from "./ResourceDisplay";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {CookingCategory} from "../../Game-Files/built/cooking";
 import {ThievingArea} from "../../Game-Files/built/thieving2";
@@ -65,7 +65,7 @@ export class DisplayManager {
 
     private createArtisanDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string, eltID: string) {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const container = document.getElementById(eltID);
         if (container === null) {
             return display;
@@ -129,7 +129,7 @@ export class DisplayManager {
 
     private createFiremakingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
         node = document.getElementById('firemaking-bonfire-button');
         if (node === null) {
@@ -145,7 +145,7 @@ export class DisplayManager {
 
     private createCookingDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
-        const display = new ResourceDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
+        const display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const category = this.game.cooking.actions.getObjectByID(actionID).category;
         const index = this.game.cooking.categories.allObjects.findIndex((c: CookingCategory) => c === category);
         const node = document.getElementById(`cooking-menu-container`)!.children[index].firstChild!.firstChild!.firstChild!.firstChild!.childNodes[2].firstChild!;
@@ -167,6 +167,17 @@ export class DisplayManager {
         // @ts-ignore
         const selectedNPC = thievingMenu.areaPanels.get(area).selectedNPC;
         if (selectedNPC.id !== actionID) {
+            display.container.style.display = 'none';
+        }
+        return display;
+    }
+
+    private createMagicDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new ResourceDisplayWithoutMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+        const node = document.getElementById('magic-screen-cast')!.children[0].children[1];
+        node.appendChild(display.container);
+        if (this.game.altMagic.activeSpell.id !== actionID) {
             display.container.style.display = 'none';
         }
         return display;
@@ -203,7 +214,8 @@ export class DisplayManager {
             case this.game.summoning.name:
                 return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);
             // case this.game.astrology.name:
-            // case this.game.altMagic.name:
+            case this.game.altMagic.name:
+                return this.createMagicDisplay(skill, actionID);
         }
         return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
     }

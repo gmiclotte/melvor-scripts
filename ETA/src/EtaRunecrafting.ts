@@ -1,10 +1,10 @@
 import {Runecrafting} from "../../Game-Files/built/runecrafting";
 import {Settings} from "./Settings";
-import {ResourceSkill} from "./ResourceSkill";
+import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {EquipmentItem, Item} from "../../Game-Files/built/item";
 
-export class EtaRunecrafting extends ResourceSkill {
+export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
         super(game, runecrafting, action, settings);
     }

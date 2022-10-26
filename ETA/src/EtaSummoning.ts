@@ -1,12 +1,12 @@
 import {Summoning} from "../../Game-Files/built/summoning";
 import {Settings} from "./Settings";
-import {ResourceSkill} from "./ResourceSkill";
+import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
 import {Item} from "../../Game-Files/built/item";
 import {Player} from "../../Game-Files/built/player";
 import {Costs} from "../../Game-Files/built/skill";
 
-export class EtaSummoning extends ResourceSkill {
+export class EtaSummoning extends ResourceSkillWithMastery {
     private readonly player: Player;
 
     constructor(game: Game, summoning: Summoning, action: any, settings: Settings) {
