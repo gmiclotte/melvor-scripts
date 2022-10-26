@@ -24,11 +24,11 @@ export class ResourceActionCounterWrapper extends ActionCounterWrapper {
 }
 
 export class ResourceActionCounter extends ActionCounter {
-    public items: { item: Item, quantity: number }[];
+    public items: Map<Item, number>;
     public gp: number;
     public sc: number;
 
-    constructor(items: { item: Item, quantity: number }[], gp: number, sc: number,
+    constructor(items: Map<Item, number>, gp: number, sc: number,
                 ms: number, actions: number, unit: number) {
         super(ms, actions, unit);
         this.items = items;
@@ -37,12 +37,16 @@ export class ResourceActionCounter extends ActionCounter {
     }
 
     static get emptyCounter(): ResourceActionCounter {
-        return new ResourceActionCounter([], 0, 0, 0, 0, 1);
+        return new ResourceActionCounter(new Map<Item, number>(), 0, 0, 0, 0, 1);
     }
 
     clone(): ResourceActionCounter {
+        const items = new Map<Item, number>();
+        this.items.forEach((quantity: number, item: Item) => {
+            items.set(item, quantity);
+        });
         return new ResourceActionCounter(
-            this.items.map(x => ({item: x.item, quantity: x.quantity})),
+            items,
             this.gp,
             this.sc,
             this.ms,

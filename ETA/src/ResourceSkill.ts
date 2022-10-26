@@ -12,7 +12,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         public resourcesReached: boolean;
         public remainingResources: ResourceActionCounter;
         protected costs: Costs;
-        protected costQuantityArray: { item: Item, quantity: number }[];
+        protected costQuantityMap: Map<Item, number>;
 
         constructor(...args: any[]) {
             super(...args);
@@ -20,18 +20,8 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.remainingResources = ResourceActionCounter.emptyCounter;
             this.resourcesReached = false;
             this.costs = new Costs(undefined);
-            this.costQuantityArray = [];
+            this.costQuantityMap = new Map<Item, number>();
         }
-
-        /*
-                constructor(game: Game, skill: any, action: any, settings: Settings) {
-                    super(game, skill, action, settings);
-                    this.actionsTaken = new ResourceActionCounterWrapper();
-                    this.remainingResources = ResourceActionCounter.emptyCounter;
-                    this.resourcesReached = false;
-                    this.costs = new Costs(undefined);
-                    this.costQuantityArray = [];
-                }*/
 
         get completed() {
             return super.completed && this.noResourceCheckpointLeft;
@@ -48,17 +38,23 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         init(game: Game) {
             super.init(game);
             this.costs = this.getRecipeCosts();
-            this.costQuantityArray = this.costs.getItemQuantityArray();
+            this.costQuantityMap = new Map<Item, number>();
+            this.costs.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
+                this.costQuantityMap.set(cost.item, cost.quantity);
+            });
             // actions performed
             this.actionsTaken.reset();
-            this.actionsTaken.active.items = this.costQuantityArray.map((cost: { item: Item, quantity: number }) =>
-                ({item: cost.item, quantity: 0}));
+            this.costQuantityMap.forEach((_: number, item: Item) => {
+                this.actionsTaken.active.items.set(item, 0);
+            });
             // set up remaining resources
             this.remainingResources = ResourceActionCounter.emptyCounter;
             this.remainingResources.gp = game.gp.amount;
-            this.remainingResources.sc = game.slayerCoins.amount
-            this.remainingResources.items = this.costQuantityArray.map((cost: { item: Item, quantity: number }) =>
-                ({item: cost.item, quantity: game.bank.getQty(cost.item)}));
+            this.remainingResources.sc = game.slayerCoins.amount;
+            this.costQuantityMap.forEach((_: number, item: Item) => {
+                const amt = this.remainingResources.items.get(item) ?? 0;
+                this.remainingResources.items.set(item, amt + game.bank.getQty(item));
+            });
             // flag to check if target was already reached
             this.resourcesReached = false;
         }
@@ -76,9 +72,10 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         actionsToResourceCheckpoint() {
-            const actionsToCheckpoint = this.costQuantityArray.map((cost: { item: Item, quantity: number }, idx: number) =>
-                this.remainingResources.items[idx].quantity / cost.quantity
-            );
+            const actionsToCheckpoint: number[] = [];
+            this.costQuantityMap.forEach((quantity: number, item: Item) => {
+                actionsToCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
+            });
             if (this.costs.gp) {
                 actionsToCheckpoint.push(this.remainingResources.gp / this.costs.gp);
             }
@@ -101,8 +98,9 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         addCost(counter: ResourceActionCounter, actions: number) {
             const resourceSetsUsed = actions * (1 - this.getPreservationChance(0) / 100);
-            this.costQuantityArray.forEach((cost: { item: Item, quantity: number }, idx: number) => {
-                counter.items[idx].quantity += cost.quantity * resourceSetsUsed;
+            this.costQuantityMap.forEach((quantity: number, item: Item) => {
+                const amt = counter.items.get(item) ?? 0;
+                counter.items.set(item, amt + quantity * resourceSetsUsed);
             });
             counter.gp += this.costs.gp * resourceSetsUsed;
             counter.sc += this.costs.sc * resourceSetsUsed;

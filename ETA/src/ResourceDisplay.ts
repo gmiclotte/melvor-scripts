@@ -2,6 +2,7 @@ import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkillWithoutMastery} from "./ResourceSkill";
 import {Display, displayConstructor} from "./Display";
+import {Item} from "../../Game-Files/built/item";
 
 function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: BaseDisplay) {
 
@@ -33,8 +34,8 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
 
         resourcesLeftToHTML(resources: ResourceActionCounter) {
             let req = '';
-            resources.items.forEach(used => {
-                    req += `<span>${this.formatNumber(Math.ceil(used.quantity))}</span><img class="skill-icon-xs mr-2" src="${used.item.media}">`;
+            resources.items.forEach((quantity: number, item: Item) => {
+                    req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
                 }
             )
             if (resources.sc > 0) {
