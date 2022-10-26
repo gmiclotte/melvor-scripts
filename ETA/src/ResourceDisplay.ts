@@ -29,7 +29,7 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
         }
 
         timeLeftToHTML(resources: ResourceActionCounter, target: number | string, time: string, finish: string) {
-            return `Time to ${target}: ${time}<br>ETA: ${finish}` + this.resourcesLeftToHTML(resources);
+            return super.timeLeftToHTML(resources, target, time, finish) + this.resourcesLeftToHTML(resources);
         }
 
         resourcesLeftToHTML(resources: ResourceActionCounter) {

@@ -108,19 +108,6 @@ export class Display {
             img.classList.add('mr-2');
             img.src = result.action.product.media;
             youHaveElement.appendChild(img);
-            // add perfect item for cooking // TODO refactor
-            const perfectID = result.action.product.id + '_Perfect';
-            const perfectItem = this.items.getObjectByID(perfectID);
-            if (perfectItem !== undefined) {
-                const perfectSpan = document.createElement('span');
-                perfectSpan.textContent = `You have: ${this.formatNumber(this.bank.getQty(perfectItem))}`;
-                youHaveElement.appendChild(perfectSpan);
-                const perfectImg = document.createElement('img');
-                img.classList.add('skill-icon-xs');
-                img.classList.add('mr-2');
-                perfectImg.src = perfectItem.media;
-                youHaveElement.appendChild(perfectImg);
-            }
         }
     }
 
