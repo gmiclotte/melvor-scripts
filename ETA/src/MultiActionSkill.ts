@@ -10,6 +10,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
 
     constructor(game: Game, skill: any, actions: any[], settings: Settings) {
         super(game, skill, {}, settings);
+        // create calculators
         this.calculators = new Map<string, EtaSkillWithMastery>;
         actions.forEach((action: any) => this.calculators.set(
             action.id,
@@ -21,14 +22,6 @@ export class MultiActionSkill extends EtaSkillWithPool {
         let done = true;
         this.calculators.forEach((calculator: EtaSkillWithMastery) => done &&= calculator.masteryCompleted);
         return done;
-    }
-
-    get averageActionTime() {
-        return this.actionInterval;
-    }
-
-    get actionInterval() {
-        return this.modifyInterval(this.skill.baseInterval);
     }
 
     get weights(): Map<string, number> {
@@ -43,19 +36,15 @@ export class MultiActionSkill extends EtaSkillWithPool {
         const rateMap = new Map<string, RatesWithMastery>();
         let xp = 0;
         let mastery = 0;
-        let ms = this.averageActionTime;
-        let maxTime = 0;
+        const weights = this.weights;
         this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
-            const gains = calculator.gainsPerAction;
-            rateMap.set(actionID, gains);
-            maxTime = Math.max(maxTime, gains.ms);
+            rateMap.set(actionID, calculator.gainsPerAction);
         });
         this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
             const gains = rateMap.get(actionID)!;
-            const weight = maxTime / gains.ms;
+            const weight = weights.get(actionID)!;
             xp += gains.xp * weight;
             mastery += gains.mastery * weight;
-            ms = Math.max(ms, gains.ms);
         });
         const pool = this.poolPerAction(mastery);
         return new MultiRates(
@@ -63,7 +52,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
             xp,
             0,
             pool,
-            ms,
+            this.averageActionTime,
             1,
         );
     }

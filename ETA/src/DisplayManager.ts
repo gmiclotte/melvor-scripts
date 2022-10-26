@@ -42,7 +42,7 @@ export class DisplayManager {
         if (actionIDs.length === 1) {
             display = this.createDisplay(skill, actionIDs[0]);
         } else {
-            display = this.createMultiDisplay(skill, ...actionIDs);
+            display = this.createMultiDisplay(skill);
         }
         this.displays.set(displayID, display);
         return display;
@@ -174,6 +174,20 @@ export class DisplayManager {
         return display;
     }
 
+    private createAgilityDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+        const category = this.game.agility.actions.getObjectByID(actionID).category;
+        const parent = document.getElementById(`skill-content-container-20`)!.childNodes[category].childNodes[1].childNodes[3].childNodes[3].childNodes[3];
+        const node = parent.childNodes[4]
+        parent.insertBefore(display.container, node);
+        const built = this.game.agility.builtObstacles.get(category);
+        if (built === undefined || built.id !== actionID) {
+            display.container.style.display = 'none';
+        }
+        return display;
+    }
+
     private createMagicDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplayWithoutMastery(this, this.settings, this.game.bank, this.game.items, displayID);
@@ -211,7 +225,8 @@ export class DisplayManager {
                 return this.createMiningDisplay(skill, actionID);
             case this.game.thieving.name:
                 return this.createThievingDisplay(skill, actionID);
-            // case this.game.agility.name:
+            case this.game.agility.name:
+                return this.createAgilityDisplay(skill, actionID);
             case this.game.summoning.name:
                 return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);
             // case this.game.astrology.name:
@@ -222,9 +237,8 @@ export class DisplayManager {
         return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
     }
 
-    private createWoodcuttingMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionIDs: string[]): Display {
+    private createWoodcuttingMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>): Display {
         const displayID = this.getDisplayID(skill);
-        console.log('creating', displayID)
         const display = new DisplayWithPool(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
         node = document.getElementsByClassName('progress-bar bg-woodcutting');
@@ -236,12 +250,25 @@ export class DisplayManager {
         return display;
     }
 
-    private createMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display {
+    private createAgilityMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>): Display {
+        const displayID = this.getDisplayID(skill);
+        const node = document.getElementById('agility-breakdown-items');
+        const display = new DisplayWithPool(this, this.settings, this.game.bank, this.game.items, displayID);
+        if (node === null) {
+            return display;
+        }
+        node.appendChild(display.container);
+        return display;
+    }
+
+    private createMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>): Display {
         switch (skill.name) {
             case this.game.woodcutting.name:
-                return this.createWoodcuttingMultiDisplay(skill, actionIDs);
+                return this.createWoodcuttingMultiDisplay(skill);
+            case this.game.agility.name:
+                return this.createAgilityMultiDisplay(skill);
         }
-        const displayID = this.getDisplayID(skill, ...actionIDs);
+        const displayID = this.getDisplayID(skill);
         return new Display(this, this.settings, this.game.bank, this.game.items, displayID);
     }
 }

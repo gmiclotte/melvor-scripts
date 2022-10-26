@@ -23,6 +23,8 @@ import {EtaThieving} from "./EtaThieving";
 import {EtaMagic} from "./EtaMagic";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {WoodcuttingMultiAction} from "./WoodcuttingMultiAction";
+import {EtaAgility} from "./EtaAgility";
+import {AgilityMultiAction} from "./AgilityMultiAction";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -80,7 +82,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaCrafting, game.crafting);
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
         this.addSkillCalculators(EtaHerblore, game.herblore);
-        // TODO this.addSkillCalculators(EtaAgility, game.agility);
+        this.addSkillCalculators(EtaAgility, game.agility);
         this.addSkillCalculators(EtaSummoning, game.summoning);
         // TODO this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
@@ -144,7 +146,7 @@ export class ETA extends TinyMod {
             game.crafting,
             game.runecrafting,
             game.herblore,
-            // game.agility,
+            game.agility,
             game.summoning,
             // game.astrology,
             game.altMagic,
@@ -180,14 +182,29 @@ export class ETA extends TinyMod {
                     this.displayManager.hideHTML(skill, action.id);
                 }
             });
-            if (skill.name === this.game.woodcutting.name) {
-                const actions = [...this.game.woodcutting.activeTrees];
-                if (!this.skipMultiAction(skill, actions)) {
-                    this.displayManager.getDisplay(skill);
-                    this.displayManager.injectHTML(this.multiTimeRemaining(skill, actions), new Date());
-                } else {
-                    this.displayManager.hideHTML(skill);
-                }
+            let actions: any[];
+            switch (skill.name) {
+                case this.game.woodcutting.name:
+                    actions = [...this.game.woodcutting.activeTrees];
+                    break;
+                case this.game.agility.name:
+                    actions = [];
+                    for (let i = 0; i < this.game.agility.builtObstacles.size; i++) {
+                        const obstacle = this.game.agility.builtObstacles.get(i);
+                        if (obstacle === undefined) {
+                            break;
+                        }
+                        actions.push(obstacle);
+                    }
+                    break;
+                default:
+                    return;
+            }
+            if (!this.skipMultiAction(skill, actions)) {
+                this.displayManager.getDisplay(skill);
+                this.displayManager.injectHTML(this.multiTimeRemaining(skill, actions), new Date());
+            } else {
+                this.displayManager.hideHTML(skill);
             }
         });
     }
@@ -199,6 +216,11 @@ export class ETA extends TinyMod {
             this.game.mining.name,
         ].includes(skill.name)) {
             return false;
+        }
+        // only compute selected obstacles for agility
+        if (skill.name === this.game.agility.name) {
+            const built = this.game.agility.builtObstacles.get(action.category);
+            return built === undefined || built.id !== action.id;
         }
         // only compute selected spell for magic
         if (skill.name === this.game.altMagic.name) {
@@ -241,7 +263,10 @@ export class ETA extends TinyMod {
 
     skipMultiAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]): boolean {
         if (skill.name === this.game.woodcutting.name) {
-            return actions.length < 2;
+            return actions.length < 1;
+        }
+        if (skill.name === this.game.agility.name) {
+            return this.game.agility.builtObstacles.get(0) === undefined;
         }
         return true;
     }
@@ -265,6 +290,8 @@ export class ETA extends TinyMod {
         let current;
         if (skill.name === this.game.woodcutting.name) {
             current = new WoodcuttingMultiAction(this.game, this.game.woodcutting, actions, this.settings);
+        } else if (skill.name === this.game.agility.name) {
+            current = new AgilityMultiAction(this.game, this.game.agility, actions, this.settings);
         } else {
             return;
         }
@@ -346,13 +373,5 @@ export class ETA extends TinyMod {
                 );
             });
         });
-    }
-
-    setValToObject(object: any, key: string, val: any): any {
-        if (object.set) {
-            object.set(key, val);
-        } else {
-            object[key] = val;
-        }
     }
 }

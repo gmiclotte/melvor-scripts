@@ -18,7 +18,7 @@ export class DisplayWithMastery extends DisplayWithPool {
     }
 
     tooltipContent(result: EtaSkillWithMastery, now: Date) {
-        return super.tooltipContent(result, now)
+        return this.skillToolTip(result, now)
             + this.masteryToolTip(result, now)
             + this.poolToolTip(result, now);
     }
