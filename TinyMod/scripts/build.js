@@ -41,7 +41,7 @@ const lineReader = readline.createInterface({
             }
         }
         line = line.replace('external_Game_Files_namespaceObject.', '');
-        if (writeLines) {
+        if (writeLines && !line.includes('Game-Files')) {
             fs.appendFileSync(buildFile, line + '\n', () => {
             });
         }
