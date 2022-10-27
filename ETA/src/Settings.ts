@@ -49,13 +49,6 @@ export class Settings {
             },
             {
                 type: 'switch',
-                name: 'UNCAP_POOL',
-                label: 'Show pool past 100%',
-                hint: 'Show pool past 100%.',
-                default: true,
-            },
-            {
-                type: 'switch',
                 name: 'CURRENT_RATES',
                 label: 'Show current rates',
                 hint: 'Show current rates, instead of average rates until all targets are met.',

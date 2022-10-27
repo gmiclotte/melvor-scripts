@@ -340,7 +340,6 @@ export class ETA extends TinyMod {
         titles.set('IS_12H_CLOCK', 'Use 12h clock');
         titles.set('SHOW_XP_RATE', 'Show XP rates');
         titles.set('SHOW_ACTION_TIME', 'Show action times');
-        titles.set('UNCAP_POOL', 'Show pool past 100%');
         titles.set('CURRENT_RATES', 'Show current rates');
         titles.forEach((value, key) => {
             this.togglesCard.addToggleRadio(
