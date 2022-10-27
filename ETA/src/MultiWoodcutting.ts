@@ -3,9 +3,8 @@ import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaWoodcutting} from "./EtaWoodcutting";
-import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 
-export class WoodcuttingMultiAction extends MultiActionSkill {
+export class MultiWoodcutting extends MultiActionSkill {
     protected calculators: Map<string, EtaWoodcutting>;
 
     constructor(game: Game, woodcutting: Woodcutting, actions: any[], settings: Settings) {
@@ -22,11 +21,11 @@ export class WoodcuttingMultiAction extends MultiActionSkill {
     get weights(): Map<string, number> {
         let maxTime = 0;
         const weights = new Map<string, number>();
-        this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
+        this.calculators.forEach((calculator, actionID) => {
             maxTime = Math.max(maxTime, calculator.averageActionTime);
             weights.set(actionID, calculator.averageActionTime);
         });
-        weights.forEach((weight: number, actionID: string) => {
+        weights.forEach((weight, actionID) => {
             weights.set(actionID, maxTime / weights.get(actionID)!);
         });
         return weights;
@@ -34,7 +33,7 @@ export class WoodcuttingMultiAction extends MultiActionSkill {
 
     get averageActionTime() {
         let maxTime = 0;
-        this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
+        this.calculators.forEach(calculator => {
             maxTime = Math.max(maxTime, calculator.averageActionTime);
         });
         return maxTime;

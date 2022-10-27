@@ -78,10 +78,6 @@ export class DisplayManager {
             return display;
         }
         parent.insertBefore(display.container, node.nextSibling);
-        // @ts-ignore
-        if (skill.activeRecipe.id !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 
@@ -138,10 +134,6 @@ export class DisplayManager {
             return display;
         }
         node.parentNode!.parentNode!.parentNode!.appendChild(display.container);
-        // @ts-ignore
-        if (skill.activeRecipe.id !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 
@@ -152,10 +144,6 @@ export class DisplayManager {
         const index = this.game.cooking.categories.allObjects.findIndex((c: CookingCategory) => c === category);
         const node = document.getElementById(`cooking-menu-container`)!.children[index].firstChild!.firstChild!.firstChild!.firstChild!.childNodes[2].firstChild!;
         node.insertBefore(display.container, node.childNodes[1]);
-        // @ts-ignore
-        if (skill.selectedRecipes.get(category) !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 
@@ -166,11 +154,6 @@ export class DisplayManager {
         // @ts-ignore
         const node = document.getElementById(`thieving-area-panel-${area!.id}`)!.firstChild!.firstChild!.childNodes[2].firstChild!;
         node.insertBefore(display.container, node.childNodes[1]);
-        // @ts-ignore
-        const selectedNPC = thievingMenu.areaPanels.get(area).selectedNPC;
-        if (selectedNPC.id !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 
@@ -182,9 +165,6 @@ export class DisplayManager {
         const node = parent.childNodes[4]
         parent.insertBefore(display.container, node);
         const built = this.game.agility.builtObstacles.get(category);
-        if (built === undefined || built.id !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 
@@ -193,9 +173,6 @@ export class DisplayManager {
         const display = new ResourceDisplayWithoutMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const node = document.getElementById('magic-screen-cast')!.children[0].children[1];
         node.appendChild(display.container);
-        if (this.game.altMagic.activeSpell.id !== actionID) {
-            display.container.style.display = 'none';
-        }
         return display;
     }
 

@@ -61,6 +61,9 @@ export class MultiActionSkill extends EtaSkillWithPool {
         const actionsToMasteryCheckpoints: number[] = [];
         const weights = this.weights;
         this.calculators.forEach((calculator, actionID) => {
+            if (calculator.masteryLevel >= 99) {
+                return;
+            }
             const rates = gainsPerAction.rateMap.get(actionID)!;
             const requiredForMasteryCheckPoint = calculator.xpToNextLevel(calculator.masteryLevel, calculator.masteryXp);
             actionsToMasteryCheckpoints.push(
@@ -99,13 +102,16 @@ export class MultiActionSkill extends EtaSkillWithPool {
     setFinalValues() {
         super.setFinalValues();
         this.calculators.forEach((calculator) => {
-            calculator.skillXp = this.skillXp;
-            calculator.poolXp = this.poolXp;
             calculator.setFinalValues();
         });
     }
 
     addActions(gainsPerAction: MultiRates, actions: number) {
         super.addActions(gainsPerAction, actions);
+        this.calculators.forEach((calculator) => {
+            calculator.addActions(gainsPerAction.rateMap.get(calculator.action.id)!, actions);
+            calculator.skillXp = this.skillXp;
+            calculator.poolXp = this.poolXp;
+        });
     }
 }

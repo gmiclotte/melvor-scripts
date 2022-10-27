@@ -52,8 +52,8 @@ export class EtaFletching extends ResourceSkillWithMastery {
     getRecipeCosts() {
         const costs = super.getRecipeCosts();
         if (this.action.alternativeCosts !== undefined) {
-            const altID = this.skill.setAltRecipes.get(this.action);
-            const altCosts = this.action.alternativeCosts[altID ?? 0];
+            const altID = this.skill.setAltRecipes.get(this.action) ?? 0;
+            const altCosts = this.action.alternativeCosts[altID];
             altCosts.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
                 costs.addItem(cost.item, this.modifyItemCost(cost.item, cost.quantity));
             });

@@ -5,7 +5,7 @@ import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaAgility} from "./EtaAgility";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 
-export class AgilityMultiAction extends MultiActionSkill {
+export class MultiAgility extends MultiActionSkill {
     protected calculators: Map<string, EtaAgility>;
     protected modifiers: PlayerModifiers;
 

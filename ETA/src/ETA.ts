@@ -22,9 +22,9 @@ import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
 import {EtaMagic} from "./EtaMagic";
 import {MultiActionSkill} from "./MultiActionSkill";
-import {WoodcuttingMultiAction} from "./WoodcuttingMultiAction";
+import {MultiWoodcutting} from "./MultiWoodcutting";
 import {EtaAgility} from "./EtaAgility";
-import {AgilityMultiAction} from "./AgilityMultiAction";
+import {MultiAgility} from "./MultiAgility";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -224,7 +224,8 @@ export class ETA extends TinyMod {
         }
         // only compute selected spell for magic
         if (skill.name === this.game.altMagic.name) {
-            return this.game.altMagic.activeSpell !== action;
+            return this.game.altMagic.selectedSpell === undefined
+                || this.game.altMagic.activeSpell !== action;
         }
         // only compute selected actions for thieving
         if (skill.name === this.game.thieving.name) {
@@ -255,7 +256,7 @@ export class ETA extends TinyMod {
         // remainder of artisan skills
         if (this.artisanSkills.includes(skill)) {
             // @ts-ignore
-            return !skill.activeRecipe || skill.activeRecipe.id !== action.id;
+            return skill.selectedRecipe === undefined || skill.activeRecipe.id !== action.id;
         }
         // unknown skill, skip
         return true;
@@ -289,9 +290,9 @@ export class ETA extends TinyMod {
         // get current state of the skill
         let current;
         if (skill.name === this.game.woodcutting.name) {
-            current = new WoodcuttingMultiAction(this.game, this.game.woodcutting, actions, this.settings);
+            current = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
         } else if (skill.name === this.game.agility.name) {
-            current = new AgilityMultiAction(this.game, this.game.agility, actions, this.settings);
+            current = new MultiAgility(this.game, this.game.agility, actions, this.settings);
         } else {
             return;
         }
