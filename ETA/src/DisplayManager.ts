@@ -4,12 +4,12 @@ import {Settings} from "./Settings";
 import {FishingArea} from "../../Game-Files/built/fishing";
 import {DisplayWithMastery} from "./DisplayWithMastery";
 import {Display} from "./Display";
-import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {ResourceDisplayWithMastery, ResourceDisplayWithoutMastery} from "./ResourceDisplay";
 import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {CookingCategory} from "../../Game-Files/built/cooking";
 import {ThievingArea} from "../../Game-Files/built/thieving2";
 import {DisplayWithPool} from "./DisplayWithPool";
+import {EtaSkill} from "./EtaSkill";
 
 export class DisplayManager {
     private readonly game: Game;
@@ -59,10 +59,11 @@ export class DisplayManager {
         display.container.style.display = 'none';
     }
 
-    injectHTML(result: EtaSkillWithMastery, now: Date) {
+    injectHTML(result: EtaSkill, now: Date) {
         const display = this.getDisplay(result.skill, result.action.id);
         display.container.style.display = 'block';
         display.injectHTML(result, now);
+        result.isComputing = false;
     }
 
     private createArtisanDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string, eltID: string) {

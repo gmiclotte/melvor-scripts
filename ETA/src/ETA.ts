@@ -175,10 +175,15 @@ export class ETA extends TinyMod {
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+        if (this.game.openPage.action !== skill) {
+            // this.log(`Not on ${skill.name} page`);
+            return;
+        }
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
                 if (!this.skipAction(skill, action)) {
-                    this.displayManager.injectHTML(this.timeRemaining(skill, action), new Date());
+                    // this.log(`Recomputing ${skill.name} ${action.name}.`);
+                    this.computeAndInjectHTML(skill, action);
                 } else {
                     this.displayManager.hideHTML(skill, action.id);
                 }
@@ -202,15 +207,52 @@ export class ETA extends TinyMod {
                     return;
             }
             if (!this.skipMultiAction(skill, actions)) {
-                this.displayManager.getDisplay(skill);
-                this.displayManager.injectHTML(this.multiTimeRemaining(skill, actions), new Date());
+                // this.log(`Recomputing ${skill.name} multi.`);
+                this.computeAndInjectMultiHTML(skill, actions);
             } else {
                 this.displayManager.hideHTML(skill);
             }
         });
     }
 
+    computeAndInjectHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any) {
+        const calculator = this.skillCalculators.get(skill.name)!.get(action.id);
+        if (calculator === undefined) {
+            this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
+            return;
+        }
+        if (calculator.isComputing) {
+            // already computing
+            return;
+        }
+        this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
+    }
+
+    computeAndInjectMultiHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]) {
+        let calculator = this.skillMultiCalculators.get(skill.name);
+        if (calculator && calculator.isComputing) {
+            // already computing
+            return;
+        }
+        // create new multi action calculators
+        if (skill.name === this.game.woodcutting.name) {
+            calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
+        } else if (skill.name === this.game.agility.name) {
+            calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
+        } else {
+            return;
+        }
+        this.skillMultiCalculators.set(skill.name, calculator);
+        this.displayManager.getDisplay(skill);
+        this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
+    }
+
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
+        // skip actions for which we do not have the level requirement
+        // TODO: check other requirements ?
+        if (action.level > skill.level) {
+            return true;
+        }
         // compute all actions for woodcutting and mining
         if ([
             this.game.woodcutting.name,
@@ -274,35 +316,11 @@ export class ETA extends TinyMod {
         return true;
     }
 
-    timeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): any {
-        // get current state of the skill
-        // @ts-ignore
-        const current = this.skillCalculators.get(skill.name).get(action.id);
-        if (current === undefined) {
-            this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
-            return undefined;
-        }
+    timeRemaining(calculator: EtaSkill) {
         // compute the targets
-        current.targets = current.getTargets(this.settings);
-        current.iterate(this.game);
-        return current;
-    }
-
-    multiTimeRemaining(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]): any {
-        // get current state of the skill
-        let current;
-        if (skill.name === this.game.woodcutting.name) {
-            current = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
-        } else if (skill.name === this.game.agility.name) {
-            current = new MultiAgility(this.game, this.game.agility, actions, this.settings);
-        } else {
-            return;
-        }
-        this.skillMultiCalculators.set(skill.name, current);
-        // compute the targets
-        current.targets = current.getTargets(this.settings);
-        current.iterate(this.game);
-        return current;
+        calculator.targets = calculator.getTargets(this.settings);
+        calculator.iterate(this.game);
+        return calculator;
     }
 
     createSettingsMenu(): void {

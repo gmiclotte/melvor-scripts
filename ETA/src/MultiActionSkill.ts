@@ -79,6 +79,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
     }
 
     init(game: Game) {
+        this.isComputing = true;
         this.calculators.forEach((calculator) => calculator.init(game));
         // get initial values
         // actions performed

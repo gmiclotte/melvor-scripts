@@ -9,6 +9,7 @@ import {ActionCounterWrapper} from "./ActionCounter";
 export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
 
 export class EtaSkill {
+    public isComputing: boolean;
     public readonly skill: any;
     public readonly action: any;
     // trackers
@@ -45,6 +46,7 @@ export class EtaSkill {
         this.TICK_INTERVAL = TICK_INTERVAL;
         // flag to check if target was already reached
         this.skillReached = false;
+        this.isComputing = false;
     }
 
     /***
@@ -101,6 +103,7 @@ export class EtaSkill {
     }
 
     init(game: Game) {
+        this.isComputing = true;
         // get initial values
         // actions performed
         this.actionsTaken.reset();
