@@ -164,7 +164,15 @@ export class DisplayManager {
         const parent = document.getElementById(`skill-content-container-20`)!.childNodes[category].childNodes[1].childNodes[3].childNodes[3].childNodes[3];
         const node = parent.childNodes[4]
         parent.insertBefore(display.container, node);
-        const built = this.game.agility.builtObstacles.get(category);
+        return display;
+    }
+
+    private createAstrologyDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+        const index = this.game.astrology.actions.allObjects.findIndex((action: any) => action.id === actionID)
+        const parent = document.getElementById(`astrology-container-content`)!.children[index].children[0].children[0].children[4];
+        parent.appendChild(display.container);
         return display;
     }
 
@@ -206,7 +214,8 @@ export class DisplayManager {
                 return this.createAgilityDisplay(skill, actionID);
             case this.game.summoning.name:
                 return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);
-            // case this.game.astrology.name:
+            case this.game.astrology.name:
+                return this.createAstrologyDisplay(skill, actionID);
             case this.game.altMagic.name:
                 return this.createMagicDisplay(skill, actionID);
         }

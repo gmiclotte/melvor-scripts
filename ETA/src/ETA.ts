@@ -25,6 +25,7 @@ import {MultiActionSkill} from "./MultiActionSkill";
 import {MultiWoodcutting} from "./MultiWoodcutting";
 import {EtaAgility} from "./EtaAgility";
 import {MultiAgility} from "./MultiAgility";
+import {EtaAstrology} from "./EtaAstrology";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -84,7 +85,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaHerblore, game.herblore);
         this.addSkillCalculators(EtaAgility, game.agility);
         this.addSkillCalculators(EtaSummoning, game.summoning);
-        // TODO this.addSkillCalculators(EtaAstrology, game.astrology);
+        this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);
 
@@ -148,7 +149,7 @@ export class ETA extends TinyMod {
             game.herblore,
             game.agility,
             game.summoning,
-            // game.astrology,
+            game.astrology,
             game.altMagic,
         ].forEach((skill: any) => {
             // initial compute
@@ -214,6 +215,7 @@ export class ETA extends TinyMod {
         if ([
             this.game.woodcutting.name,
             this.game.mining.name,
+            this.game.astrology.name,
         ].includes(skill.name)) {
             return false;
         }
