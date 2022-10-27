@@ -11,6 +11,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         public actionsTaken: ResourceActionCounterWrapper;
         public resourcesReached: boolean;
         public remainingResources: ResourceActionCounter;
+        public finalXpMap: Map<string, number>;
         protected costs: Costs;
         protected costQuantityMap: Map<Item, number>;
 
@@ -21,6 +22,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.resourcesReached = false;
             this.costs = new Costs(undefined);
             this.costQuantityMap = new Map<Item, number>();
+            this.finalXpMap = new Map<string, number>();
         }
 
         get completed() {
@@ -110,6 +112,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             super.setFinalValues();
             if (this.resourcesCompleted) {
                 this.actionsTaken.resources = this.actionsTaken.active.clone();
+                this.finalXpMap = this.getXpMap();
                 this.resourcesReached = true;
             }
         }

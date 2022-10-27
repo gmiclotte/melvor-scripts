@@ -1,6 +1,6 @@
 import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
-import {ResourceSkillWithoutMastery} from "./ResourceSkill";
+import {ResourceSkillWithMastery, ResourceSkillWithoutMastery} from "./ResourceSkill";
 import {Display, displayConstructor} from "./Display";
 import {Item} from "../../Game-Files/built/item";
 
@@ -45,6 +45,26 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
                 req += `<span>${this.formatNumber(Math.ceil(resources.gp))}</span><img class="skill-icon-xs mr-2" src="assets/media/main/coins.svg">`;
             }
             return `<br/>Requires: ${req}`;
+        }
+
+        finalLevel(result: ResourceSkillWithMastery) {
+            const skillXp = result.finalXpMap.get('skillXp')!;
+            const skillLevel = result.xpToLevel(skillXp);
+            return skillLevel + this.getProgressInLevel(result, skillXp, skillLevel, 'skill');
+
+        }
+
+        finalPool(result: ResourceSkillWithMastery) {
+            return result.poolXpToPercentWithModifiers(result.finalXpMap.get('poolXp')!);
+        }
+
+        finalMastery(result: ResourceSkillWithMastery) {
+            const masteryXp = result.finalXpMap.get('masteryXp')!;
+            const masteryLevel = result.xpToLevel(masteryXp);
+            if (masteryLevel >= 99) {
+                return 99;
+            }
+            return masteryLevel + this.getProgressInLevel(result, masteryXp, masteryLevel, 'mastery');
         }
     }
 }

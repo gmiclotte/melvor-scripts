@@ -52,7 +52,7 @@ export class EtaSkillWithPool extends EtaSkill {
      */
 
     get poolProgress() {
-        return this.computePoolProgress(this.poolXp)
+        return this.poolXpToPercentWithModifiers(this.poolXp);
     }
 
     get nextPoolCheckpoint() {
@@ -140,9 +140,17 @@ export class EtaSkillWithPool extends EtaSkill {
         return this.poolProgress >= this.masteryCheckpoints[tier];
     }
 
-    computePoolProgress(poolXp: number) {
-        let percent = (100 * poolXp) / this.skill.baseMasteryPoolCap;
-        percent += this.modifiers.increasedMasteryPoolProgress;
-        return percent;
+    poolXpToPercent(poolXp: number) {
+        return (100 * poolXp) / this.skill.baseMasteryPoolCap;
+    }
+
+    poolXpToPercentWithModifiers(poolXp: number) {
+        return this.poolXpToPercent(poolXp) + this.modifiers.increasedMasteryPoolProgress;
+    }
+
+    getXpMap() {
+        const levels = super.getXpMap();
+        levels.set('poolXp', this.poolXp);
+        return levels;
     }
 }

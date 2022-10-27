@@ -156,4 +156,10 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         });
         return modifier;
     }
+
+    getXpMap() {
+        const levels = super.getXpMap();
+        levels.set('masteryXp', this.masteryXp);
+        return levels;
+    }
 }

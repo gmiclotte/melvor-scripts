@@ -247,4 +247,10 @@ export class EtaSkill {
             + this.modifiers.increasedGlobalSkillIntervalPercent
             - this.modifiers.decreasedGlobalSkillIntervalPercent;
     }
+
+    getXpMap() {
+        const levels = new Map<string, number>();
+        levels.set('skillXp', this.skillXp);
+        return levels;
+    }
 }

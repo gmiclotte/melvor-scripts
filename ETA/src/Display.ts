@@ -136,21 +136,23 @@ export class Display {
     }
 
     skillToolTip(result: EtaSkill, now: Date) {
-        const finalLevel = result.xpToLevel(result.skillXp)
-        const levelProgress = this.getPercentageInLevel(result, result.skillXp, result.skillLevel, "skill");
         return this.finalLevelElement(
             'Final Level',
-            this.formatLevel(finalLevel, levelProgress) + ' / 99',
+            this.formatLevel(this.finalLevel(result)) + ' / 99',
             'success',
         ) + this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
     }
 
-    getPercentageInLevel(result: EtaSkill, currentXp: number, level: number, type: string): number {
+    finalLevel(result: EtaSkill) {
+        return result.skillLevel + this.getProgressInLevel(result, result.skillXp, result.skillLevel, "skill");
+    }
+
+    getProgressInLevel(result: EtaSkill, currentXp: number, level: number, type: string): number {
         const currentLevel = level;
         const currentLevelXp = result.levelToXp(currentLevel);
         const nextLevelXp = result.levelToXp(currentLevel + 1);
         // progress towards next level
-        return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp) * 100;
+        return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
     }
 
     tooltipSection(resources: ActionCounter, now: Date, target: number | string, prepend = '') {
@@ -205,12 +207,12 @@ export class Display {
             + '</div>';
     }
 
-    formatLevel(level: number, progress: number) {
-        progress = Math.floor(progress);
-        if (progress !== 0) {
-            return (level + progress / 100).toFixed(2);
+    formatLevel(level: number) {
+        const levelString = level.toFixed(2);
+        if (levelString.endsWith('.00') || levelString.endsWith(',00')) {
+            return level.toFixed(0);
         }
-        return level;
+        return levelString;
     }
 
     // Convert milliseconds to hours/minutes/seconds and format them

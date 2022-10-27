@@ -9,7 +9,7 @@ export class DisplayWithPool extends Display {
         this.element.textContent = "";
         if (this.settings.get('SHOW_XP_RATE')) {
             this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp))
-                + `\r\nPool/h: ${result.computePoolProgress(rates.pool).toFixed(2)}%`
+                + `\r\nPool/h: ${result.poolXpToPercent(rates.pool).toFixed(2)}%`
         }
         if (this.settings.get('SHOW_ACTION_TIME')) {
             this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
@@ -25,7 +25,7 @@ export class DisplayWithPool extends Display {
     poolToolTip(result: EtaSkillWithMastery, now: Date) {
         const tooltip = this.finalLevelElement(
             'Final Pool XP',
-            result.poolProgress.toFixed(2) + '%',
+            this.formatLevel(this.finalPool(result)) + '%',
             'warning',
         )
         let prepend = ''
@@ -39,5 +39,9 @@ export class DisplayWithPool extends Display {
         }
          */
         return tooltip + this.tooltipSection(result.actionsTaken.pool, now, `${result.targets.poolPercent}%`, prepend);
+    }
+
+    finalPool(result: EtaSkillWithPool) {
+        return result.poolProgress;
     }
 }

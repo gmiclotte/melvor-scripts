@@ -9,7 +9,7 @@ export class DisplayWithMastery extends DisplayWithPool {
         if (this.settings.get('SHOW_XP_RATE')) {
             this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp))
                 + "\r\nMXp/h: " + this.formatNumber(Math.floor(rates.mastery))
-                + `\r\nPool/h: ${result.computePoolProgress(rates.pool).toFixed(2)}%`
+                + `\r\nPool/h: ${result.poolXpToPercent(rates.pool).toFixed(2)}%`
         }
         if (this.settings.get('SHOW_ACTION_TIME')) {
             this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
@@ -24,21 +24,22 @@ export class DisplayWithMastery extends DisplayWithPool {
     }
 
     masteryToolTip(result: EtaSkillWithMastery, now: Date) {
-        const finalLevel = result.xpToLevel(result.masteryXp)
-        const levelProgress = this.getPercentageInLevel(result, result.masteryXp, result.masteryLevel, "mastery");
         return this.finalLevelElement(
             'Final Mastery',
-            this.formatLevel(finalLevel, levelProgress) + ' / 99',
+            this.formatLevel(this.finalMastery(result)) + ' / 99',
             'success',
         ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
     }
 
-    getPercentageInLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
-        const currentLevel = level;
-        if (currentLevel >= 99 && type === "mastery") {
+    finalMastery(result: EtaSkillWithMastery) {
+        return result.masteryLevel + this.getProgressInLevel(result, result.masteryXp, result.masteryLevel, "mastery");
+    }
+
+    getProgressInLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
+        if (level >= 99 && type === "mastery") {
             // mastery is capped at 99
             return 0;
         }
-        return super.getPercentageInLevel(result, currentXp, level, type);
+        return super.getProgressInLevel(result, currentXp, level, type);
     }
 }
