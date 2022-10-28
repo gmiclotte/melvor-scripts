@@ -62,7 +62,6 @@
 .tinyModOuter {
     padding: 0.25rem;
     margin: 0.25rem !important;
-    min-width: 250px;
 }
 
 .tinyModCardContainer {
@@ -224,6 +223,7 @@
 
 .tinyModTabButtonContainer {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     background-color: inherit;
     border-color: inherit;
@@ -311,6 +311,7 @@
 /*Card Container Container */
 .tinyModCCContainer {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     line-height: 20px;
