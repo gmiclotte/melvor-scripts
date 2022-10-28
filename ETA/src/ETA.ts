@@ -38,7 +38,7 @@ export class ETA extends TinyMod {
     private skillCalculators: Map<string, Map<string, EtaSkill>>;
     private skillMultiCalculators: Map<string, MultiActionSkill>;
     private displayManager: DisplayManager;
-    private npcAreaMap: Map<string, ThievingArea>;
+    private readonly npcAreaMap: Map<string, ThievingArea>;
 
     constructor(ctx: any, settings: Settings, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
@@ -171,29 +171,32 @@ export class ETA extends TinyMod {
             skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
             this.displayManager.getDisplay(skill, action.id);
         });
-        this.skillCalculators.set(skill.name, skillMap);
+        // @ts-ignore
+        const skillID = skill.id;
+        this.skillCalculators.set(skillID, skillMap);
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         if (this.game.openPage.action !== skill) {
-            // this.log(`Not on ${skill.name} page`);
+            // this.log(`Not on ${skill.id} page`);
             return;
         }
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
                 if (!this.skipAction(skill, action)) {
-                    // this.log(`Recomputing ${skill.name} ${action.name}.`);
+                    // this.log(`Recomputing ${skill.id} ${action.id}.`);
                     this.computeAndInjectHTML(skill, action);
                 } else {
                     this.displayManager.hideHTML(skill, action.id);
                 }
             });
             let actions: any[];
-            switch (skill.name) {
-                case this.game.woodcutting.name:
+            // @ts-ignore
+            switch (skill.id) {
+                case this.game.woodcutting.id:
                     actions = [...this.game.woodcutting.activeTrees];
                     break;
-                case this.game.agility.name:
+                case this.game.agility.id:
                     actions = [];
                     for (let i = 0; i < this.game.agility.builtObstacles.size; i++) {
                         const obstacle = this.game.agility.builtObstacles.get(i);
@@ -207,7 +210,7 @@ export class ETA extends TinyMod {
                     return;
             }
             if (!this.skipMultiAction(skill, actions)) {
-                // this.log(`Recomputing ${skill.name} multi.`);
+                // this.log(`Recomputing ${skill.id} multi.`);
                 this.computeAndInjectMultiHTML(skill, actions);
             } else {
                 this.displayManager.hideHTML(skill);
@@ -216,9 +219,11 @@ export class ETA extends TinyMod {
     }
 
     computeAndInjectHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any) {
-        const calculator = this.skillCalculators.get(skill.name)!.get(action.id);
+        // @ts-ignore
+        const skillID = skill.id;
+        const calculator = this.skillCalculators.get(skillID)!.get(action.id);
         if (calculator === undefined) {
-            this.warn(`Skill ${skill.name} Action ${action.name} is not implemented in ETA.`);
+            this.warn(`Skill ${skillID} Action ${action.id} is not implemented in ETA.`);
             return;
         }
         if (calculator.isComputing) {
@@ -229,59 +234,63 @@ export class ETA extends TinyMod {
     }
 
     computeAndInjectMultiHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]) {
-        let calculator = this.skillMultiCalculators.get(skill.name);
+        // @ts-ignore
+        const skillID = skill.id;
+        let calculator = this.skillMultiCalculators.get(skillID);
         if (calculator && calculator.isComputing) {
             // already computing
             return;
         }
         // create new multi action calculators
-        if (skill.name === this.game.woodcutting.name) {
+        if (skillID === this.game.woodcutting.id) {
             calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
-        } else if (skill.name === this.game.agility.name) {
+        } else if (skillID === this.game.agility.id) {
             calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
         } else {
             return;
         }
-        this.skillMultiCalculators.set(skill.name, calculator);
+        this.skillMultiCalculators.set(skillID, calculator);
         this.displayManager.getDisplay(skill);
         this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
     }
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
+        // @ts-ignore
+        const skillID = skill.id;
         // skip actions for which we do not have the level requirement
         // agility actions do not have a level requirement comparable to skill level
         // TODO: check other requirements ?
-        if (skill.name !== this.game.agility.name && action.level > skill.level) {
+        if (skillID !== this.game.agility.id && action.level > skill.level) {
             return true;
         }
-        switch (skill.name) {
-            case this.game.woodcutting.name:
-            case this.game.mining.name:
-            case this.game.astrology.name:
+        switch (skillID) {
+            case this.game.woodcutting.id:
+            case this.game.mining.id:
+            case this.game.astrology.id:
                 // compute all actions for woodcutting, mining, and astrology
                 return false;
-            case this.game.agility.name:
+            case this.game.agility.id:
                 if (this.game.agility.getObstacleLevel(action.category) > skill.level) {
                     return true;
                 }
                 // only compute selected obstacles for agility
                 const built = this.game.agility.builtObstacles.get(action.category);
                 return built === undefined || built.id !== action.id;
-            case this.game.altMagic.name:
+            case this.game.altMagic.id:
                 // only compute selected spell for magic
                 return this.game.altMagic.selectedSpell === undefined
                     || this.game.altMagic.activeSpell !== action;
-            case this.game.thieving.name:
+            case this.game.thieving.id:
                 // only compute selected actions for thieving
                 const area = this.npcAreaMap.get(action.id);
                 // @ts-ignore
                 return thievingMenu.areaPanels.get(area).selectedNPC !== action;
-            case this.game.cooking.name:
+            case this.game.cooking.id:
                 // only compute selected actions for cooking
                 return this.game.cooking.selectedRecipes.get(action.category) !== action;
-            case this.game.fishing.name:
+            case this.game.fishing.id:
                 // only compute selected actions for fishing
-                const calculators = this.skillCalculators.get(skill.name);
+                const calculators = this.skillCalculators.get(skillID);
                 if (calculators === undefined) {
                     return true;
                 }
@@ -305,10 +314,12 @@ export class ETA extends TinyMod {
     }
 
     skipMultiAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]): boolean {
-        if (skill.name === this.game.woodcutting.name) {
+        // @ts-ignore
+        const skillID = skill.id;
+        if (skillID === this.game.woodcutting.id) {
             return actions.length < 1;
         }
-        if (skill.name === this.game.agility.name) {
+        if (skillID === this.game.agility.id) {
             return this.game.agility.builtObstacles.get(0) === undefined;
         }
         return true;
@@ -373,8 +384,10 @@ export class ETA extends TinyMod {
     addTargetInputs() {
         this.skillTargetCard = new TabCard('EtaTarget', true, this.tag, this.content, '', '150px', true);
         this.settings.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
-            const card = this.skillTargetCard.addTab(skill.name, skill.media, '', '150px', undefined);
-            card.addSectionTitle(skill.name + ' Targets');
+            // @ts-ignore
+            const skillID = skill.id;
+            const card = this.skillTargetCard.addTab(skillID, skill.media, '', '150px', undefined);
+            card.addSectionTitle(skill.name);
             [
                 {id: 'LEVEL', label: 'Level targets'},
                 {id: 'MASTERY', label: 'Mastery targets'},
@@ -384,10 +397,10 @@ export class ETA extends TinyMod {
                 card.addNumberArrayInput(
                     target.label,
                     this.settings,
-                    skill.name,
+                    skillID,
                     [],
-                    () => this.settings.get(key, skill.name),
-                    (_: any, __: string, result: any) => this.settings.set(key, result, skill.name),
+                    () => this.settings.get(key, skillID),
+                    (_: any, __: string, result: any) => this.settings.set(key, result, skillID),
                 );
             });
         });

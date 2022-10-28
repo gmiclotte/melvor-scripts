@@ -89,13 +89,15 @@ export class Settings {
         this.skillList.push(game.altMagic);
         this.skillSettings = new Map<string, any>();
         this.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
+            // @ts-ignore
+            const skillID = skill.id;
             [
                 {id: 'LEVEL', label: 'Level targets'},
                 {id: 'MASTERY', label: 'Mastery targets'},
                 {id: 'POOL', label: 'Pool targets (%)'},
             ].forEach(target => {
                 const key = 'TARGET_' + target.id;
-                this.addSkillSetting(key, target.label, skill.name);
+                this.addSkillSetting(key, target.label, skillID);
             });
         });
     }
@@ -148,29 +150,29 @@ export class Settings {
         return Math.ceil(target);
     }
 
-    getTargetLevel(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillName), 99, 170);
+    getTargetLevel(skillID: string, current: number) {
+        return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillID), 99, 170);
     }
 
-    getTargetMastery(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_MASTERY'), this.get('TARGET_MASTERY', skillName), 99, 170);
+    getTargetMastery(skillID: string, current: number) {
+        return this.getTarget(current, this.get('GLOBAL_TARGET_MASTERY'), this.get('TARGET_MASTERY', skillID), 99, 170);
     }
 
-    getTargetPool(skillName: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillName), 100, 100);
+    getTargetPool(skillID: string, current: number) {
+        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillID), 100, 100);
     }
 
-    private addSkillSetting(key: string, label: string, skillName: string): string {
-        let skillSettings = this.skillSettings.get(skillName);
+    private addSkillSetting(key: string, label: string, skillID: string): string {
+        let skillSettings = this.skillSettings.get(skillID);
         if (skillSettings === undefined) {
-            skillSettings = this.ctx.settings.section(skillName);
-            this.skillSettings.set(skillName, skillSettings);
+            skillSettings = this.ctx.settings.section(skillID);
+            this.skillSettings.set(skillID, skillSettings);
         }
         skillSettings.add({
             type: 'numberArray',
             name: key,
             label: label,
-            hint: `{target.label} for ${skillName}.`,
+            hint: `{target.label} for ${skillID}.`,
             default: [],
         });
         return key;

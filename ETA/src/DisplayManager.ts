@@ -49,7 +49,9 @@ export class DisplayManager {
     }
 
     public getDisplayID(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): string {
-        return `etaTime${skill.name}${actionIDs.sort().join('-')}`
+        // @ts-ignore
+        const skillID = skill.id;
+        return `etaTime${skillID}${actionIDs.sort().join('-')}`
             .replace(' ', '-');
     }
 
@@ -198,26 +200,27 @@ export class DisplayManager {
             return this.createArtisanDisplay(skill, actionID, `${skill.constructor.name.toLowerCase()}-artisan-container`);
         }
         // other containers
-        switch (skill.name) {
-            case this.game.woodcutting.name:
+        // @ts-ignore
+        switch (skill.id) {
+            case this.game.woodcutting.id:
                 return this.createWoodcuttingDisplay(skill, actionID);
-            case this.game.fishing.name:
+            case this.game.fishing.id:
                 return this.createFishingDisplay(skill, actionID);
-            case this.game.firemaking.name:
+            case this.game.firemaking.id:
                 return this.createFiremakingDisplay(skill, actionID);
-            case this.game.cooking.name:
+            case this.game.cooking.id:
                 return this.createCookingDisplay(skill, actionID);
-            case this.game.mining.name:
+            case this.game.mining.id:
                 return this.createMiningDisplay(skill, actionID);
-            case this.game.thieving.name:
+            case this.game.thieving.id:
                 return this.createThievingDisplay(skill, actionID);
-            case this.game.agility.name:
+            case this.game.agility.id:
                 return this.createAgilityDisplay(skill, actionID);
-            case this.game.summoning.name:
+            case this.game.summoning.id:
                 return this.createArtisanDisplay(skill, actionID, `summoning-creation-element`);
-            case this.game.astrology.name:
+            case this.game.astrology.id:
                 return this.createAstrologyDisplay(skill, actionID);
-            case this.game.altMagic.name:
+            case this.game.altMagic.id:
                 return this.createMagicDisplay(skill, actionID);
         }
         const displayID = this.getDisplayID(skill, actionID);
@@ -249,10 +252,11 @@ export class DisplayManager {
     }
 
     private createMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>): Display {
-        switch (skill.name) {
-            case this.game.woodcutting.name:
+        // @ts-ignore
+        switch (skill.id) {
+            case this.game.woodcutting.id:
                 return this.createWoodcuttingMultiDisplay(skill);
-            case this.game.agility.name:
+            case this.game.agility.id:
                 return this.createAgilityMultiDisplay(skill);
         }
         const displayID = this.getDisplayID(skill);

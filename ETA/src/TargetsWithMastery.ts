@@ -17,9 +17,11 @@ export class TargetsWithMastery extends TargetsWithPool {
             this.poolXp = 0;
             return this;
         }
+        // @ts-ignore
+        const skillID = skill.id;
         // target mastery
         const mastery = skill.getMasteryXP(action);
-        this.masteryLevel = settings.getTargetMastery(skill.name, mastery);
+        this.masteryLevel = settings.getTargetMastery(skillID, mastery);
         this.masteryXp = this.current.levelToXp(this.masteryLevel);
     }
 

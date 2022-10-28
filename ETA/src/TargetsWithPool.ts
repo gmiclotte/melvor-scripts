@@ -15,9 +15,11 @@ export class TargetsWithPool extends Targets {
             this.poolXp = 0;
             return this;
         }
+        // @ts-ignore
+        const skillID = skill.id;
         // target pool percentage
         const pool = (100 * skill.masteryPoolXP) / skill.masteryPoolCap;
-        this.poolPercent = settings.getTargetPool(skill.name, pool);
+        this.poolPercent = settings.getTargetPool(skillID, pool);
         this.poolXp = this.poolPercent / 100 * skill.masteryPoolCap;
     }
 

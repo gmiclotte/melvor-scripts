@@ -139,7 +139,7 @@ export class EtaSkill {
             this.progress();
             it++;
             if (it >= maxIt) {
-                console.error(`ETA skill ${this.skill.name} ran out of iterations for action ${this.action.name} !`);
+                console.error(`ETA skill ${this.skill.id} ran out of iterations for action ${this.action.id} !`);
                 break;
             }
         }

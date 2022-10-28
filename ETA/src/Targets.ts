@@ -14,8 +14,10 @@ export class Targets {
             this.skillXp = 0;
             return this;
         }
+        // @ts-ignore
+        const skillID = skill.id;
         // target level
-        this.skillLevel = settings.getTargetLevel(skill.name, skill.level);
+        this.skillLevel = settings.getTargetLevel(skillID, skill.level);
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
 
