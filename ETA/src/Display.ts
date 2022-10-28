@@ -138,7 +138,7 @@ export class Display {
     skillToolTip(result: EtaSkill, now: Date) {
         return this.finalLevelElement(
             'Final Level',
-            this.formatLevel(this.finalLevel(result)) + ' / 99',
+            this.formatLevel(this.finalLevel(result)),
             'success',
         ) + this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
     }

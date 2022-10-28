@@ -26,7 +26,7 @@ export class DisplayWithMastery extends DisplayWithPool {
     masteryToolTip(result: EtaSkillWithMastery, now: Date) {
         return this.finalLevelElement(
             'Final Mastery',
-            this.formatLevel(this.finalMastery(result)) + ' / 99',
+            this.formatLevel(this.finalMastery(result)),
             'success',
         ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
     }
