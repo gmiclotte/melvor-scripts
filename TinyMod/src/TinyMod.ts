@@ -1,4 +1,4 @@
-import {addMenuItem, addModal, destroyMenu} from "./Menu";
+import {addModal, destroyMenu} from "./Menu";
 
 export class TinyMod {
     protected readonly ctx: any;
@@ -46,14 +46,7 @@ export class TinyMod {
 
         // create modal and access point
         this.modal = addModal(`${this.tag} Settings`, this.modalID, [this.content]);
-        const style = document.createElement("style");
-        document.head.appendChild(style);
-        const sheet = style.sheet;
-        if (sheet) {
-            sheet.insertRule(`#${this.modalID} .show { display: flex !important; }`);
-            sheet.insertRule(`#${this.modalID} .modal-dialog { max-width: 95%; display: inline-block; }`);
-        }
-        //addMenuItem(`${this.tag} Settings`, this.icon, this.menuItemID, this.modalID);
+
         // @ts-ignore
         sidebar.category('Modding').item('Mod Settings').subitem(this.tag).remove();
         // @ts-ignore

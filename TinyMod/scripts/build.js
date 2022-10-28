@@ -14,7 +14,11 @@ fs.unlink(testFile, () => {
 
 // dirs
 const {config, version} = require('./package.json');
-copydir.sync(`./${config.tinyMod}/styles`, './build/styles');
+if (fs.existsSync('./styles')) {
+    copydir.sync(`./styles`, './build/styles');
+} else {
+    copydir.sync(`./${config.tinyMod}/styles`, './build/styles');
+}
 copydir.sync('./icons', './build/icons');
 
 const {namespace} = require("./manifest.json");

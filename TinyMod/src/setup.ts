@@ -1,5 +1,5 @@
 import {Card} from "./Card";
-import {addModal, createMenu, headingEyeOnClick, addMenuItem, destroyMenu} from "./Menu";
+import {addModal, destroyMenu} from "./Menu";
 import {TabCard} from "./TabCard";
 import {TinyMod} from "./TinyMod";
 
@@ -10,7 +10,7 @@ export function setup(ctx: any): void {
             // @ts-ignore
             TinyMod: {
                 Card: Card,
-                Menu: {addModal, createMenu, headingEyeOnClick, addMenuItem, destroyMenu},
+                Menu: {addModal, destroyMenu},
                 TabCard: TabCard,
                 TinyMod: TinyMod,
             },
