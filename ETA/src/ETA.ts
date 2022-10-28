@@ -249,53 +249,51 @@ export class ETA extends TinyMod {
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
         // skip actions for which we do not have the level requirement
+        // agility actions do not have a level requirement comparable to skill level
         // TODO: check other requirements ?
-        if (action.level > skill.level) {
+        if (skill.name !== this.game.agility.name && action.level > skill.level) {
             return true;
         }
-        // compute all actions for woodcutting and mining
-        if ([
-            this.game.woodcutting.name,
-            this.game.mining.name,
-            this.game.astrology.name,
-        ].includes(skill.name)) {
-            return false;
-        }
-        // only compute selected obstacles for agility
-        if (skill.name === this.game.agility.name) {
-            const built = this.game.agility.builtObstacles.get(action.category);
-            return built === undefined || built.id !== action.id;
-        }
-        // only compute selected spell for magic
-        if (skill.name === this.game.altMagic.name) {
-            return this.game.altMagic.selectedSpell === undefined
-                || this.game.altMagic.activeSpell !== action;
-        }
-        // only compute selected actions for thieving
-        if (skill.name === this.game.thieving.name) {
-            const area = this.npcAreaMap.get(action.id);
-            // @ts-ignore
-            return thievingMenu.areaPanels.get(area).selectedNPC !== action;
-        }
-        // only compute selected actions for cooking
-        if (skill.name === this.game.cooking.name) {
-            return this.game.cooking.selectedRecipes.get(action.category) !== action;
-        }
-        // only compute selected actions for fishing
-        if (skill.name === this.game.fishing.name) {
-            const calculators = this.skillCalculators.get(skill.name);
-            if (calculators === undefined) {
-                return true;
-            }
-            const calculator = calculators.get(action.id);
-            if (calculator === undefined) {
-                return true;
-            }
-            const fish = this.game.fishing.selectedAreaFish.get((calculator as EtaFishing).area);
-            if (fish === undefined) {
-                return true;
-            }
-            return fish.id !== action.id;
+        switch (skill.name) {
+            case this.game.woodcutting.name:
+            case this.game.mining.name:
+            case this.game.astrology.name:
+                // compute all actions for woodcutting, mining, and astrology
+                return false;
+            case this.game.agility.name:
+                if (this.game.agility.getObstacleLevel(action.category) > skill.level) {
+                    return true;
+                }
+                // only compute selected obstacles for agility
+                const built = this.game.agility.builtObstacles.get(action.category);
+                return built === undefined || built.id !== action.id;
+            case this.game.altMagic.name:
+                // only compute selected spell for magic
+                return this.game.altMagic.selectedSpell === undefined
+                    || this.game.altMagic.activeSpell !== action;
+            case this.game.thieving.name:
+                // only compute selected actions for thieving
+                const area = this.npcAreaMap.get(action.id);
+                // @ts-ignore
+                return thievingMenu.areaPanels.get(area).selectedNPC !== action;
+            case this.game.cooking.name:
+                // only compute selected actions for cooking
+                return this.game.cooking.selectedRecipes.get(action.category) !== action;
+            case this.game.fishing.name:
+                // only compute selected actions for fishing
+                const calculators = this.skillCalculators.get(skill.name);
+                if (calculators === undefined) {
+                    return true;
+                }
+                const calculator = calculators.get(action.id);
+                if (calculator === undefined) {
+                    return true;
+                }
+                const fish = this.game.fishing.selectedAreaFish.get((calculator as EtaFishing).area);
+                if (fish === undefined) {
+                    return true;
+                }
+                return fish.id !== action.id;
         }
         // remainder of artisan skills
         if (this.artisanSkills.includes(skill)) {
