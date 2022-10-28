@@ -195,7 +195,7 @@ export class DisplayManager {
             this.game.runecrafting,
             this.game.herblore,
         ].includes(skill)) {
-            return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-artisan-container`);
+            return this.createArtisanDisplay(skill, actionID, `${skill.constructor.name.toLowerCase()}-artisan-container`);
         }
         // other containers
         switch (skill.name) {
@@ -214,7 +214,7 @@ export class DisplayManager {
             case this.game.agility.name:
                 return this.createAgilityDisplay(skill, actionID);
             case this.game.summoning.name:
-                return this.createArtisanDisplay(skill, actionID, `${skill.name.toLowerCase()}-creation-element`);
+                return this.createArtisanDisplay(skill, actionID, `summoning-creation-element`);
             case this.game.astrology.name:
                 return this.createAstrologyDisplay(skill, actionID);
             case this.game.altMagic.name:
