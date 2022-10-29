@@ -1,4 +1,4 @@
-import {addModal, destroyMenu} from "./Menu";
+import {addModal, destroyMenu, destroyModal} from "./Menu";
 
 export class TinyMod {
     protected readonly ctx: any;
@@ -31,29 +31,29 @@ export class TinyMod {
         console.error(this.tag, ...x);
     }
 
-    createSettingsMenu(funcs: (() => void)[] = []): void {
-        // set names
-
-        // clean up in case elements already exist
-        destroyMenu(this.menuItemID, this.modalID);
-
+    createModal(funcs: (() => void)[] = []): void {
+        // clean up in case modal already exists
+        destroyModal(this.modalID);
         // create wrapper
         this.content = document.createElement('div');
         this.content.className = 'tinyModTabContent';
-
         // run inner functions
         funcs.forEach(func => func());
-
         // create modal and access point
         this.modal = addModal(`${this.tag} Settings`, this.modalID, [this.content]);
+    }
 
+    createSettingsMenu(funcs: (() => void)[] = []): void {
+        // clean up in case elements already exist
+        destroyMenu(this.menuItemID, this.modalID);
+        // create the modal
+        this.createModal(funcs);
         // @ts-ignore
         sidebar.category('Modding').item('Mod Settings').subitem(this.tag).remove();
         // @ts-ignore
         const settingsSideBarItem = sidebar.category('Modding').item('Mod Settings').subitem(this.tag);
         settingsSideBarItem.rootEl.dataset.toggle = 'modal';
         settingsSideBarItem.rootEl.dataset.target = '#' + this.modalID;
-
         // log
         this.log('added settings menu!')
     }

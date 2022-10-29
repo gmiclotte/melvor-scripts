@@ -7,7 +7,9 @@ module.exports = {
     outputModule: true
   },
   optimization: {
-    minimize: false
+    minimize: false,
+    usedExports: true,
+    concatenateModules: true
   },
   module: {
     rules: [
@@ -45,6 +47,7 @@ module.exports = {
   output: {
     filename: 'setup.mjs',
     path: path.resolve(__dirname, 'packed'),
+    module: true,
     library: {
       type: 'module',
     },

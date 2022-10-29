@@ -127,7 +127,7 @@ export class Card {
      * @param {string} containerWidth container width
      * @return {HTMLDivElement[]} The image buttons
      */
-    addImageButtons(sources: any, idtexts: any, size: any, onclickCallbacks: any, tooltips: any, containerWidth = undefined) {
+    addImageButtons(sources: any, idtexts: any, size: any, onclickCallbacks: any, tooltips: any, containerWidth:string|undefined = undefined) {
         const newCCContainer = document.createElement('div');
         newCCContainer.className = 'tinyModMultiImageButtonContainer';
         for (let i = 0; i < sources.length; i++) {

@@ -20,6 +20,9 @@ if (fs.existsSync('./styles')) {
     copydir.sync(`./${config.tinyMod}/styles`, './build/styles');
 }
 copydir.sync('./icons', './build/icons');
+if (fs.existsSync('./src/workers')) {
+    copydir.sync(`./src/workers`, './build/workers');
+}
 
 const {namespace} = require("./manifest.json");
 // copy manifest.json
@@ -35,7 +38,7 @@ const lineReader = readline.createInterface({
     let writeLines = true;
     let writeLinesTest = false;
     await lineReader.on('line', function (line) {
-        if (line.includes('CONCATENATED MODULE')) {
+        if (line.includes('CONCATENATED MODULE') || line.includes('EXTERNAL MODULE')) {
             if (!line.includes('Game-Files')) {
                 writeLines = true;
                 writeLinesTest = true;
@@ -45,13 +48,15 @@ const lineReader = readline.createInterface({
             }
         }
         line = line.replace('external_Game_Files_namespaceObject.', '');
+        line = line.replace(/[a-zA-Z0-9_]*Game_Files[a-zA-Z0-9_]*\.+/, '');
         if (writeLines && !line.includes('Game-Files')) {
             fs.appendFileSync(buildFile, line + '\n', () => {
             });
         }
         if (writeLinesTest && !line.includes('webpack_exports')) {
             const cleanedLine = line.replace(/^function ([a-zA-Z]+)/, '$1 = function')
-                .replace(/^class ([a-zA-Z]+)/, '$1 = class');
+                .replace(/^class ([a-zA-Z]+)/, '$1 = class')
+                .replace(/^const ([a-zA-Z]+)/, '$1');
             fs.appendFileSync(testFile, cleanedLine + '\n', () => {
             });
         }

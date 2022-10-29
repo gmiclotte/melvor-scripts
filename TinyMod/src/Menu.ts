@@ -37,12 +37,7 @@ export function addModal(title: any, id: any, content: any) {
     return modal;
 }
 
-export function destroyMenu(menuItemId: string, modalID: string) {
-    // remove the TinyMod tab access point
-    const tab = document.getElementById(menuItemId);
-    if (tab !== null) {
-        //tab.remove();
-    }
+export function destroyModal(modalID: string) {
     // hide and remove the modal
     const modal = document.getElementById(modalID);
     if (modal) {
@@ -50,4 +45,13 @@ export function destroyMenu(menuItemId: string, modalID: string) {
         $(modal).modal('dispose');
         modal.remove();
     }
+}
+
+export function destroyMenu(menuItemId: string, modalID: string) {
+    // remove the TinyMod tab access point
+    const tab = document.getElementById(menuItemId);
+    if (tab !== null) {
+        tab.remove();
+    }
+    destroyModal(modalID);
 }
