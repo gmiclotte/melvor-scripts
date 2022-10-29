@@ -1,0 +1,5 @@
+{
+  "namespace": "Tiny_Snippets",
+  "setup": "setup.mjs",
+  "load": []
+}
