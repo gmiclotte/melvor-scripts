@@ -43,7 +43,7 @@ export class EtaSkillWithPool extends EtaSkill {
     get averageRates(): RatesWithPool {
         return RatesWithPool.addPoolToRates(
             super.averageRates,
-            (this.skillXp - this.initial.xp) / this.actionsTaken.active.ms,
+            (this.poolXp - this.initial.pool) / this.actionsTaken.active.ms,
         );
     }
 
