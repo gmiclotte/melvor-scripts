@@ -325,7 +325,10 @@ export class ETA extends TinyMod {
                 globalKey,
                 target.defaultValue,
                 () => this.settings.get(globalKey),
-                (_: any, __: string, result: any) => this.settings.set(globalKey, result),
+                (_: any, __: string, result: any) => {
+                    this.settings.set(globalKey, result);
+                    recomputeEverySkill();
+                },
             );
         });
 
@@ -350,9 +353,39 @@ export class ETA extends TinyMod {
                     skillID,
                     [],
                     () => this.settings.get(key, skillID),
-                    (_: any, __: string, result: any) => this.settings.set(key, result, skillID),
+                    (_: any, __: string, result: any) => {
+                        this.settings.set(key, result, skillID);
+                        recomputeSkill(skill);
+                    },
                 );
             });
         });
     }
+}
+
+export function recomputeSkill(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+    // @ts-ignore
+    const etaApi = mod.api.ETA;
+    if (etaApi === undefined || etaApi.ETA === undefined) {
+        return;
+    }
+    // @ts-ignore
+    etaApi.ETA.recompute(skill);
+}
+
+export function recomputeEverySkill() {
+    // @ts-ignore
+    const etaApi = mod.api.ETA;
+    if (etaApi === undefined || etaApi.ETA === undefined) {
+        return;
+    }
+    // @ts-ignore
+    const skill = game.openPage.action;
+    // @ts-ignore
+    if (skill === undefined || game.skills.getObjectByID(skill.id) === undefined) {
+        // page is not a skill or is township
+        return;
+    }
+    // @ts-ignore
+    etaApi.ETA.recompute(skill);
 }

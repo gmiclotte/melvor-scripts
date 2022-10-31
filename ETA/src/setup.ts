@@ -1,4 +1,4 @@
-import {ETA} from './ETA';
+import {ETA, recomputeEverySkill, recomputeSkill} from './ETA';
 import {GatheringSkill} from "../../Game-Files/built/skill";
 import {ArtisanSkill} from "../../Game-Files/built/artisanSkill";
 import {Fletching} from "../../Game-Files/built/fletching";
@@ -11,7 +11,6 @@ import {Cooking} from "../../Game-Files/built/cooking";
 import {Thieving} from "../../Game-Files/built/thieving2";
 import {Settings} from "./Settings";
 import {Game} from "../../Game-Files/built/game";
-
 
 export function setup(ctx: any): void {
     // load style sheet
@@ -38,35 +37,15 @@ export function setup(ctx: any): void {
         {clas: AltMagic, method: 'selectSpellOnClick'},
         {clas: AltMagic, method: 'selectItemOnClick'},
         {clas: AltMagic, method: 'selectBarOnClick'},
-    ].forEach(patch =>
+    ].forEach(patch => {
         ctx.patch(patch.clas, patch.method).after(function () {
             // @ts-ignore
-            const etaApi = mod.api.ETA;
-            if (etaApi === undefined || etaApi.ETA === undefined) {
-                return;
-            }
-            // @ts-ignore
-            etaApi.ETA.recompute(this);
-        })
-    );
+            recomputeSkill(this);
+        });
+    });
 
     // patch sidebar click
-    ctx.patch(SidebarItem, 'click').after(function () {
-        // @ts-ignore
-        const etaApi = mod.api.ETA;
-        if (etaApi === undefined || etaApi.ETA === undefined) {
-            return;
-        }
-        // @ts-ignore
-        const skill = game.openPage.action;
-        // @ts-ignore
-        if (skill === undefined || game.skills.getObjectByID(skill.id) === undefined) {
-            // page is not a skill or is township
-            return;
-        }
-        // @ts-ignore
-        etaApi.ETA.recompute(skill);
-    })
+    ctx.patch(SidebarItem, 'click').after(recomputeEverySkill)
 
     // create settings -> outside of hooks !
     // @ts-ignore
