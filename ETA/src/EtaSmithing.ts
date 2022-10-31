@@ -2,6 +2,7 @@ import {Smithing} from "../../Game-Files/built/smithing";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
+import {Item} from "../../Game-Files/built/item";
 
 export class EtaSmithing extends ResourceSkillWithMastery {
     constructor(game: Game, smithing: Smithing, action: any, settings: Settings) {
@@ -36,5 +37,16 @@ export class EtaSmithing extends ResourceSkillWithMastery {
             modifier += 5;
         }
         return modifier;
+    }
+
+    modifyItemCost(item: Item, quantity: number) {
+        // @ts-ignore
+        if (item.id === "melvorD:Coal_Ore") {
+            // @ts-ignore
+            quantity = applyModifier(quantity, this.modifiers.decreasedSmithingCoalCost, 2);
+            quantity -= this.modifiers.decreasedFlatSmithingCoalCost;
+            return quantity;
+        }
+        return quantity;
     }
 }

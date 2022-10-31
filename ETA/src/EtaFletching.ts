@@ -60,4 +60,14 @@ export class EtaFletching extends ResourceSkillWithMastery {
         }
         return costs;
     }
+
+    modifyItemCost(item: Item, quantity: number) {
+        // @ts-ignore
+        if (this.action.product instanceof EquipmentItem && this.action.product.ammoType === AmmoTypeID.Javelins) {
+            const modifier = this.modifiers.increasedJavelinResourceCost - this.modifiers.decreasedJavelinResourceCost;
+            // @ts-ignore
+            quantity = applyModifier(quantity, modifier);
+        }
+        return quantity;
+    }
 }

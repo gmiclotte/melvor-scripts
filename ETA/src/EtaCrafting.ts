@@ -2,6 +2,7 @@ import {Crafting} from "../../Game-Files/built/crafting";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Game} from "../../Game-Files/built/game";
+import {Item} from "../../Game-Files/built/item";
 
 export class EtaCrafting extends ResourceSkillWithMastery {
     constructor(game: Game, crafting: Crafting, action: any, settings: Settings) {
@@ -42,5 +43,13 @@ export class EtaCrafting extends ResourceSkillWithMastery {
             modifier += 5;
         }
         return modifier;
+    }
+
+    modifyItemCost(item: Item, quantity: number) {
+        if (this.action.category.id === "melvorF:Dragonhide") {
+            quantity -= this.modifiers.decreasedFlatCraftingDragonhideCost;
+            quantity = Math.max(1, quantity);
+        }
+        return quantity;
     }
 }
