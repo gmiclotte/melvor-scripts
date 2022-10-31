@@ -121,9 +121,9 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         getPreservationChance(chance: number): number {
             chance += this.modifiers.increasedGlobalPreservationChance
-                - this.modifiers.decreasedGlobalPreservationChance;
-            +this.getSkillModifierValue('increasedSkillPreservationChance');
-            -this.getSkillModifierValue('decreasedSkillPreservationChance');
+                - this.modifiers.decreasedGlobalPreservationChance
+                + this.getSkillModifierValue('increasedSkillPreservationChance')
+                - this.getSkillModifierValue('decreasedSkillPreservationChance');
             chance = Math.min(chance, this.getPreservationCap());
             if (chance < 0) {
                 return 0;
