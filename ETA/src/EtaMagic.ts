@@ -77,8 +77,9 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         ));
     }
 
-    addCost(counter: ResourceActionCounter, actions: number) {
-        super.addCost(counter, actions);
+    addCost(counter: ResourceActionCounter, actions: number, preservation: number) {
+        super.addCost(counter, actions, preservation);
+        // no need to compute rune preservation before adding xp, since there is no pool or mastery bonus to worry about
         const resourceSetsUsed = actions * (1 - this.runePreservationChance / 100);
         this.runeCostQuantityMap.forEach((quantity: number, item: Item) => {
             const amt = counter.items.get(item) ?? 0;

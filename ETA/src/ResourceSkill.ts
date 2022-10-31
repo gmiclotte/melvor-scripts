@@ -93,13 +93,15 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         addActions(gainsPerAction: ResourceRates, actions: number) {
+            // compute preservation before increasing the stats
+            const preservation = this.getPreservationChance(0);
             super.addActions(gainsPerAction, actions);
-            this.addCost(this.remainingResources, -actions);
-            this.addCost(this.actionsTaken.active, actions);
+            this.addCost(this.remainingResources, -actions, preservation);
+            this.addCost(this.actionsTaken.active, actions, preservation);
         }
 
-        addCost(counter: ResourceActionCounter, actions: number) {
-            const resourceSetsUsed = actions * (1 - this.getPreservationChance(0) / 100);
+        addCost(counter: ResourceActionCounter, actions: number, preservation: number) {
+            const resourceSetsUsed = actions * (1 - preservation / 100);
             this.costQuantityMap.forEach((quantity: number, item: Item) => {
                 const amt = counter.items.get(item) ?? 0;
                 counter.items.set(item, amt + quantity * resourceSetsUsed);
