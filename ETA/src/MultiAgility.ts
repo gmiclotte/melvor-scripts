@@ -4,6 +4,7 @@ import {Game} from "../../Game-Files/built/game";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaAgility} from "./EtaAgility";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import {MultiRates} from "./MultiRates";
 
 export class MultiAgility extends MultiActionSkill {
     public calculators: Map<string, EtaAgility>;
@@ -46,5 +47,16 @@ export class MultiAgility extends MultiActionSkill {
                 calculator.updatedModifiers = true;
             }
         });
+    }
+
+    addActions(gainsPerAction: MultiRates, actions: number) {
+        this.calculators.forEach((calculator) => {
+            const gains = gainsPerAction.rateMap.get(calculator.action.id)!;
+            // set current gains before adjusting time
+            calculator.setCurrentRates(gains);
+            // adjust time to time of full course
+            gains.ms = gainsPerAction.ms;
+        });
+        super.addActions(gainsPerAction, actions);
     }
 }
