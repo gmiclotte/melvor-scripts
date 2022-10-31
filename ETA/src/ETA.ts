@@ -105,6 +105,11 @@ export class ETA extends TinyMod {
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+        // @ts-ignore
+        if (!this.game.loopStarted) {
+            //this.log('Game loop is not running, probably fastforwarding. Skip all ETA recomputes.');
+            return;
+        }
         if (this.game.openPage.action !== skill) {
             // this.log(`Not on ${skill.id} page`);
             return;
