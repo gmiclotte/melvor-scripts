@@ -6,7 +6,7 @@ import {EtaAgility} from "./EtaAgility";
 import {PlayerModifiers} from "../../Game-Files/built/modifier";
 
 export class MultiAgility extends MultiActionSkill {
-    protected calculators: Map<string, EtaAgility>;
+    public calculators: Map<string, EtaAgility>;
     protected modifiers: PlayerModifiers;
 
     constructor(game: Game, agility: Agility, actions: any[], settings: Settings) {

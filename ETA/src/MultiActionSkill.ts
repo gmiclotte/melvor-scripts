@@ -6,7 +6,7 @@ import {MultiRates} from "./MultiRates";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
 
 export class MultiActionSkill extends EtaSkillWithPool {
-    protected calculators: Map<string, EtaSkillWithMastery>;
+    public calculators: Map<string, EtaSkillWithMastery>;
 
     constructor(game: Game, skill: any, actions: any[], settings: Settings) {
         super(game, skill, {}, settings);

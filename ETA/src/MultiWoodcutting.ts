@@ -5,7 +5,7 @@ import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 
 export class MultiWoodcutting extends MultiActionSkill {
-    protected calculators: Map<string, EtaWoodcutting>;
+    public calculators: Map<string, EtaWoodcutting>;
 
     constructor(game: Game, woodcutting: Woodcutting, actions: any[], settings: Settings) {
         super(game, woodcutting, actions, settings);

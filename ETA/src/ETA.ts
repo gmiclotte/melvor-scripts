@@ -191,6 +191,7 @@ export class ETA extends TinyMod {
                 }
             });
             let actions: any[];
+            let injectSubCalcs = false;
             // @ts-ignore
             switch (skill.id) {
                 case this.game.woodcutting.id:
@@ -205,13 +206,14 @@ export class ETA extends TinyMod {
                         }
                         actions.push(obstacle);
                     }
+                    injectSubCalcs = true;
                     break;
                 default:
                     return;
             }
             if (!this.skipMultiAction(skill, actions)) {
                 // this.log(`Recomputing ${skill.id} multi.`);
-                this.computeAndInjectMultiHTML(skill, actions);
+                this.computeAndInjectMultiHTML(skill, actions, injectSubCalcs);
             } else {
                 this.displayManager.hideHTML(skill);
             }
@@ -233,7 +235,7 @@ export class ETA extends TinyMod {
         this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
     }
 
-    computeAndInjectMultiHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[]) {
+    computeAndInjectMultiHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[], injectSubCalcs: boolean) {
         // @ts-ignore
         const skillID = skill.id;
         let calculator = this.skillMultiCalculators.get(skillID);
@@ -252,6 +254,11 @@ export class ETA extends TinyMod {
         this.skillMultiCalculators.set(skillID, calculator);
         this.displayManager.getDisplay(skill);
         this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
+        if (injectSubCalcs) {
+            calculator.calculators.forEach(sub => {
+                this.displayManager.injectHTML(sub, new Date())
+            });
+        }
     }
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
@@ -275,7 +282,17 @@ export class ETA extends TinyMod {
                 }
                 // only compute selected obstacles for agility
                 const built = this.game.agility.builtObstacles.get(action.category);
-                return built === undefined || built.id !== action.id;
+                if (built === undefined || built.id !== action.id) {
+                    return true;
+                }
+                // only compute obstacles that are not part of the current active course
+                for (let category = 0; category < action.category; category++) {
+                    const built = this.game.agility.builtObstacles.get(category);
+                    if (built === undefined) {
+                        return false;
+                    }
+                }
+                return true;
             case this.game.altMagic.id:
                 // only compute selected spell for magic
                 return this.game.altMagic.selectedSpell === undefined
