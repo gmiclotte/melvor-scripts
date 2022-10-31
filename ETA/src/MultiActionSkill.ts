@@ -18,6 +18,22 @@ export class MultiActionSkill extends EtaSkillWithPool {
         ));
     }
 
+    get completed() {
+        if (this.infiniteActions) {
+            return true;
+        }
+        if (!this.targets.completed()) {
+            return false;
+        }
+        let masteriesCompleted = true;
+        this.calculators.forEach((calculator) => {
+            if (!calculator.completed) {
+                masteriesCompleted = false;
+            }
+        });
+        return masteriesCompleted;
+    }
+
     get masteryCompleted() {
         let done = true;
         this.calculators.forEach((calculator: EtaSkillWithMastery) => done &&= calculator.masteryCompleted);
