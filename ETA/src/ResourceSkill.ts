@@ -117,6 +117,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 this.finalXpMap = this.getXpMap();
                 this.resourcesReached = true;
             }
+            this.costs = this.getRecipeCosts();
         }
 
         getPreservationChance(chance: number): number {
