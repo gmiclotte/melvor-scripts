@@ -10,6 +10,8 @@ import {Firemaking} from "../../Game-Files/built/firemakingTicks";
 import {Cooking} from "../../Game-Files/built/cooking";
 import {Thieving} from "../../Game-Files/built/thieving2";
 import {Settings} from "./Settings";
+import {Game} from "../../Game-Files/built/game";
+
 
 export function setup(ctx: any): void {
     // load style sheet
@@ -77,4 +79,76 @@ export function setup(ctx: any): void {
             ETA: new ETA(ctx, settings, game),
         })
     });
+}
+
+export function testup(mod: any, game: Game): any {
+    // clean up existing UI elements
+    // @ts-ignore
+    if (window.eta && window.eta.displayManager) {
+        // @ts-ignore
+        window.eta.displayManager.removeAllDisplays();
+    }
+    const settings = new Settings(mod.getDevContext(), game);
+    const eta = new ETA(mod.getDevContext(), settings, game, 'Dev');
+    // @ts-ignore
+    window.eta = eta;
+
+    // mining
+    {
+        let skill = game.mining;
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            if (!skill.activeRock.isRespawning && skill.activeRock.currentHP > 0) {
+                skill.actionTimer.start(skill.actionInterval);
+                skill.renderQueue.progressBar = true;
+            }
+            eta.recompute(skill);
+        }
+    }
+
+    // thieving
+    {
+        let skill = game.thieving;
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            // Override to prevent action timer starting when stunned
+            if (!(skill.stunState === 1 /* ThievingStunState.Stunned */)) {
+                skill.actionTimer.start(skill.actionInterval);
+                skill.renderQueue.progressBar = true;
+            }
+            eta.recompute(skill);
+        }
+    }
+
+    // skills with generic startActionTimer
+    [
+        game.woodcutting,
+        game.fishing,
+        game.firemaking,
+        game.cooking,
+        // mining is handled separately
+        game.smithing,
+        // thieving is handled separately
+        game.fletching,
+        game.crafting,
+        game.runecrafting,
+        game.herblore,
+        game.agility,
+        game.summoning,
+        game.astrology,
+        game.altMagic,
+    ].forEach((skill: any) => {
+        // initial compute
+        eta.recompute(skill);
+        skill.startActionTimer = () => {
+            skill.actionTimer.start(skill.actionInterval);
+            skill.renderQueue.progressBar = true;
+            eta.recompute(skill);
+        }
+    });
+
+    // return eta object
+    return eta;
 }

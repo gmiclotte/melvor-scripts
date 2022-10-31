@@ -1,1 +1,1 @@
-ETA.testup(mod, game);
+testup(mod, game);
