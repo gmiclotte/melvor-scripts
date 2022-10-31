@@ -1,5 +1,4 @@
 import {PlayerModifiers, SkillModifierObject} from "../../Game-Files/built/modifier";
-import {Astrology} from "../../Game-Files/built/astrology";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {Settings} from "./Settings";
@@ -23,7 +22,6 @@ export class EtaSkill {
     // targets reached
     public skillReached: boolean;
     protected readonly modifiers: PlayerModifiers;
-    protected readonly astrology: Astrology;
     protected currentRatesSet: boolean;
     // other
     protected infiniteActions: boolean;
@@ -33,7 +31,6 @@ export class EtaSkill {
         this.skill = skill;
         this.action = action;
         this.modifiers = game.modifiers;
-        this.astrology = game.astrology;
         this.targets = new Targets(this, settings, skill, action);
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
