@@ -126,9 +126,11 @@ export class MultiActionSkill extends EtaSkillWithPool {
     addActions(gainsPerAction: MultiRates, actions: number) {
         super.addActions(gainsPerAction, actions);
         this.calculators.forEach((calculator) => {
-            calculator.addActions(gainsPerAction.rateMap.get(calculator.action.id)!, actions);
+            const gains = gainsPerAction.rateMap.get(calculator.action.id)!;
+            calculator.addActions(gains, actions);
             calculator.skillXp = this.skillXp;
             calculator.poolXp = this.poolXp;
+            calculator.setCurrentRates(gains);
         });
     }
 }
