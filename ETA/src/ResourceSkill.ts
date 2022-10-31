@@ -144,7 +144,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
                 const quantity = this.modifyItemCost(cost.item, cost.quantity);
                 if (quantity > 0) {
-                    costs.addItem(cost.item, cost.quantity);
+                    costs.addItem(cost.item, quantity);
                 }
             });
             if (this.action.gpCost > 0) {
