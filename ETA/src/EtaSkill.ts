@@ -31,7 +31,7 @@ export class EtaSkill {
         this.skill = skill;
         this.action = action;
         this.modifiers = game.modifiers;
-        this.targets = new Targets(this, settings, skill, action);
+        this.targets = this.getTargets(settings);
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
@@ -96,7 +96,7 @@ export class EtaSkill {
     }
 
     getTargets(settings: Settings) {
-        return new Targets(this, settings, this.skill, this.action);
+        return new Targets(this, settings);
     }
 
     init(game: Game) {
@@ -127,8 +127,11 @@ export class EtaSkill {
         }
     }
 
-    iterate(game: Game): void {
+    iterate(game: Game, settings: Settings): void {
         this.init(game);
+        // compute the targets
+        this.targets = this.getTargets(settings);
+        // limit to 1000 iterations, in case something goes wrong
         const maxIt = 1000;
         let it = 0;
         this.setFinalValues();

@@ -1,5 +1,3 @@
-import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
-import {MasteryAction} from "../../Game-Files/built/mastery2";
 import {EtaSkill} from "./EtaSkill";
 
 export class Targets {
@@ -7,17 +5,16 @@ export class Targets {
     public skillXp: number;
     protected readonly current: EtaSkill;
 
-    constructor(current: EtaSkill, settings: any, skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any = undefined) {
+    constructor(current: EtaSkill, settings: any) {
         this.current = current;
-        if (action === undefined) {
+        if (current.action === undefined) {
             this.skillLevel = 0;
             this.skillXp = 0;
             return this;
         }
-        // @ts-ignore
-        const skillID = skill.id;
         // target level
-        this.skillLevel = settings.getTargetLevel(skillID, skill.level);
+        const currentLevel = current.skill.level;
+        this.skillLevel = settings.getTargetLevel(current.skill.id, currentLevel);
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
 

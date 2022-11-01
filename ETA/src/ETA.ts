@@ -276,9 +276,7 @@ export class ETA extends TinyMod {
     }
 
     timeRemaining(calculator: EtaSkill) {
-        // compute the targets
-        calculator.targets = calculator.getTargets(this.settings);
-        calculator.iterate(this.game);
+        calculator.iterate(this.game, this.settings);
         return calculator;
     }
 
