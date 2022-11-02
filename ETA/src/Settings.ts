@@ -47,13 +47,6 @@ export class Settings {
                 hint: 'Show action times.',
                 default: true,
             },
-            {
-                type: 'switch',
-                name: 'CURRENT_RATES',
-                label: 'Show current rates',
-                hint: 'Show current rates, instead of average rates until all targets are met.',
-                default: true,
-            },
         ]);
         /*
             targets

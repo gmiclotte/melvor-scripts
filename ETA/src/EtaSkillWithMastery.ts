@@ -42,13 +42,6 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return gains;
     }
 
-    get averageRates(): RatesWithMastery {
-        return RatesWithMastery.addMasteryToRates(
-            super.averageRates,
-            (this.masteryXp - this.initial.mastery) / this.actionsTaken.active.ms,
-        );
-    }
-
     /***
      * mastery methods
      */
@@ -118,29 +111,29 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         }
     }
 
-    actionsToCheckpoint(gainsPerAction: RatesWithMastery) {
+    attemptsToCheckpoint(gainsPerAction: RatesWithMastery) {
         if (this.masteryLevel === 99) {
-            return super.actionsToCheckpoint(gainsPerAction);
+            return super.attemptsToCheckpoint(gainsPerAction);
         }
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         const requiredForMasteryCheckPoint = this.xpToNextLevel(this.masteryLevel, this.masteryXp);
-        const actionsToMasteryCheckpoint = requiredForMasteryCheckPoint / gainsPerAction.mastery;
+        const attemptsToMasteryCheckpoint = requiredForMasteryCheckPoint / gainsPerAction.mastery / gainsPerAction.successRate;
         return Math.ceil(Math.min(
-            super.actionsToCheckpoint(gainsPerAction),
-            actionsToMasteryCheckpoint,
+            super.attemptsToCheckpoint(gainsPerAction),
+            attemptsToMasteryCheckpoint,
         ));
     }
 
-    addActions(gainsPerAction: RatesWithMastery, actions: number) {
-        super.addActions(gainsPerAction, actions);
-        this.masteryXp += gainsPerAction.mastery * actions;
+    addAttempts(gainsPerAction: RatesWithMastery, attempts: number) {
+        super.addAttempts(gainsPerAction, attempts);
+        this.masteryXp += gainsPerAction.mastery * attempts * gainsPerAction.successRate;
     }
 
     setCurrentRatesNoCheck(gains: RatesWithMastery): RatesWithMastery {
         return this.currentRates = RatesWithMastery.addMasteryToRates(
             super.setCurrentRatesNoCheck(gains),
-            gains.mastery / gains.ms,
+            gains.mastery / gains.ms * gains.successRate,
         );
     }
 

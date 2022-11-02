@@ -23,10 +23,10 @@ export class MultiAgility extends MultiActionSkill {
         });
     }
 
-    get averageActionTime() {
+    get actionInterval() {
         let sumTime = 0;
         this.calculators.forEach((calculator: EtaAgility) => {
-            sumTime += calculator.averageActionTime;
+            sumTime += calculator.actionInterval;
         });
         return sumTime;
     }
@@ -49,14 +49,16 @@ export class MultiAgility extends MultiActionSkill {
         });
     }
 
-    addActions(gainsPerAction: MultiRates, actions: number) {
+    addAttempts(gainsPerAction: MultiRates, attempts: number) {
         this.calculators.forEach((calculator) => {
             const gains = gainsPerAction.rateMap.get(calculator.action.id)!;
-            // set current gains before adjusting time
+            // set course duration
+            calculator.courseDuration = gainsPerAction.ms;
+            // set current gains before adjusting time back to course duration
             calculator.setCurrentRates(gains);
             // adjust time to time of full course
-            gains.ms = gainsPerAction.ms;
+            gains.ms = calculator.courseDuration;
         });
-        super.addActions(gainsPerAction, actions);
+        super.addAttempts(gainsPerAction, attempts);
     }
 }

@@ -18,6 +18,7 @@ export class EtaSkill {
     public initial: Rates;
     public targets: Targets;
     // current rates
+    public attemptsPerHour: number;
     public currentRates: Rates;
     // targets reached
     public skillReached: boolean;
@@ -36,6 +37,7 @@ export class EtaSkill {
         this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
         this.currentRatesSet = false;
+        this.attemptsPerHour = 0;
         this.currentRates = Rates.emptyRates;
         this.initial = Rates.emptyRates;
         this.infiniteActions = false;
@@ -53,15 +55,8 @@ export class EtaSkill {
     get gainsPerAction() {
         return new Rates(
             this.actionXP,
-            this.averageActionTime,
-            1, // unit
-        );
-    }
-
-    get averageRates(): Rates {
-        return new Rates(
-            (this.skillXp - this.initial.xp) / this.actionsTaken.active.ms,
-            this.actionsTaken.active.ms / this.actionsTaken.active.actions, // ms per action
+            this.successRate,
+            this.averageAttemptTime,
             1, // unit
         );
     }
@@ -82,9 +77,13 @@ export class EtaSkill {
         return this.modifyInterval(this.skill.baseInterval);
     }
 
-    // for skills without respawn this is a duplicate of actionInterval
-    get averageActionTime() {
+    // for skills without respawns or failures this is a duplicate of actionInterval
+    get averageAttemptTime() {
         return this.actionInterval;
+    }
+
+    get successRate() {
+        return 1;
     }
 
     get completed() {
@@ -109,6 +108,7 @@ export class EtaSkill {
         // initial
         this.initial = new Rates(
             this.skillXp,
+            this.successRate,
             0, // ms
             1, // unit
         );
@@ -156,27 +156,27 @@ export class EtaSkill {
 
     progress(): void {
         const gainsPerAction = this.gainsPerAction;
-        const actions = this.actionsToCheckpoint(gainsPerAction);
-        if (actions === Infinity) {
+        const attempts = this.attemptsToCheckpoint(gainsPerAction);
+        if (attempts === Infinity) {
             this.infiniteActions = true;
             return;
         }
-        this.addActions(gainsPerAction, actions);
+        this.addAttempts(gainsPerAction, attempts);
         this.setFinalValues();
     }
 
-    actionsToCheckpoint(gainsPerAction: Rates) {
+    attemptsToCheckpoint(gainsPerAction: Rates) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         const requiredForXPCheckPoint = this.xpToNextLevel(this.skillLevel, this.skillXp);
-        const actionsToXPCheckpoint = requiredForXPCheckPoint / gainsPerAction.xp;
-        return Math.ceil(actionsToXPCheckpoint);
+        const attemptsToXPCheckpoint = requiredForXPCheckPoint / gainsPerAction.xp / gainsPerAction.successRate;
+        return Math.ceil(attemptsToXPCheckpoint);
     }
 
-    addActions(gainsPerAction: Rates, actions: number) {
-        this.skillXp += gainsPerAction.xp * actions;
-        this.actionsTaken.active.actions += actions;
-        this.actionsTaken.active.ms += actions * gainsPerAction.ms;
+    addAttempts(gainsPerAction: Rates, attempts: number) {
+        this.skillXp += gainsPerAction.xp * attempts * gainsPerAction.successRate;
+        this.actionsTaken.active.actions += attempts;
+        this.actionsTaken.active.ms += attempts * gainsPerAction.ms;
     }
 
     setCurrentRates(gains: Rates) {
@@ -187,8 +187,11 @@ export class EtaSkill {
     }
 
     setCurrentRatesNoCheck(gains: Rates): Rates {
+        // ms per hour divided by ms per attempt
+        this.attemptsPerHour = 3600 * 1000 / this.averageAttemptTime;
         return this.currentRates = new Rates(
-            gains.xp / gains.ms,
+            gains.xp / gains.ms * gains.successRate,
+            gains.successRate,
             gains.ms,
             1, // unit
         );

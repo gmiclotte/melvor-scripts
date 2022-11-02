@@ -68,13 +68,14 @@ export class MultiActionSkill extends EtaSkillWithPool {
             xp,
             0,
             pool,
-            this.averageActionTime,
+            this.successRate,
+            this.averageAttemptTime,
             1,
         );
     }
 
-    actionsToCheckpoint(gainsPerAction: MultiRates) {
-        const actionsToMasteryCheckpoints: number[] = [];
+    attemptsToCheckpoint(gainsPerAction: MultiRates) {
+        const attemptsToMasteryCheckpoints: number[] = [];
         const weights = this.weights;
         this.calculators.forEach((calculator, actionID) => {
             if (calculator.masteryLevel >= 99) {
@@ -82,15 +83,15 @@ export class MultiActionSkill extends EtaSkillWithPool {
             }
             const rates = gainsPerAction.rateMap.get(actionID)!;
             const requiredForMasteryCheckPoint = calculator.xpToNextLevel(calculator.masteryLevel, calculator.masteryXp);
-            actionsToMasteryCheckpoints.push(
+            attemptsToMasteryCheckpoints.push(
                 requiredForMasteryCheckPoint
                 / rates.mastery
                 / weights.get(actionID)!
             );
         });
         return Math.ceil(Math.min(
-            super.actionsToCheckpoint(gainsPerAction),
-            ...actionsToMasteryCheckpoints,
+            super.attemptsToCheckpoint(gainsPerAction),
+            ...attemptsToMasteryCheckpoints,
         ));
     }
 
@@ -109,6 +110,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
             this.skillXp,
             -Infinity,
             this.poolXp,
+            this.successRate,
             0, // ms
             1, // unit
         );
@@ -123,11 +125,11 @@ export class MultiActionSkill extends EtaSkillWithPool {
         });
     }
 
-    addActions(gainsPerAction: MultiRates, actions: number) {
-        super.addActions(gainsPerAction, actions);
+    addAttempts(gainsPerAction: MultiRates, attempts: number) {
+        super.addAttempts(gainsPerAction, attempts);
         this.calculators.forEach((calculator) => {
             const gains = gainsPerAction.rateMap.get(calculator.action.id)!;
-            calculator.addActions(gains, actions);
+            calculator.addAttempts(gains, attempts);
             calculator.skillXp = this.skillXp;
             calculator.poolXp = this.poolXp;
             calculator.setCurrentRates(gains);

@@ -22,8 +22,8 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
             if (resourceActionsTaken.actions === 0) {
                 this.element.textContent += "\r\nNo resources!";
             } else {
-                this.element.textContent += "\r\nActions: " + this.formatNumber(resourceActionsTaken.actions)
-                    + "\r\nTime: " + this.msToHms(resourceActionsTaken.ms)
+                this.element.textContent += "\r\nActions left: " + this.formatNumber(resourceActionsTaken.actions)
+                    + "\r\nTime left: " + this.msToHms(resourceActionsTaken.ms)
                     + "\r\nETA: " + this.dateFormat(now, this.addMSToDate(now, resourceActionsTaken.ms));
             }
         }

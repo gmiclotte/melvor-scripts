@@ -32,10 +32,17 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
     }
 
     get runePreservationChance() {
-        return this.modifiers.increasedRunePreservation
+        const runePreservation = this.modifiers.increasedRunePreservation
             - this.modifiers.decreasedRunePreservation
             + this.modifiers.increasedAltMagicRunePreservation
             - this.modifiers.decreasedAltMagicRunePreservation;
+        if (runePreservation < 0) {
+            return 0;
+        }
+        if (runePreservation > 100) {
+            return 1;
+        }
+        return runePreservation / 100;
     }
 
     init(game: Game) {
@@ -50,37 +57,34 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         });
         // set up remaining resources
         this.runeCostQuantityMap.forEach((_: number, item: Item) => {
-            const amt = this.remainingResources.items.get(item) ?? 0;
-            this.remainingResources.items.set(item, amt + game.bank.getQty(item));
+            this.remainingResources.items.set(item, game.bank.getQty(item));
         });
         // flag to check if target was already reached
         this.resourcesReached = false;
     }
 
-    actionsToResourceCheckpoint() {
-        const actionsToRuneCheckpoint: number[] = [];
+    attemptsToResourceCheckpoint() {
+        const attemptsToRuneCheckpoint: number[] = [];
         this.runeCostQuantityMap.forEach((quantity: number, item: Item) => {
-            const itemCost = this.costQuantityMap.get(item);
-            if (itemCost) {
-                quantity += itemCost;
-            }
-            actionsToRuneCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
+            const itemCost = this.costQuantityMap.get(item) ?? 0;
+            quantity = quantity * (1 - this.runePreservationChance) + itemCost;
+            attemptsToRuneCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
         });
-        const runeSets = Math.min(...actionsToRuneCheckpoint);
+        const runeSets = Math.min(...attemptsToRuneCheckpoint);
         if (runeSets <= 0) {
             return 0;
         }
         // apply preservation
         return Math.ceil(Math.min(
-            super.actionsToResourceCheckpoint(),
-            runeSets / (1 - this.runePreservationChance / 100),
+            super.attemptsToResourceCheckpoint(),
+            runeSets,
         ));
     }
 
-    addCost(counter: ResourceActionCounter, actions: number, preservation: number) {
-        super.addCost(counter, actions, preservation);
+    addCost(counter: ResourceActionCounter, attempts: number, preservation: number) {
+        super.addCost(counter, attempts, preservation);
         // no need to compute rune preservation before adding xp, since there is no pool or mastery bonus to worry about
-        const resourceSetsUsed = actions * (1 - this.runePreservationChance / 100);
+        const resourceSetsUsed = attempts * (1 - this.runePreservationChance);
         this.runeCostQuantityMap.forEach((quantity: number, item: Item) => {
             const amt = counter.items.get(item) ?? 0;
             counter.items.set(item, amt + quantity * resourceSetsUsed);

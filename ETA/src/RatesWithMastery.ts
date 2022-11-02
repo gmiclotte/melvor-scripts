@@ -4,13 +4,13 @@ import {RatesWithPool} from "./RatesWithPool";
 export class RatesWithMastery extends RatesWithPool {
     public mastery: number;
 
-    constructor(xp: number, mastery: number, pool: number, ms: number, unit: number) {
-        super(xp, pool, ms, unit);
+    constructor(xp: number, mastery: number, pool: number, successRate: number, ms: number, unit: number) {
+        super(xp, pool, successRate, ms, unit);
         this.mastery = mastery;
     }
 
     static get emptyRates(): RatesWithMastery {
-        return new RatesWithMastery(0, 0, 0, 0, 1);
+        return new RatesWithMastery(0, 0, 0, 1, 0, 1);
     }
 
     get hourlyRates() {
@@ -22,6 +22,7 @@ export class RatesWithMastery extends RatesWithPool {
             rates.xp,
             mastery,
             rates.pool,
+            rates.successRate,
             rates.ms,
             rates.unit,
         );
@@ -33,6 +34,7 @@ export class RatesWithMastery extends RatesWithPool {
             this.xp * factor,
             this.mastery * factor,
             this.pool * factor,
+            this.successRate,
             this.ms,
             unit,
         )

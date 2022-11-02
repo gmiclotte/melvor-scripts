@@ -3,17 +3,10 @@ import {Display} from "./Display";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
 
 export class DisplayWithPool extends Display {
-    injectRateElement(result: EtaSkillWithPool) {
-        this.element.style.display = 'block';
-        const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
-        this.element.textContent = "";
+    injectRates(result: EtaSkillWithPool) {
+        super.injectRates(result);
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp))
-                + `\r\nPool/h: ${result.poolXpToPercent(rates.pool).toFixed(2)}%`
-        }
-        if (this.settings.get('SHOW_ACTION_TIME')) {
-            this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
-            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
+            this.element.textContent += `\r\nPool/h: ${result.poolXpToPercent(result.currentRates.hourlyRates.pool).toFixed(2)}%`;
         }
     }
 

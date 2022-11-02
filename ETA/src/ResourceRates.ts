@@ -7,15 +7,15 @@ export class ResourceRates extends RatesWithMastery {
 
     constructor(xp: number, mastery: number, pool: number,
                 items: { item: string, quantity: number }[], gp: number, sc: number,
-                ms: number, unit: number) {
-        super(xp, mastery, pool, ms, unit);
+                successRate: number, ms: number, unit: number) {
+        super(xp, mastery, pool, successRate, ms, unit);
         this.items = items;
         this.gp = gp;
         this.sc = sc;
     }
 
     static get emptyRates(): ResourceRates {
-        return new ResourceRates(0, 0, 0, [], 0, 0, 0, 1);
+        return new ResourceRates(0, 0, 0, [], 0, 0, 1, 0, 1);
     }
 
     scaledRates(unit: number): RatesWithMastery {
@@ -27,6 +27,7 @@ export class ResourceRates extends RatesWithMastery {
             this.items.map(x => ({item: x.item, quantity: x.quantity * factor})),
             this.gp * factor,
             this.sc * factor,
+            this.successRate,
             this.ms,
             unit,
         )

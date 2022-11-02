@@ -13,16 +13,23 @@ export class EtaAgility extends EtaSkillWithMastery {
     public was99Mastery: boolean;
     public updatedModifiers: boolean;
     public modifiers!: PlayerModifiers;
+    public courseDuration: number;
 
     constructor(game: Game, agility: Agility, action: any, settings: Settings) {
         super(game, agility, action, settings);
         this.was99Mastery = false;
         this.updatedModifiers = false;
         this.modifiers = EtaAgility.cloneModifiers(game.modifiers);
+        this.courseDuration = Infinity;
     }
 
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
+    }
+
+    // rescale this for displaying actions per hour
+    get averageAttemptTime() {
+        return this.courseDuration === Infinity ? this.actionInterval : this.courseDuration;
     }
 
     static cloneModifiers(modifiers: PlayerModifiers) {

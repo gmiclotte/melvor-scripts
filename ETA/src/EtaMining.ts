@@ -37,7 +37,7 @@ export class EtaMining extends EtaSkillWithMastery {
             - this.modifiers.decreasedChanceNoDamageMining;
     }
 
-    get averageActionTime() {
+    get averageAttemptTime() {
         // base action time
         const actionInterval = this.actionInterval;
         // check if rock respawns
@@ -82,5 +82,4 @@ export class EtaMining extends EtaSkillWithMastery {
         }
         return modifier;
     }
-
 }

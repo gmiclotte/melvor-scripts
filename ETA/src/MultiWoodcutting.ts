@@ -22,8 +22,8 @@ export class MultiWoodcutting extends MultiActionSkill {
         let maxTime = 0;
         const weights = new Map<string, number>();
         this.calculators.forEach((calculator, actionID) => {
-            maxTime = Math.max(maxTime, calculator.averageActionTime);
-            weights.set(actionID, calculator.averageActionTime);
+            maxTime = Math.max(maxTime, calculator.actionInterval);
+            weights.set(actionID, calculator.actionInterval);
         });
         weights.forEach((weight, actionID) => {
             weights.set(actionID, maxTime / weights.get(actionID)!);
@@ -31,10 +31,10 @@ export class MultiWoodcutting extends MultiActionSkill {
         return weights;
     }
 
-    get averageActionTime() {
+    get actionInterval() {
         let maxTime = 0;
         this.calculators.forEach(calculator => {
-            maxTime = Math.max(maxTime, calculator.averageActionTime);
+            maxTime = Math.max(maxTime, calculator.actionInterval);
         });
         return maxTime;
     }

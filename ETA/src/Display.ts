@@ -81,14 +81,21 @@ export class Display {
 
     injectRateElement(result: EtaSkill) {
         this.element.style.display = 'block';
-        const rates = this.settings.get('CURRENT_RATES') ? result.currentRates.hourlyRates : result.averageRates.hourlyRates;
         this.element.textContent = "";
+        this.injectRates(result);
+        this.injectActions(result);
+    }
+
+    injectRates(result: EtaSkill) {
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent = "Xp/h: " + this.formatNumber(Math.floor(rates.xp));
+            this.element.textContent += "Xp/h: " + this.formatNumber(Math.floor(result.currentRates.hourlyRates.xp));
         }
-        if (this.settings.get('SHOW_ACTION_TIME')) {
-            this.element.textContent += "\r\nAction time: " + this.formatNumber(Math.ceil(rates.ms) / 1000) + 's';
-            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * 3.6e6 / rates.ms) / 100);
+    }
+
+    injectActions(result: EtaSkill) {
+        if (this.settings.get('SHOW_ACTION_TIME') && result.attemptsPerHour > 0) {
+            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * result.attemptsPerHour) / 100);
+            // this.element.textContent += "\r\nSuccesses/h: " + this.formatNumber(Math.round(100 * 3.6e6 / result.currentRates.hourlyRates.ms) / 100);
         }
     }
 

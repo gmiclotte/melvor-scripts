@@ -30,7 +30,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         get noResourceCheckpointLeft() {
-            return this.actionsToResourceCheckpoint() <= 0;
+            return this.attemptsToResourceCheckpoint() <= 0;
         }
 
         get resourcesCompleted() {
@@ -54,54 +54,53 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.remainingResources.gp = game.gp.amount;
             this.remainingResources.sc = game.slayerCoins.amount;
             this.costQuantityMap.forEach((_: number, item: Item) => {
-                const amt = this.remainingResources.items.get(item) ?? 0;
-                this.remainingResources.items.set(item, amt + game.bank.getQty(item));
+                this.remainingResources.items.set(item, game.bank.getQty(item));
             });
             // flag to check if target was already reached
             this.resourcesReached = false;
         }
 
-        actionsToCheckpoint(gainsPerAction: ResourceRates) {
-            const resourceActions = this.actionsToResourceCheckpoint();
+        attemptsToCheckpoint(gainsPerAction: ResourceRates) {
+            const resourceActions = this.attemptsToResourceCheckpoint();
             if (resourceActions === 0) {
                 // ran out of resources, now check other targets
-                return super.actionsToCheckpoint(gainsPerAction);
+                return super.attemptsToCheckpoint(gainsPerAction);
             }
             return Math.ceil(Math.min(
-                super.actionsToCheckpoint(gainsPerAction),
+                super.attemptsToCheckpoint(gainsPerAction),
                 resourceActions,
             ));
         }
 
-        actionsToResourceCheckpoint() {
-            const actionsToCheckpoint: number[] = [];
+        attemptsToResourceCheckpoint() {
+            const attemptsToCheckpoint: number[] = [];
             this.costQuantityMap.forEach((quantity: number, item: Item) => {
-                actionsToCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
+                attemptsToCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
             });
             if (this.costs.gp) {
-                actionsToCheckpoint.push(this.remainingResources.gp / this.costs.gp);
+                attemptsToCheckpoint.push(this.remainingResources.gp / this.costs.gp);
             }
             if (this.costs.sc) {
-                actionsToCheckpoint.push(this.remainingResources.sc / this.costs.sc);
+                attemptsToCheckpoint.push(this.remainingResources.sc / this.costs.sc);
             }
-            const resourceSets = Math.min(...actionsToCheckpoint);
+            const resourceSets = Math.min(...attemptsToCheckpoint);
             if (resourceSets <= 0) {
                 return 0;
             }
             // apply preservation
-            return Math.ceil(resourceSets / (1 - this.getPreservationChance(0) / 100));
+            return resourceSets / (1 - this.getPreservationChance(0) / 100);
         }
 
-        addActions(gainsPerAction: ResourceRates, actions: number) {
+        addAttempts(gainsPerAction: ResourceRates, attempts: number) {
             // compute preservation before increasing the stats
             const preservation = this.getPreservationChance(0);
-            super.addActions(gainsPerAction, actions);
-            this.addCost(this.remainingResources, -actions, preservation);
-            this.addCost(this.actionsTaken.active, actions, preservation);
+            super.addAttempts(gainsPerAction, attempts);
+            this.addCost(this.remainingResources, -attempts, preservation);
+            this.addCost(this.actionsTaken.active, attempts, preservation);
         }
 
-        addCost(counter: ResourceActionCounter, actions: number, preservation: number) {
-            const resourceSetsUsed = actions * (1 - preservation / 100);
+        addCost(counter: ResourceActionCounter, attempts: number, preservation: number) {
+            const resourceSetsUsed = attempts * (1 - preservation / 100);
             this.costQuantityMap.forEach((quantity: number, item: Item) => {
                 const amt = counter.items.get(item) ?? 0;
                 counter.items.set(item, amt + quantity * resourceSetsUsed);

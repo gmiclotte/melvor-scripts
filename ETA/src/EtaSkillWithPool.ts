@@ -40,13 +40,6 @@ export class EtaSkillWithPool extends EtaSkill {
         );
     }
 
-    get averageRates(): RatesWithPool {
-        return RatesWithPool.addPoolToRates(
-            super.averageRates,
-            (this.poolXp - this.initial.pool) / this.actionsTaken.active.ms,
-        );
-    }
-
     /***
      * pool methods
      */
@@ -102,26 +95,26 @@ export class EtaSkillWithPool extends EtaSkill {
         }
     }
 
-    actionsToCheckpoint(gainsPerAction: RatesWithPool) {
+    attemptsToCheckpoint(gainsPerAction: RatesWithPool) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         const requiredForPoolCheckPoint = this.nextPoolCheckpointXp - this.poolXp;
-        const actionsToPoolCheckpoint = requiredForPoolCheckPoint / gainsPerAction.pool;
+        const attemptsToPoolCheckpoint = requiredForPoolCheckPoint / gainsPerAction.pool / gainsPerAction.successRate;
         return Math.ceil(Math.min(
-            super.actionsToCheckpoint(gainsPerAction),
-            actionsToPoolCheckpoint,
+            super.attemptsToCheckpoint(gainsPerAction),
+            attemptsToPoolCheckpoint,
         ));
     }
 
-    addActions(gainsPerAction: RatesWithPool, actions: number) {
-        super.addActions(gainsPerAction, actions);
-        this.poolXp += gainsPerAction.pool * actions;
+    addAttempts(gainsPerAction: RatesWithPool, attempts: number) {
+        super.addAttempts(gainsPerAction, attempts);
+        this.poolXp += gainsPerAction.pool * attempts * gainsPerAction.successRate;
     }
 
     setCurrentRatesNoCheck(gains: RatesWithPool): RatesWithPool {
         return this.currentRates = RatesWithPool.addPoolToRates(
             super.setCurrentRatesNoCheck(gains),
-            gains.pool / gains.ms,
+            gains.pool / gains.ms * gains.successRate,
         );
     }
 

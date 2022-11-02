@@ -3,13 +3,13 @@ import {Rates} from "./Rates";
 export class RatesWithPool extends Rates {
     public pool: number;
 
-    constructor(xp: number, pool: number, ms: number, unit: number) {
-        super(xp, ms, unit);
+    constructor(xp: number, pool: number, successRate: number, ms: number, unit: number) {
+        super(xp, successRate, ms, unit);
         this.pool = pool;
     }
 
     static get emptyRates(): RatesWithPool {
-        return new RatesWithPool(0, 0, 0, 1);
+        return new RatesWithPool(0, 0, 1, 0, 1);
     }
 
     get hourlyRates() {
@@ -20,6 +20,7 @@ export class RatesWithPool extends Rates {
         return new RatesWithPool(
             rates.xp,
             pool,
+            rates.successRate,
             rates.ms,
             rates.unit,
         );
@@ -30,6 +31,7 @@ export class RatesWithPool extends Rates {
         return new RatesWithPool(
             this.xp * factor,
             this.pool * factor,
+            this.successRate,
             this.ms,
             unit,
         )
