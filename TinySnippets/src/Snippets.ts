@@ -2,6 +2,7 @@ import {TinyMod} from "../../TinyMod/src/TinyMod";
 import {Card} from "../../TinyMod/src/Card";
 import {removePoolLimitSetting} from "./RemovePoolLimit";
 import {unlimitedOfflineSetting} from "./UnlimitedOffline";
+import {pauseOfflineProgressSetting} from "./ZaWarudo";
 
 export type Snippet = {
     function: (ctx: any) => void,
@@ -26,6 +27,7 @@ export class Snippets extends TinyMod {
         this.snippets = [
             unlimitedOfflineSetting,
             removePoolLimitSetting,
+            pauseOfflineProgressSetting,
         ];
         // create toggles
         this.toggles = ctx.settings.section('Toggles');
