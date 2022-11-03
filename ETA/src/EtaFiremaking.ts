@@ -14,7 +14,7 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
     }
 
     get actionXP() {
-        return this.action.baseExperience * (1 + this.skill.bonfireBonusXP / 100);
+        return super.actionXP * (1 + this.skill.bonfireBonusXP / 100);
     }
 
     get actionInterval() {
