@@ -276,7 +276,7 @@ export class ETA extends TinyMod {
     }
 
     timeRemaining(calculator: EtaSkill) {
-        calculator.iterate(this.game, this.settings);
+        calculator.iterate(this.game);
         return calculator;
     }
 
@@ -310,6 +310,7 @@ export class ETA extends TinyMod {
 
     addGlobalTargetInputs() {
         this.globalTargetsCard = new Card(this.tag, this.content, '', '150px', true);
+        // targets
         [
             {id: 'LEVEL', label: 'Global level targets', defaultValue: [99]},
             {id: 'MASTERY', label: 'Global mastery targets', defaultValue: [99]},
@@ -328,7 +329,32 @@ export class ETA extends TinyMod {
                 },
             );
         });
-
+        // other numerical settings
+        [
+            {id: 'minimalActionTime', label: 'Minimal action time in ms', defaultValue: 250},
+        ].forEach(numerical => {
+            const key = numerical.id;
+            this.globalTargetsCard.addNumberInput(
+                numerical.label,
+                this.settings.get(key),
+                0,
+                Infinity,
+                (event: any) => {
+                    let value = parseInt(event.currentTarget.value);
+                    if (isNaN(value)) {
+                        value = numerical.defaultValue;
+                    }
+                    if (value < 0) {
+                        value = numerical.defaultValue;
+                    }
+                    if (value > Infinity) {
+                        value = numerical.defaultValue;
+                    }
+                    this.settings.set(key, value);
+                    recomputeEverySkill();
+                },
+            );
+        });
     }
 
     addTargetInputs() {

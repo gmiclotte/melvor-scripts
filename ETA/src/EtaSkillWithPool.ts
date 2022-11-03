@@ -19,7 +19,7 @@ export class EtaSkillWithPool extends EtaSkill {
     constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         const args: [Game, any, any, Settings] = [game, skill, action, settings];
         super(...args);
-        this.targets = this.getTargets(settings);
+        this.targets = this.getTargets();
         this.poolXp = 0;
         this.currentRates = RatesWithPool.emptyRates;
         this.initial = RatesWithPool.emptyRates;
@@ -69,8 +69,8 @@ export class EtaSkillWithPool extends EtaSkill {
         return !this.poolReached && this.targets.poolCompleted();
     }
 
-    getTargets(settings: Settings) {
-        return new TargetsWithPool(this, settings);
+    getTargets() {
+        return new TargetsWithPool(this, this.settings);
     }
 
     init(game: Game) {

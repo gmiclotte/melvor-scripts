@@ -23,6 +23,7 @@ export class EtaSkill {
     // targets reached
     public skillReached: boolean;
     protected readonly modifiers: PlayerModifiers;
+    protected readonly settings: Settings;
     protected currentRatesSet: boolean;
     // other
     protected infiniteActions: boolean;
@@ -32,7 +33,8 @@ export class EtaSkill {
         this.skill = skill;
         this.action = action;
         this.modifiers = game.modifiers;
-        this.targets = this.getTargets(settings);
+        this.settings = settings;
+        this.targets = this.getTargets();
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
@@ -94,8 +96,8 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
-    getTargets(settings: Settings) {
-        return new Targets(this, settings);
+    getTargets() {
+        return new Targets(this, this.settings);
     }
 
     init(game: Game) {
@@ -127,10 +129,10 @@ export class EtaSkill {
         }
     }
 
-    iterate(game: Game, settings: Settings): void {
+    iterate(game: Game): void {
         this.init(game);
         // compute the targets
-        this.targets = this.getTargets(settings);
+        this.targets = this.getTargets();
         // limit to 1000 iterations, in case something goes wrong
         const maxIt = 1000;
         let it = 0;
@@ -236,7 +238,7 @@ export class EtaSkill {
         interval += flatModifier;
         // @ts-ignore
         interval = roundToTickInterval(interval);
-        return Math.max(interval, 250);
+        return Math.max(interval, this.settings.get('minimalActionTime'));
     }
 
     getFlatIntervalModifier() {

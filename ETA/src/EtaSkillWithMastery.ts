@@ -20,7 +20,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         const args: [Game, any, any, Settings] = [game, skill, action, settings];
         super(...args);
-        this.targets = this.getTargets(settings);
+        this.targets = this.getTargets();
         this.masteryXp = 0;
         this.totalMasteryWithoutAction = 0;
         this.currentRates = RatesWithMastery.emptyRates;
@@ -83,8 +83,8 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return !this.masteryReached && this.targets.masteryCompleted();
     }
 
-    getTargets(settings: Settings) {
-        return new TargetsWithMastery(this, settings);
+    getTargets() {
+        return new TargetsWithMastery(this, this.settings);
     }
 
     init(game: Game) {

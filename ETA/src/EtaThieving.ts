@@ -22,7 +22,7 @@ export class EtaThieving extends EtaSkillWithMastery {
         interval *= 1 + modifier / 100;
         // @ts-ignore
         interval = roundToTickInterval(interval);
-        return Math.max(interval, 250);
+        return Math.max(interval, this.settings.get('minimalActionTime'));
     }
 
     get successRate() {

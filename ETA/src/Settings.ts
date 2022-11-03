@@ -48,6 +48,18 @@ export class Settings {
                 default: true,
             },
         ]);
+        // numerical settings
+        this.generalSettings.add([
+            {
+                type: 'number',
+                name: 'minimalActionTime',
+                min: 0,
+                max: Infinity,
+                label: 'Minimal action time in ms',
+                hint: 'Minimal action time in ms.',
+                default: 250,
+            },
+        ]);
         /*
             targets
          */
