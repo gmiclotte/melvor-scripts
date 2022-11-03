@@ -222,7 +222,8 @@
 }
 
 .tinyModTabButtonContainer {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     flex-wrap: wrap;
     width: 100%;
     background-color: inherit;
