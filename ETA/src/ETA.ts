@@ -312,7 +312,7 @@ export class ETA extends TinyMod {
         this.globalTargetsCard = new Card(this.tag, this.content, '', '150px', true);
         // targets
         [
-            {id: 'LEVEL', label: 'Global level targets', defaultValue: [99]},
+            {id: 'LEVEL', label: 'Global level targets', defaultValue: [99, 120]},
             {id: 'MASTERY', label: 'Global mastery targets', defaultValue: [99]},
             {id: 'POOL', label: 'Global pool targets (%)', defaultValue: [100]},
         ].forEach(target => {
