@@ -259,6 +259,7 @@ export class Card {
         newInput.max = max;
         newInput.value = startValue;
         newInput.className = 'form-control mb-1';
+        newInput.style.width = this.inputWidth;
         newInput.addEventListener('change', onChangeCallback);
         const label = this.createLabel(labelText, newInput.id);
         label.classList.add('mb-1');
