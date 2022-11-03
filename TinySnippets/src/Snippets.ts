@@ -17,8 +17,8 @@ export type Snippet = {
 export class Snippets extends TinyMod {
 
     private togglesCard!: Card;
-    private snippets: Snippet[];
-    private toggles: any;
+    private readonly snippets: Snippet[];
+    private readonly toggles: any;
 
     constructor(ctx: any, tag: string = 'TinySnippets') {
         super(ctx, tag);
@@ -37,7 +37,6 @@ export class Snippets extends TinyMod {
         this.snippets.forEach(snippet => {
             const key = snippet.setting.name;
             const label = snippet.setting.label;
-            this.log(key, label, this.toggles.get(key))
             this.togglesCard.addToggleRadio(
                 label,
                 key,
@@ -61,7 +60,9 @@ export class Snippets extends TinyMod {
             confirmButtonText: getLangString('MENU_TEXT', 'CONFIRM'),
         }).then((_: any) => {
             this.snippets.forEach((snippet: any) => {
+                // execute snippet if toggled on
                 if (this.toggles.get(snippet.setting.name)) {
+                    this.log(`executing ${snippet.setting.name}`);
                     snippet.function(this.ctx);
                 }
             });
