@@ -26,18 +26,24 @@ export class EtaThieving extends EtaSkillWithMastery {
     }
 
     get successRate() {
-        const failRate = Math.max(0, Math.min(1, 1 - this.getNPCSuccessRate() / 100));
-        return 1 / (1 - failRate);
+        return this.getNPCSuccessRate() / 100;
     }
 
     get averageAttemptTime() {
-        const failRate = Math.max(0, Math.min(1, 1 - this.getNPCSuccessRate() / 100));
+        const failRate = 1 - this.getNPCSuccessRate() / 100;
         const avoidStunRate = this.avoidStunChance / 100;
         return (this.actionInterval + failRate * (1 - avoidStunRate) * this.stunInterval);
     }
 
     getNPCSuccessRate() {
-        return Math.min(100, (100 * (100 + this.getStealthAgainstNPC())) / (100 + this.action.perception));
+        const successRate = (100 * (100 + this.getStealthAgainstNPC())) / (100 + this.action.perception);
+        if (successRate < 0) {
+            return 0;
+        }
+        if (successRate > 100) {
+            return 100;
+        }
+        return successRate;
     }
 
     getStealthAgainstNPC() {
