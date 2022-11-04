@@ -50,4 +50,5 @@ export const removePoolLimitSetting = {
         hint: 'Remove pool limit',
         default: false,
     },
+    toggles: [],
 }

@@ -20,4 +20,5 @@ export const unlimitedOfflineSetting = {
         hint: 'Remove offline progress limit',
         default: false,
     },
+    toggles: [],
 }

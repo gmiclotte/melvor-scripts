@@ -3,16 +3,20 @@ import {Card} from "../../TinyMod/src/Card";
 import {removePoolLimitSetting} from "./RemovePoolLimit";
 import {unlimitedOfflineSetting} from "./UnlimitedOffline";
 import {pauseOfflineProgressSetting} from "./ZaWarudo";
+import {Game} from "../../Game-Files/built/game";
+
+export type Toggle = {
+    type: string,
+    name: string,
+    label: string,
+    hint: string,
+    default: boolean,
+};
 
 export type Snippet = {
-    function: (ctx: any) => void,
-    setting: {
-        type: string,
-        name: string,
-        label: string,
-        hint: string,
-        default: boolean,
-    }
+    function: (ctx: any, game: Game) => void,
+    setting: Toggle,
+    toggles: Toggle[],
 };
 
 export class Snippets extends TinyMod {
@@ -27,25 +31,37 @@ export class Snippets extends TinyMod {
         this.snippets = [
             unlimitedOfflineSetting,
             removePoolLimitSetting,
-            pauseOfflineProgressSetting,
+            pauseOfflineProgressSetting(ctx),
         ];
         // create toggles
         this.toggles = ctx.settings.section('Toggles');
-        this.snippets.forEach(snippet => this.toggles.add(snippet.setting));
+        this.snippets.forEach(snippet => {
+            this.toggles.add(snippet.setting);
+            snippet.toggles.forEach(toggle => {
+                this.toggles.add(toggle);
+            });
+        });
+    }
+
+    addToggle(toggle: Toggle) {
+        const key = toggle.name;
+        const label = toggle.label;
+        this.togglesCard.addToggleRadio(
+            label,
+            key,
+            this.toggles,
+            key,
+            this.toggles.get(key),
+        );
     }
 
     addToggles() {
         this.togglesCard = new Card(this.tag, this.content, '', '150px', true);
         this.snippets.forEach(snippet => {
-            const key = snippet.setting.name;
-            const label = snippet.setting.label;
-            this.togglesCard.addToggleRadio(
-                label,
-                key,
-                this.toggles,
-                key,
-                this.toggles.get(key),
-            );
+            this.addToggle(snippet.setting);
+            snippet.toggles.forEach(toggle => {
+                this.addToggle(toggle);
+            });
         });
     }
 
@@ -65,7 +81,8 @@ export class Snippets extends TinyMod {
                 // execute snippet if toggled on
                 if (this.toggles.get(snippet.setting.name)) {
                     this.log(`executing ${snippet.setting.name}`);
-                    snippet.function(this.ctx);
+                    // @ts-ignore
+                    snippet.function(this.ctx, game);
                 }
             });
         });
