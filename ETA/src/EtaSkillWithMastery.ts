@@ -3,6 +3,7 @@ import {TargetsWithMastery} from "./TargetsWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
+import {Astrology, AstrologyRecipe} from "../../Game-Files/gameTypes/astrology";
 
 export class EtaSkillWithMastery extends EtaSkillWithPool {
     // trackers
@@ -16,10 +17,12 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     public masteryReached: boolean;
     // other
     protected totalMasteryWithoutAction: number;
+    private astrology: Astrology;
 
     constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         const args: [Game, any, any, Settings] = [game, skill, action, settings];
         super(...args);
+        this.astrology = game.astrology;
         this.targets = this.getTargets();
         this.masteryXp = 0;
         this.totalMasteryWithoutAction = 0;
@@ -141,6 +144,12 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         let modifier = this.modifiers.increasedGlobalMasteryXP - this.modifiers.decreasedGlobalMasteryXP;
         modifier += this.getSkillModifierValue('increasedMasteryXP');
         modifier -= this.getSkillModifierValue('decreasedMasteryXP');
+        this.astrology.masteryXPConstellations.forEach((constellation: AstrologyRecipe) => {
+            const modValue = this.getSkillModifierValue(constellation.masteryXPModifier);
+            if (modValue > 0) {
+                modifier += modValue * constellation.maxValueModifiers;
+            }
+        });
         return modifier;
     }
 
