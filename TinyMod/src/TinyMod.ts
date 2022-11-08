@@ -11,7 +11,7 @@ export class TinyMod {
     // @ts-ignore 2564
     protected content: HTMLDivElement;
     private readonly icon: string;
-    protected readonly idManager: ElementIDManager;
+    public readonly idManager: ElementIDManager;
 
     constructor(ctx: any, tag: string, icon = 'assets/media/main/settings_header.svg') {
         this.ctx = ctx;
