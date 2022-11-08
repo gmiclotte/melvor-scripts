@@ -1,4 +1,6 @@
 *.js
 built
+data
 game
 lib
+*Types
