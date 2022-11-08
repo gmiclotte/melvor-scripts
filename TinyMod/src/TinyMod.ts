@@ -1,4 +1,5 @@
 import {addModal, destroyMenu, destroyModal} from "./Menu";
+import {ElementIDManager} from "./ElementIDManager";
 
 export class TinyMod {
     protected readonly ctx: any;
@@ -10,13 +11,31 @@ export class TinyMod {
     // @ts-ignore 2564
     protected content: HTMLDivElement;
     private readonly icon: string;
+    protected readonly idManager: ElementIDManager;
 
     constructor(ctx: any, tag: string, icon = 'assets/media/main/settings_header.svg') {
         this.ctx = ctx;
         this.tag = tag;
+        this.idManager = new ElementIDManager(this.tag);
         this.icon = icon;
         this.modalID = tag.toLowerCase() + 'Modal';
         this.menuItemID = tag.toLowerCase() + 'Button';
+    }
+
+    getElementByRawID(rawID: string): HTMLElement | null {
+        const taggedID = this.idManager.getID(rawID, false);
+        return this.getElementByID(taggedID);
+    }
+
+    getElementByID(taggedID: string): HTMLElement | null {
+        if (!this.idManager.hasTaggedID(taggedID)) {
+            return null;
+        }
+        return document.getElementById(this.idManager.getID(taggedID, false));
+    }
+
+    getElement(idData: string): HTMLElement | null {
+        return document.getElementById(this.idManager.getID(idData, false));
     }
 
     log(...x: any): void {

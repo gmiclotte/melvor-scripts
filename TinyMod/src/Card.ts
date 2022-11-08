@@ -1,11 +1,12 @@
+import {ElementIDManager} from "./ElementIDManager";
+
 export class Card {
-    tag: string;
+    idManager: ElementIDManager;
     container: any;
     dropDowns: any;
     inputWidth: any;
     numOutputs: any;
     outerContainer: any;
-    private ids: Map<string, boolean>;
 
     /**
      * Constructs an instance of McsCard
@@ -14,9 +15,8 @@ export class Card {
      * @param {string} inputWidth The width of inputs for the card's ui elements
      * @param {boolean} outer This card is an outside card
      */
-    constructor(tag: string, parentElement: any, height: any, inputWidth: any, outer = false) {
-        this.tag = tag;
-        this.ids = new Map<string, boolean>();
+    constructor(idManager: ElementIDManager, parentElement: any, height: any, inputWidth: any, outer = false) {
+        this.idManager = idManager;
         this.outerContainer = document.createElement('div');
         this.outerContainer.className = `tinyModCardContainer${outer ? ' tinyModOuter block block-rounded border-top border-combat border-4x bg-combat-inner-dark' : ''}`;
         if (height !== '') {
@@ -32,14 +32,7 @@ export class Card {
     }
 
     getID(idData: string, create: boolean): string {
-        const id = `TinyMod-${this.tag}-${idData}`.replace(/ /g, '-');
-        if (create) {
-            if (this.ids.get(id)) {
-                console.warn(`element with id ${id} already exists!`);
-            }
-            this.ids.set(id, true);
-        }
-        return id;
+        return this.idManager.getID(idData, create);
     }
 
     clearContainer() {
@@ -55,12 +48,13 @@ export class Card {
     /**
      * Creates a new button and appends it to the container. Autoadds callbacks to change colour
      * @param {string} buttonText Text to display on button
+     * @param {string} id override for the default id
      * @param {Function} onclickCallback Callback to excute when pressed
      */
-    addButton(buttonText: string, onclickCallback: () => void) {
+    addButton(buttonText: string, id: string, onclickCallback: () => void) {
         const newButton = document.createElement('button');
         newButton.type = 'button';
-        newButton.id = this.getID(`${buttonText} Button`, true);
+        newButton.id = this.getID(id, true);
         newButton.className = 'btn btn-primary m-1';
         newButton.style.width = `100%`;
         newButton.textContent = buttonText;
@@ -304,11 +298,6 @@ export class Card {
 
     /**
      * Adds and input for number arrays to the card
-     * @param labelText
-     * @param object
-     * @param key
-     * @param defaultValue
-     * @param callback
      */
     addNumberArrayInput(labelText: any, object: any, key: string, defaultValue: any = undefined,
                         get = this.getKeyFromObject, set = this.setValToObject) {
@@ -395,7 +384,7 @@ export class Card {
         newOutput.className = 'tinyModNumberOutput';
         newOutput.style.width = this.inputWidth;
         newOutput.textContent = initialValue;
-        newOutput.id = outputID ?? this.getID(`${labelText} Output`, true);
+        newOutput.id = this.getID(outputID ?? `${labelText} Output`, true);
         // label
         const newLabel = this.createLabel(labelText, newOutput.id);
         if (setLabelID) {

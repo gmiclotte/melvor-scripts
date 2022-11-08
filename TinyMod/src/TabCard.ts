@@ -1,4 +1,5 @@
 import {Card} from './Card';
+import {ElementIDManager} from "./ElementIDManager";
 
 export class TabCard extends Card {
     container: any;
@@ -10,8 +11,8 @@ export class TabCard extends Card {
     tabCount: any;
     tabIDs: any;
 
-    constructor(idPrefix: any, init: any, tag: string, parentElement: any, height: any, inputWidth: any, outer = false) {
-        super(tag, parentElement, height, inputWidth, outer);
+    constructor(idManager: ElementIDManager, idPrefix: any, init: any, tag: string, parentElement: any, height: any, inputWidth: any, outer = false) {
+        super(idManager, parentElement, height, inputWidth, outer);
         this.selectedTab = 0;
         this.tabCount = 0;
         this.idPrefix = idPrefix;
@@ -35,7 +36,7 @@ export class TabCard extends Card {
         // set header
         this.addTabHeader(tabID, title, img, () => this.onTabClick(index));
         // create, insert and return card
-        card = card ? card : new Card(this.tag, this.tabContainer, height, inputWidth);
+        card = card ? card : new Card(this.idManager, this.tabContainer, height, inputWidth);
         if (!card) {
             console.warn(`failed to add tab ${tabID}`)
             return card;
@@ -93,12 +94,12 @@ export class TabCard extends Card {
         // create img element
         const newImage = document.createElement('img');
         newImage.className = 'tinyModButtonImage';
-        newImage.id = `${tabID}-image`;
+        newImage.id = this.idManager.getID(`${tabID}-image`, true);
         newImage.src = img;
         // create tab element
         const newTab = document.createElement('button');
         newTab.type = 'button';
-        newTab.id = tabID;
+        newTab.id = this.idManager.getID(tabID, true);
         newTab.className = 'tinyModTabButton';
         newTab.dataset.tippyContent = title;
         newTab.onclick = callBack;
