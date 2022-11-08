@@ -23,14 +23,6 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         this.runeCostQuantityMap = new Map<Item, number>();
     }
 
-    actionXP(): number {
-        let xp = this.action.baseExperience;
-        if (this.action.produces === this.productionID.MagicXP && this.skill.selectedConversionItem) {
-            xp += this.skill.selectedConversionItem.sellsFor * 0.03;
-        }
-        return this.modifyXP(xp);
-    }
-
     get runePreservationChance() {
         const runePreservation = this.modifiers.increasedRunePreservation
             - this.modifiers.decreasedRunePreservation
@@ -43,6 +35,14 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
             return 1;
         }
         return runePreservation / 100;
+    }
+
+    actionXP(): number {
+        let xp = this.action.baseExperience;
+        if (this.action.produces === this.productionID.MagicXP && this.skill.selectedConversionItem) {
+            xp += this.skill.selectedConversionItem.sellsFor * 0.03;
+        }
+        return this.modifyXP(xp);
     }
 
     init(game: Game) {

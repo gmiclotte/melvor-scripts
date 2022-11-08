@@ -26,16 +26,16 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.finalXpMap = new Map<string, number>();
         }
 
-        completed() {
-            return super.completed() && this.noResourceCheckpointLeft;
-        }
-
         get noResourceCheckpointLeft() {
             return this.attemptsToResourceCheckpoint() <= 0;
         }
 
         get resourcesCompleted() {
             return !this.resourcesReached && this.noResourceCheckpointLeft;
+        }
+
+        completed() {
+            return super.completed() && this.noResourceCheckpointLeft;
         }
 
         init(game: Game) {

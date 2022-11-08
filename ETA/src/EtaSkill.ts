@@ -50,25 +50,8 @@ export class EtaSkill {
         this.isComputing = false;
     }
 
-    /***
-     * Get and set rates
-     */
-
-    gainsPerAction() {
-        return new Rates(
-            this.actionXP(),
-            this.successRate,
-            this.averageAttemptTime,
-            1, // unit
-        );
-    }
-
     get skillLevel(): number {
         return this.xpToLevel(this.skillXp);
-    }
-
-    actionXP(): number {
-        return this.modifyXP(this.action.baseExperience);
     }
 
     /***
@@ -88,12 +71,29 @@ export class EtaSkill {
         return 1;
     }
 
-    completed() {
-        return this.infiniteActions || this.targets.completed();
-    }
-
     get skillCompleted() {
         return !this.skillReached && this.targets.skillCompleted();
+    }
+
+    /***
+     * Get and set rates
+     */
+
+    gainsPerAction() {
+        return new Rates(
+            this.actionXP(),
+            this.successRate,
+            this.averageAttemptTime,
+            1, // unit
+        );
+    }
+
+    actionXP(): number {
+        return this.modifyXP(this.action.baseExperience);
+    }
+
+    completed() {
+        return this.infiniteActions || this.targets.completed();
     }
 
     getTargets() {

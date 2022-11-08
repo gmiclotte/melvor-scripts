@@ -30,19 +30,6 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     }
 
     /***
-     * Get and set rates
-     */
-
-    gainsPerAction() {
-        const gains = RatesWithMastery.addMasteryToRates(
-            super.gainsPerAction(),
-            this.getMasteryXPToAddForAction,
-        );
-        gains.pool = this.poolPerAction(gains.mastery);
-        return gains;
-    }
-
-    /***
      * mastery methods
      */
 
@@ -81,6 +68,19 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
 
     get masteryCompleted() {
         return !this.masteryReached && this.targets.masteryCompleted();
+    }
+
+    /***
+     * Get and set rates
+     */
+
+    gainsPerAction() {
+        const gains = RatesWithMastery.addMasteryToRates(
+            super.gainsPerAction(),
+            this.getMasteryXPToAddForAction,
+        );
+        gains.pool = this.poolPerAction(gains.mastery);
+        return gains;
     }
 
     getTargets() {

@@ -30,17 +30,6 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     /***
-     * Get and set rates
-     */
-
-    gainsPerAction() {
-        return RatesWithPool.addPoolToRates(
-            super.gainsPerAction(),
-            0,
-        );
-    }
-
-    /***
      * pool methods
      */
 
@@ -67,6 +56,17 @@ export class EtaSkillWithPool extends EtaSkill {
 
     get poolCompleted() {
         return !this.poolReached && this.targets.poolCompleted();
+    }
+
+    /***
+     * Get and set rates
+     */
+
+    gainsPerAction() {
+        return RatesWithPool.addPoolToRates(
+            super.gainsPerAction(),
+            0,
+        );
     }
 
     getTargets() {

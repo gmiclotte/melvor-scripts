@@ -13,12 +13,12 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         return this.action.baseInterval * 0.6;
     }
 
-    actionXP() {
-        return super.actionXP() * (1 + this.skill.bonfireBonusXP / 100);
-    }
-
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
+    }
+
+    actionXP() {
+        return super.actionXP() * (1 + this.skill.bonfireBonusXP / 100);
     }
 
     getRecipeCosts() {

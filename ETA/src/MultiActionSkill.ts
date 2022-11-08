@@ -18,6 +18,20 @@ export class MultiActionSkill extends EtaSkillWithPool {
         ));
     }
 
+    get masteryCompleted() {
+        let done = true;
+        this.calculators.forEach((calculator: EtaSkillWithMastery) => done &&= calculator.masteryCompleted);
+        return done;
+    }
+
+    get weights(): Map<string, number> {
+        const weights = new Map<string, number>();
+        this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
+            weights.set(actionID, 1);
+        });
+        return weights;
+    }
+
     completed() {
         if (this.infiniteActions) {
             return true;
@@ -32,20 +46,6 @@ export class MultiActionSkill extends EtaSkillWithPool {
             }
         });
         return masteriesCompleted;
-    }
-
-    get masteryCompleted() {
-        let done = true;
-        this.calculators.forEach((calculator: EtaSkillWithMastery) => done &&= calculator.masteryCompleted);
-        return done;
-    }
-
-    get weights(): Map<string, number> {
-        const weights = new Map<string, number>();
-        this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
-            weights.set(actionID, 1);
-        });
-        return weights;
     }
 
     gainsPerAction() {
