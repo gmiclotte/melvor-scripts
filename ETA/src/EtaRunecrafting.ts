@@ -1,8 +1,8 @@
-import {Runecrafting} from "../../Game-Files/built/runecrafting";
+import type {Runecrafting} from "../../Game-Files/gameTypes/runecrafting";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
-import {EquipmentItem, Item} from "../../Game-Files/built/item";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {EquipmentItem, Item} from "../../Game-Files/gameTypes/item";
 
 export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
@@ -13,8 +13,8 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return 1700;
     }
 
-    get actionXP() {
-        let xp = super.actionXP;
+    actionXP() {
+        let xp = super.actionXP();
         // Tier 2 Mastery Pool Checkpoint: 250% base xp when making runes
         if (this.skill.isMakingRunes && this.isPoolTierActive(1)) {
             xp *= 2.5;
@@ -23,6 +23,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     }
 
     modifyItemCost(item: Item, quantity: number) {
+        // @ts-ignore
         if (this.action.product instanceof EquipmentItem && item.type === 'Rune') {
             const masteryLevel = this.masteryLevel;
             let runeCostReduction = Math.floor(masteryLevel / 10) * 0.05;

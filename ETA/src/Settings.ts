@@ -1,6 +1,6 @@
-import {Game} from "../../Game-Files/built/game";
-import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
-import {MasteryAction} from "../../Game-Files/built/mastery2";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {MasterySkillData, SkillWithMastery} from "../../Game-Files/gameTypes/skill";
+import type {MasteryAction} from "../../Game-Files/gameTypes/mastery2";
 
 export class Settings {
     public readonly skillList: SkillWithMastery<MasteryAction, MasterySkillData>[];

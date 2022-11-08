@@ -1,7 +1,7 @@
-import {Mining} from "../../Game-Files/built/rockTicking";
+import type {Mining} from "../../Game-Files/gameTypes/rockTicking";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaMining extends EtaSkillWithMastery {
     constructor(game: Game, mining: Mining, action: any, settings: Settings) {

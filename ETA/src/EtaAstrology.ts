@@ -1,7 +1,7 @@
-import {Astrology} from "../../Game-Files/built/astrology";
+import type {Astrology} from "../../Game-Files/gameTypes/astrology";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaAstrology extends EtaSkillWithMastery {
     constructor(game: Game, astrology: Astrology, action: any, settings: Settings) {
@@ -9,6 +9,7 @@ export class EtaAstrology extends EtaSkillWithMastery {
     }
 
     get actionInterval() {
+        // @ts-ignore
         return this.modifyInterval(Astrology.baseInterval);
     }
 

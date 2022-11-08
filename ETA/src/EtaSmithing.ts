@@ -1,8 +1,8 @@
-import {Smithing} from "../../Game-Files/built/smithing";
+import type {Smithing} from "../../Game-Files/gameTypes/smithing";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
-import {Item} from "../../Game-Files/built/item";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {Item} from "../../Game-Files/gameTypes/item";
 
 export class EtaSmithing extends ResourceSkillWithMastery {
     constructor(game: Game, smithing: Smithing, action: any, settings: Settings) {

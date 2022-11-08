@@ -1,9 +1,9 @@
-import {Agility} from "../../Game-Files/built/agility";
+import type {Agility} from "../../Game-Files/gameTypes/agility";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaAgility} from "./EtaAgility";
-import {PlayerModifiers} from "../../Game-Files/built/modifier";
+import type {PlayerModifiers} from "../../Game-Files/gameTypes/modifier";
 import {MultiRates} from "./MultiRates";
 
 export class MultiAgility extends MultiActionSkill {
@@ -13,6 +13,7 @@ export class MultiAgility extends MultiActionSkill {
     constructor(game: Game, agility: Agility, actions: any[], settings: Settings) {
         super(game, agility, actions, settings);
         // keep a copy of the modifiers
+        // @ts-ignore
         this.modifiers = new PlayerModifiers();
         // create the calculators
         this.calculators = new Map<string, EtaAgility>;

@@ -1,7 +1,7 @@
-import {Thieving} from "../../Game-Files/built/thieving2";
+import type {Thieving} from "../../Game-Files/gameTypes/thieving2";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaThieving extends EtaSkillWithMastery {
     constructor(game: Game, thieving: Thieving, action: any, settings: Settings) {

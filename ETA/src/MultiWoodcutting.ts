@@ -1,6 +1,6 @@
-import {Woodcutting} from "../../Game-Files/built/woodcutting";
+import type {Woodcutting} from "../../Game-Files/gameTypes/woodcutting";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 

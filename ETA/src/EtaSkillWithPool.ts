@@ -1,7 +1,7 @@
 import {RatesWithPool} from "./RatesWithPool";
 import {TargetsWithPool} from "./TargetsWithPool";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaSkill} from "./EtaSkill";
 
 export class EtaSkillWithPool extends EtaSkill {
@@ -33,9 +33,9 @@ export class EtaSkillWithPool extends EtaSkill {
      * Get and set rates
      */
 
-    get gainsPerAction() {
+    gainsPerAction() {
         return RatesWithPool.addPoolToRates(
-            super.gainsPerAction,
+            super.gainsPerAction(),
             0,
         );
     }

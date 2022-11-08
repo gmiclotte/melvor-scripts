@@ -1,8 +1,8 @@
-import {PlayerModifiers, SkillModifierObject} from "../../Game-Files/built/modifier";
+import type {PlayerModifiers, SkillModifierObject} from "../../Game-Files/gameTypes/modifier";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {ActionCounterWrapper} from "./ActionCounter";
 
 export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
@@ -54,9 +54,9 @@ export class EtaSkill {
      * Get and set rates
      */
 
-    get gainsPerAction() {
+    gainsPerAction() {
         return new Rates(
-            this.actionXP,
+            this.actionXP(),
             this.successRate,
             this.averageAttemptTime,
             1, // unit
@@ -67,7 +67,7 @@ export class EtaSkill {
         return this.xpToLevel(this.skillXp);
     }
 
-    get actionXP(): number {
+    actionXP(): number {
         return this.modifyXP(this.action.baseExperience);
     }
 
@@ -88,7 +88,7 @@ export class EtaSkill {
         return 1;
     }
 
-    get completed() {
+    completed() {
         return this.infiniteActions || this.targets.completed();
     }
 
@@ -137,7 +137,7 @@ export class EtaSkill {
         const maxIt = 1000;
         let it = 0;
         this.setFinalValues();
-        while (!this.completed) {
+        while (!this.completed()) {
             this.progress();
             it++;
             if (it >= maxIt) {
@@ -145,7 +145,7 @@ export class EtaSkill {
                 break;
             }
         }
-        this.setCurrentRates(this.gainsPerAction);
+        this.setCurrentRates(this.gainsPerAction());
     }
 
     xpToNextLevel(level: number, xp: number): number {
@@ -157,7 +157,7 @@ export class EtaSkill {
     }
 
     progress(): void {
-        const gainsPerAction = this.gainsPerAction;
+        const gainsPerAction = this.gainsPerAction();
         const attempts = this.attemptsToCheckpoint(gainsPerAction);
         if (attempts === Infinity) {
             this.infiniteActions = true;

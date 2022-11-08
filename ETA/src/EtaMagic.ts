@@ -1,9 +1,9 @@
-import {AltMagic} from "../../Game-Files/built/altMagic";
+import type {AltMagic} from "../../Game-Files/gameTypes/altMagic";
 import {Settings} from "./Settings";
 import {ResourceSkillWithoutMastery} from "./ResourceSkill";
-import {Item} from "../../Game-Files/built/item";
-import {Costs} from "../../Game-Files/built/skill";
-import {Game} from "../../Game-Files/built/game";
+import type {Item} from "../../Game-Files/gameTypes/item";
+import type {Costs} from "../../Game-Files/gameTypes/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 
 export class EtaMagic extends ResourceSkillWithoutMastery {
@@ -23,7 +23,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         this.runeCostQuantityMap = new Map<Item, number>();
     }
 
-    get actionXP(): number {
+    actionXP(): number {
         let xp = this.action.baseExperience;
         if (this.action.produces === this.productionID.MagicXP && this.skill.selectedConversionItem) {
             xp += this.skill.selectedConversionItem.sellsFor * 0.03;
@@ -103,6 +103,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
     }
 
     getRuneRecipeCosts() {
+        // @ts-ignore
         const costs = new Costs({});
         // rune costs
         this.game.combat.player.getRuneCosts(this.action).forEach((cost: { item: Item, quantity: number }) => {
@@ -112,6 +113,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
     }
 
     getRecipeCosts() {
+        // @ts-ignore
         const costs = new Costs({});
         // variable item costs
         switch (this.action.specialCost.type) {

@@ -1,7 +1,7 @@
-import {Herblore} from "../../Game-Files/built/herblore";
+import type {Herblore} from "../../Game-Files/gameTypes/herblore";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaHerblore extends ResourceSkillWithMastery {
     constructor(game: Game, herblore: Herblore, action: any, settings: Settings) {

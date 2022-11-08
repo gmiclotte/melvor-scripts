@@ -1,8 +1,8 @@
 import {ResourceRates} from "./ResourceRates";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
-import {Game} from "../../Game-Files/built/game";
-import {Item} from "../../Game-Files/built/item";
-import {Costs} from "../../Game-Files/built/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {Item} from "../../Game-Files/gameTypes/item";
+import type {Costs} from "../../Game-Files/gameTypes/skill";
 import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 import {EtaSkill, etaSkillConstructor} from "./EtaSkill";
 
@@ -20,13 +20,14 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.actionsTaken = new ResourceActionCounterWrapper();
             this.remainingResources = ResourceActionCounter.emptyCounter;
             this.resourcesReached = false;
+            // @ts-ignore
             this.costs = new Costs(undefined);
             this.costQuantityMap = new Map<Item, number>();
             this.finalXpMap = new Map<string, number>();
         }
 
-        get completed() {
-            return super.completed && this.noResourceCheckpointLeft;
+        completed() {
+            return super.completed() && this.noResourceCheckpointLeft;
         }
 
         get noResourceCheckpointLeft() {
@@ -140,6 +141,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         getRecipeCosts() {
+            // @ts-ignore
             const costs = new Costs(undefined);
             this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
                 const quantity = this.modifyItemCost(cost.item, cost.quantity);

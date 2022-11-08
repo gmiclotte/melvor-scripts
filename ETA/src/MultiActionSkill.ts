@@ -1,5 +1,5 @@
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {RatesWithMastery} from "./RatesWithMastery";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {MultiRates} from "./MultiRates";
@@ -18,7 +18,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
         ));
     }
 
-    get completed() {
+    completed() {
         if (this.infiniteActions) {
             return true;
         }
@@ -27,7 +27,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
         }
         let masteriesCompleted = true;
         this.calculators.forEach((calculator) => {
-            if (!calculator.completed) {
+            if (!calculator.completed()) {
                 masteriesCompleted = false;
             }
         });
@@ -48,13 +48,13 @@ export class MultiActionSkill extends EtaSkillWithPool {
         return weights;
     }
 
-    get gainsPerAction() {
+    gainsPerAction() {
         const rateMap = new Map<string, RatesWithMastery>();
         let xp = 0;
         let mastery = 0;
         const weights = this.weights;
         this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
-            rateMap.set(actionID, calculator.gainsPerAction);
+            rateMap.set(actionID, calculator.gainsPerAction());
         });
         this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
             const gains = rateMap.get(actionID)!;

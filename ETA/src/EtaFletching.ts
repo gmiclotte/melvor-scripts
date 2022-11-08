@@ -1,8 +1,8 @@
-import {Fletching} from "../../Game-Files/built/fletching";
+import type {Fletching} from "../../Game-Files/gameTypes/fletching";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
-import {EquipmentItem, Item} from "../../Game-Files/built/item";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {EquipmentItem, Item} from "../../Game-Files/gameTypes/item";
 
 export class EtaFletching extends ResourceSkillWithMastery {
     constructor(game: Game, fletching: Fletching, action: any, settings: Settings) {
@@ -36,6 +36,7 @@ export class EtaFletching extends ResourceSkillWithMastery {
 
     doesRecipeMakeArrows() {
         const product = this.action.product;
+        // @ts-ignore
         return product instanceof EquipmentItem
             // @ts-ignore
             && product.ammoType === AmmoTypeID.Arrows;

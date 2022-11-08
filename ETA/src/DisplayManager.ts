@@ -1,13 +1,13 @@
-import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
-import {Game} from "../../Game-Files/built/game";
+import type {MasterySkillData, SkillWithMastery} from "../../Game-Files/gameTypes/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {Settings} from "./Settings";
-import {FishingArea} from "../../Game-Files/built/fishing";
+import type {FishingArea} from "../../Game-Files/gameTypes/fishing";
 import {DisplayWithMastery} from "./DisplayWithMastery";
 import {Display} from "./Display";
 import {ResourceDisplayWithMastery, ResourceDisplayWithoutMastery} from "./ResourceDisplay";
-import {MasteryAction} from "../../Game-Files/built/mastery2";
-import {CookingCategory} from "../../Game-Files/built/cooking";
-import {ThievingArea} from "../../Game-Files/built/thieving2";
+import type {MasteryAction} from "../../Game-Files/gameTypes/mastery2";
+import type {CookingCategory} from "../../Game-Files/gameTypes/cooking";
+import type {ThievingArea} from "../../Game-Files/gameTypes/thieving2";
 import {DisplayWithPool} from "./DisplayWithPool";
 import {EtaSkill} from "./EtaSkill";
 

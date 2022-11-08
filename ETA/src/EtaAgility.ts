@@ -1,13 +1,13 @@
-import {Agility} from "../../Game-Files/built/agility";
+import type {Agility} from "../../Game-Files/gameTypes/agility";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
-import {
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {
     MappedModifiers,
     PlayerModifiers,
     SkillModifierObject,
     StandardModifierObject
-} from "../../Game-Files/built/modifier";
+} from "../../Game-Files/gameTypes/modifier";
 
 export class EtaAgility extends EtaSkillWithMastery {
     public was99Mastery: boolean;
@@ -54,6 +54,7 @@ export class EtaAgility extends EtaSkillWithMastery {
             }
         })
         // copy to new PlayerModifiers object
+        // @ts-ignore
         const clonedModifiers = new PlayerModifiers();
         clonedModifiers.addModifiers(modifierObject);
         return clonedModifiers;
@@ -105,6 +106,7 @@ export class EtaAgility extends EtaSkillWithMastery {
 
     /** Gets the change in debuff modifiers after obtaining 99 mastery */
     getObstacleModifierDebuffChange(): MappedModifiers {
+        // @ts-ignore
         const modifiers = new MappedModifiers();
         const masteryLevel = this.masteryLevel;
         // Level 99 Mastery: Debuffs are halved for obstacle

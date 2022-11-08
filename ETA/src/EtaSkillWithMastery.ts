@@ -1,7 +1,7 @@
 import {RatesWithMastery} from "./RatesWithMastery";
 import {TargetsWithMastery} from "./TargetsWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
 
 export class EtaSkillWithMastery extends EtaSkillWithPool {
@@ -33,9 +33,9 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
      * Get and set rates
      */
 
-    get gainsPerAction() {
+    gainsPerAction() {
         const gains = RatesWithMastery.addMasteryToRates(
-            super.gainsPerAction,
+            super.gainsPerAction(),
             this.getMasteryXPToAddForAction,
         );
         gains.pool = this.poolPerAction(gains.mastery);

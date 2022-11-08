@@ -1,5 +1,5 @@
 import {ActionCounter, ActionCounterWrapper} from "./ActionCounter";
-import {Item} from "../../Game-Files/built/item";
+import type {Item} from "../../Game-Files/gameTypes/item";
 
 export class ResourceActionCounterWrapper extends ActionCounterWrapper {
     public active!: ResourceActionCounter;

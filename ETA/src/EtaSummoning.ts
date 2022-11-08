@@ -1,10 +1,10 @@
-import {Summoning} from "../../Game-Files/built/summoning";
+import type {Summoning} from "../../Game-Files/gameTypes/summoning";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
-import {Item} from "../../Game-Files/built/item";
-import {Player} from "../../Game-Files/built/player";
-import {Costs} from "../../Game-Files/built/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {Item} from "../../Game-Files/gameTypes/item";
+import type {Player} from "../../Game-Files/gameTypes/player";
+import type {Costs} from "../../Game-Files/gameTypes/skill";
 
 export class EtaSummoning extends ResourceSkillWithMastery {
     private readonly player: Player;
@@ -97,6 +97,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
     addNonShardCosts(altID: number, costs: Costs) {
         const item = this.action.nonShardItemCosts[altID];
         const salePrice = Math.max(20, item.sellsFor);
+        // @ts-ignore
         const itemValueRequired = Summoning.recipeGPCost * (1 - this.getNonShardCostReductionModifier() / 100);
         const qtyToAdd = Math.max(1, Math.floor(itemValueRequired / salePrice));
         costs.addItem(item, qtyToAdd);

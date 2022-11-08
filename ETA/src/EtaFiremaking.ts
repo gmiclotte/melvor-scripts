@@ -1,8 +1,8 @@
-import {Firemaking} from "../../Game-Files/built/firemakingTicks";
+import type {Firemaking} from "../../Game-Files/gameTypes/firemakingTicks";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
-import {Costs} from "../../Game-Files/built/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
+import type {Costs} from "../../Game-Files/gameTypes/skill";
 
 export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
@@ -13,8 +13,8 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         return this.action.baseInterval * 0.6;
     }
 
-    get actionXP() {
-        return super.actionXP * (1 + this.skill.bonfireBonusXP / 100);
+    actionXP() {
+        return super.actionXP() * (1 + this.skill.bonfireBonusXP / 100);
     }
 
     get actionInterval() {
@@ -22,6 +22,7 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
     }
 
     getRecipeCosts() {
+        // @ts-ignore
         const costs = new Costs(undefined);
         costs.addItem(this.action.log, 1);
         return costs;

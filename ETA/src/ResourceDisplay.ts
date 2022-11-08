@@ -2,7 +2,7 @@ import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkillWithMastery, ResourceSkillWithoutMastery} from "./ResourceSkill";
 import {Display, displayConstructor} from "./Display";
-import {Item} from "../../Game-Files/built/item";
+import type {Item} from "../../Game-Files/gameTypes/item";
 
 function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: BaseDisplay) {
 

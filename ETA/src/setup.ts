@@ -1,16 +1,16 @@
 import {ETA, recomputeEverySkill, recomputeSkill} from './ETA';
-import {GatheringSkill} from "../../Game-Files/built/skill";
-import {ArtisanSkill} from "../../Game-Files/built/artisanSkill";
-import {Fletching} from "../../Game-Files/built/fletching";
-import {Summoning} from "../../Game-Files/built/summoning";
-import {SidebarItem} from "../../Game-Files/built/sidebar";
-import {AltMagic} from "../../Game-Files/built/altMagic";
-import {Fishing} from "../../Game-Files/built/fishing";
-import {Firemaking} from "../../Game-Files/built/firemakingTicks";
-import {Cooking} from "../../Game-Files/built/cooking";
-import {Thieving} from "../../Game-Files/built/thieving2";
+import type {GatheringSkill} from "../../Game-Files/gameTypes/skill";
+import type {ArtisanSkill} from "../../Game-Files/gameTypes/artisanSkill";
+import type {Fletching} from "../../Game-Files/gameTypes/fletching";
+import type {Summoning} from "../../Game-Files/gameTypes/summoning";
+import type {SidebarItem} from "../../Game-Files/gameTypes/sidebar";
+import type {AltMagic} from "../../Game-Files/gameTypes/altMagic";
+import type {Fishing} from "../../Game-Files/gameTypes/fishing";
+import type {Firemaking} from "../../Game-Files/gameTypes/firemakingTicks";
+import type {Cooking} from "../../Game-Files/gameTypes/cooking";
+import type {Thieving} from "../../Game-Files/gameTypes/thieving2";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export function setup(ctx: any): void {
     // load style sheet
@@ -18,24 +18,36 @@ export function setup(ctx: any): void {
 
     [
         // patch GatheringSkill.startActionTimer
+        // @ts-ignore
         {clas: GatheringSkill, method: 'startActionTimer'},
+        // @ts-ignore
         {clas: GatheringSkill, method: 'stop'},
         // patch ArtisanSkill.selectRecipeOnClick
+        // @ts-ignore
         {clas: ArtisanSkill, method: 'selectRecipeOnClick'},
         // patch Fishing.onAreaFishSelection
+        // @ts-ignore
         {clas: Fishing, method: 'onAreaFishSelection'},
         // patch Firemaking.selectLog
+        // @ts-ignore
         {clas: Firemaking, method: 'selectLog'},
         // patch Cooking.onRecipeSelectionClick
+        // @ts-ignore
         {clas: Cooking, method: 'onRecipeSelectionClick'},
         // patch Thieving.onNPCPanelSelection
+        // @ts-ignore
         {clas: Thieving, method: 'onNPCPanelSelection'},
         // patch selectAltRecipeOnClick
+        // @ts-ignore
         {clas: Fletching, method: 'selectAltRecipeOnClick'},
+        // @ts-ignore
         {clas: Summoning, method: 'selectAltRecipeOnClick'},
         // patch AltMagic
+        // @ts-ignore
         {clas: AltMagic, method: 'selectSpellOnClick'},
+        // @ts-ignore
         {clas: AltMagic, method: 'selectItemOnClick'},
+        // @ts-ignore
         {clas: AltMagic, method: 'selectBarOnClick'},
     ].forEach(patch => {
         ctx.patch(patch.clas, patch.method).after(function () {
@@ -45,6 +57,7 @@ export function setup(ctx: any): void {
     });
 
     // patch sidebar click
+    // @ts-ignore
     ctx.patch(SidebarItem, 'click').after(recomputeEverySkill)
 
     // create settings -> outside of hooks !

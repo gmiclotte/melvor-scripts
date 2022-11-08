@@ -1,7 +1,7 @@
-import {Cooking} from "../../Game-Files/built/cooking";
+import type {Cooking} from "../../Game-Files/gameTypes/cooking";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaCooking extends ResourceSkillWithMastery {
     constructor(game: Game, cooking: Cooking, action: any, settings: Settings) {
@@ -22,6 +22,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
 
     get recipeSuccessChance() {
         const masteryLevel = this.masteryLevel;
+        // @ts-ignore
         let chance = Cooking.baseSuccessChance;
         chance += this.modifiers.increasedChanceSuccessfulCook
             - this.modifiers.decreasedChanceSuccessfulCook;

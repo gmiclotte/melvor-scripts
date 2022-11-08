@@ -1,7 +1,7 @@
-import {Fish, Fishing, FishingArea} from "../../Game-Files/built/fishing";
+import type {Fish, Fishing, FishingArea} from "../../Game-Files/gameTypes/fishing";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 
 export class EtaFishing extends EtaSkillWithMastery {
     // @ts-ignore

@@ -2,8 +2,8 @@ import {EtaSkill} from "./EtaSkill";
 import {ActionCounter} from "./ActionCounter";
 import {DisplayManager} from "./DisplayManager";
 import {Settings} from "./Settings";
-import {Bank} from "../../Game-Files/built/bank2";
-import {ItemRegistry} from "../../Game-Files/built/namespaceRegistry";
+import type {Bank} from "../../Game-Files/gameTypes/bank2";
+import type {ItemRegistry} from "../../Game-Files/gameTypes/namespaceRegistry";
 
 export type displayConstructor<BaseDisplay = Display> = new(...args: any[]) => Display;
 

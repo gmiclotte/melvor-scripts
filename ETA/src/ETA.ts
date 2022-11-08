@@ -2,8 +2,8 @@ import {Card} from "../../TinyMod/src/Card";
 import {TabCard} from "../../TinyMod/src/TabCard";
 import {TinyMod} from "../../TinyMod/src/TinyMod";
 import {EtaSkill, etaSkillConstructor} from "./EtaSkill"
-import {MasterySkillData, SkillWithMastery} from "../../Game-Files/built/skill";
-import {Game} from "../../Game-Files/built/game";
+import type {MasterySkillData, SkillWithMastery} from "../../Game-Files/gameTypes/skill";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaFishing} from "./EtaFishing";
 import {EtaMining} from "./EtaMining";
 import {DisplayManager} from "./DisplayManager";
@@ -15,8 +15,8 @@ import {EtaRunecrafting} from "./EtaRunecrafting";
 import {EtaHerblore} from "./EtaHerblore";
 import {EtaSummoning} from "./EtaSummoning";
 import {EtaFiremaking} from "./EtaFiremaking";
-import {MasteryAction} from "../../Game-Files/built/mastery2";
-import {ThievingArea, ThievingNPC} from "../../Game-Files/built/thieving2";
+import type {MasteryAction} from "../../Game-Files/gameTypes/mastery2";
+import type {ThievingArea, ThievingNPC} from "../../Game-Files/gameTypes/thieving2";
 import {EtaWoodcutting} from "./EtaWoodcutting";
 import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
@@ -292,7 +292,7 @@ export class ETA extends TinyMod {
     }
 
     addToggles(): void {
-        this.togglesCard = new Card(this.tag, this.content, '', '150px', true);
+        this.togglesCard = new Card(this.idManager, this.content, '', '150px', true);
         const titles = new Map<string, string>()
         titles.set('IS_12H_CLOCK', 'Use 12h clock');
         titles.set('SHOW_XP_RATE', 'Show XP rates');
@@ -309,7 +309,7 @@ export class ETA extends TinyMod {
     }
 
     addGlobalTargetInputs() {
-        this.globalTargetsCard = new Card(this.tag, this.content, '', '150px', true);
+        this.globalTargetsCard = new Card(this.idManager, this.content, '', '150px', true);
         // targets
         [
             {id: 'LEVEL', label: 'Global level targets', defaultValue: [99, 120]},
@@ -358,7 +358,7 @@ export class ETA extends TinyMod {
     }
 
     addTargetInputs() {
-        this.skillTargetCard = new TabCard('EtaTarget', true, this.tag, this.content, '', '150px', true);
+        this.skillTargetCard = new TabCard(this.idManager, 'EtaTarget', true, this.tag, this.content, '', '150px', true);
         this.settings.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
             // @ts-ignore
             const skillID = skill.id;
