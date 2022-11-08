@@ -19,12 +19,6 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.js$/,
-        exclude: [
-          path.resolve(__dirname, '../Game-Files/')
-        ]
-      },
-      {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
@@ -53,14 +47,4 @@ module.exports = {
     },
     clean: true,
   },
-  externals: [
-    function ({ context, request }, callback) {
-      if (/^.*Game-Files.*$/.test(request)) {
-        // Externalize to a commonjs module using the request path
-        return callback(null,'Game-Files');
-      }
-      // Continue without externalizing the import
-      callback();
-    },
-  ],
 };
