@@ -1,8 +1,8 @@
-#tinyModModal.show {
+.tinyModModal.show {
     display: flex !important;
 }
 
-#tinyModModal .modal-dialog {
+.tinyModModal .modal-dialog {
     max-width: 95%;
     display: inline-block;
 }
@@ -183,7 +183,7 @@
     border-radius: 0.5rem;
 }
 
-#tinyModModal input.form-control {
+.tinyModModal input.form-control {
     width: 100px;
 }
 
@@ -263,7 +263,7 @@
     justify-content: center;
 }
 
-#tinyModModal .combat-equip-img {
+.tinyModModal .combat-equip-img {
     margin: 2px;
 }
 

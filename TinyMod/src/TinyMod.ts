@@ -2,6 +2,7 @@ import {addModal, destroyMenu, destroyModal} from "./Menu";
 import {ElementIDManager} from "./ElementIDManager";
 
 export class TinyMod {
+    public readonly idManager: ElementIDManager;
     protected readonly ctx: any;
     protected readonly modalID: string;
     protected readonly menuItemID: string;
@@ -11,7 +12,6 @@ export class TinyMod {
     // @ts-ignore 2564
     protected content: HTMLDivElement;
     private readonly icon: string;
-    public readonly idManager: ElementIDManager;
 
     constructor(ctx: any, tag: string, icon = 'assets/media/main/settings_header.svg') {
         this.ctx = ctx;
@@ -23,19 +23,20 @@ export class TinyMod {
     }
 
     getElementByRawID(rawID: string): HTMLElement | null {
-        const taggedID = this.idManager.getID(rawID, false);
+        const taggedID = this.idManager.getID(rawID);
         return this.getElementByID(taggedID);
     }
 
     getElementByID(taggedID: string): HTMLElement | null {
-        if (!this.idManager.hasTaggedID(taggedID)) {
-            return null;
+        const elt = this.idManager.get(taggedID);
+        if (elt === undefined) {
+            return null
         }
-        return document.getElementById(this.idManager.getID(taggedID, false));
+        return elt;
     }
 
     getElement(idData: string): HTMLElement | null {
-        return document.getElementById(this.idManager.getID(idData, false));
+        return document.getElementById(this.idManager.getID(idData));
     }
 
     log(...x: any): void {
@@ -50,23 +51,28 @@ export class TinyMod {
         console.error(this.tag, ...x);
     }
 
-    createModal(funcs: (() => void)[] = []): void {
+    createModal(funcs: (() => void)[] = [], content: HTMLDivElement[] = []): void {
         // clean up in case modal already exists
         destroyModal(this.modalID);
         // create wrapper
-        this.content = document.createElement('div');
-        this.content.className = 'tinyModTabContent';
+        if (content.length === 0) {
+            this.content = document.createElement('div');
+            this.content.className = 'tinyModTabContent';
+            content.push(this.content);
+        } else {
+            this.content = content[0];
+        }
         // run inner functions
         funcs.forEach(func => func());
         // create modal and access point
-        this.modal = addModal(`${this.tag} Settings`, this.modalID, [this.content]);
+        this.modal = addModal(`${this.tag} Settings`, this.modalID, content);
     }
 
-    createSettingsMenu(funcs: (() => void)[] = []): void {
+    createSettingsMenu(funcs: (() => void)[] = [], content: HTMLDivElement[] = []): void {
         // clean up in case elements already exist
         destroyMenu(this.menuItemID, this.modalID);
         // create the modal
-        this.createModal(funcs);
+        this.createModal(funcs, content);
         // @ts-ignore
         sidebar.category('Modding').item('Mod Settings').subitem(this.tag).remove();
         // @ts-ignore

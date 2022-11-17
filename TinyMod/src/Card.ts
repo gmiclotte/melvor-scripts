@@ -31,8 +31,8 @@ export class Card {
         this.numOutputs = [];
     }
 
-    getID(idData: string, create: boolean): string {
-        return this.idManager.getID(idData, create);
+    setID(idData: string, elt: HTMLElement): string {
+        return this.idManager.setID(idData, elt);
     }
 
     clearContainer() {
@@ -54,7 +54,7 @@ export class Card {
     addButton(buttonText: string, id: string, onclickCallback: () => void) {
         const newButton = document.createElement('button');
         newButton.type = 'button';
-        newButton.id = this.getID(id, true);
+        this.setID(id, newButton);
         newButton.className = 'btn btn-primary m-1';
         newButton.style.width = `100%`;
         newButton.textContent = buttonText;
@@ -77,7 +77,7 @@ export class Card {
         const newImage = document.createElement('img');
         newImage.style.width = `${imageSize}px`;
         newImage.style.height = `${imageSize}px`;
-        newImage.id = this.getID(imageID, true);
+        this.setID(imageID, newImage);
         newImage.src = imageSource;
         const div = document.createElement('div');
         div.className = 'mb-1';
@@ -99,13 +99,13 @@ export class Card {
     createImageButton(imageSource: any, idText: any, onclickCallback: any, size: any, tooltip: any) {
         const newButton = document.createElement('button');
         newButton.type = 'button';
-        newButton.id = this.getID(`${idText} Button`, true);
+        this.setID(`${idText} Button`, newButton);
         newButton.className = 'btn btn-outline-dark';
         newButton.onclick = onclickCallback;
         if (tooltip) newButton.dataset.tippyContent = tooltip;
         const newImage = document.createElement('img');
         newImage.className = `tinyModButtonImage tinyModImage${size}`;
-        newImage.id = this.getID(`${idText} Button Image`, true);
+        this.setID(`${idText} Button Image`, newImage);
         newImage.src = imageSource;
         newButton.appendChild(newImage);
         return newButton;
@@ -121,7 +121,7 @@ export class Card {
      * @param {string} containerWidth container width
      * @return {HTMLDivElement[]} The image buttons
      */
-    addImageButtons(sources: any, idtexts: any, size: any, onclickCallbacks: any, tooltips: any, containerWidth:string|undefined = undefined) {
+    addImageButtons(sources: any, idtexts: any, size: any, onclickCallbacks: any, tooltips: any, containerWidth: string | undefined = undefined) {
         const newCCContainer = document.createElement('div');
         newCCContainer.className = 'tinyModMultiImageButtonContainer';
         for (let i = 0; i < sources.length; i++) {
@@ -161,12 +161,8 @@ export class Card {
 
     /**
      * Creates a multiple button popup menu (Equip grid)
-     * @param {string[]} sources
-     * @param {string[]} elIds
-     * @param {HTMLElement[]} popups
-     * @param {string[]} tooltips The tooltip contents
      */
-    addMultiPopupMenu(sources: any, elIds: any, popups: any, tooltips: any, newCCContainer: HTMLDivElement) {
+    addMultiPopupMenu(sources: any, elIds: any, popups: any, tooltips: any, newCCContainer: HTMLDivElement | undefined = undefined) {
         if (!newCCContainer) {
             newCCContainer = document.createElement('div');
         }
@@ -179,7 +175,7 @@ export class Card {
             containerDiv.style.position = 'relative';
             containerDiv.style.cursor = 'pointer';
             const newImage = document.createElement('img');
-            newImage.id = this.getID(elIds[i], true);
+            this.setID(elIds[i], newImage);
             newImage.src = sources[i];
             newImage.className = 'combat-equip-img border border-2x border-rounded-equip border-combat-outline p-1';
             newImage.dataset.tippyContent = tooltips[i];
@@ -203,7 +199,7 @@ export class Card {
      */
     addDropdown(labelText: any, optionText: any, optionValues: any, onChangeCallback: any) {
         const newCCContainer = this.createCCContainer();
-        newCCContainer.id = this.getID(`${labelText} Dropdown Container`, true);
+        this.setID(`${labelText} Dropdown Container`, newCCContainer);
         const label = this.createLabel(labelText, newCCContainer.id);
         label.classList.add('mb-1');
         newCCContainer.appendChild(label);
@@ -224,7 +220,7 @@ export class Card {
     createDropdown(optionText: any, optionValues: any, labelText: string, onChangeCallback: any) {
         const newDropdown = document.createElement('select');
         newDropdown.className = 'form-control mb-1';
-        newDropdown.id = this.getID(`${labelText} Dropdown`, true);
+        this.setID(`${labelText} Dropdown`, newDropdown);
         for (let i = 0; i < optionText.length; i++) {
             const newOption = document.createElement('option');
             newOption.text = optionText[i];
@@ -247,7 +243,7 @@ export class Card {
     addNumberInput(labelText: any, startValue: any, min: any, max: any, onChangeCallback: any) {
         const newCCContainer = this.createCCContainer();
         const newInput = document.createElement('input');
-        newInput.id = this.getID(`${labelText} Input`, true);
+        this.setID(`${labelText} Input`, newInput);
         newInput.type = 'number';
         newInput.min = min;
         newInput.max = max;
@@ -273,7 +269,7 @@ export class Card {
         inputId = inputId.length === 0 ? labelText : inputId;
         const newCCContainer = this.createCCContainer();
         const newInput = document.createElement('input');
-        newInput.id = this.getID(`${inputId} TextInput`, true);
+        this.setID(`${inputId} TextInput`, newInput);
         newInput.type = 'text';
         newInput.value = startValue;
         newInput.className = 'form-control mb-1';
@@ -301,7 +297,6 @@ export class Card {
      */
     addNumberArrayInput(labelText: any, object: any, key: string, defaultValue: any = undefined,
                         get = this.getKeyFromObject, set = this.setValToObject) {
-        let timeout: any = undefined;
         const onInputCallback = (event: any) => {
             const rawInput = event.currentTarget.value;
             const input = rawInput === 'undefined' || rawInput === 'null' ? '' : rawInput;
@@ -323,15 +318,7 @@ export class Card {
             if (result.length === 0) {
                 result = defaultValue;
             }
-            if (timeout) {
-                clearTimeout(timeout);
-            }
-            if (input !== this.numberArrayToInputString(get(object, key))) {
-                timeout = setTimeout(() => {
-                    set(object, key, result);
-                    event.target.value = this.numberArrayToInputString(result);
-                }, 500);
-            }
+            set(object, key, result);
         }
         this.addTextInput(labelText, this.numberArrayToInputString(get(object, key)), onInputCallback, labelText + key);
     }
@@ -384,11 +371,11 @@ export class Card {
         newOutput.className = 'tinyModNumberOutput';
         newOutput.style.width = this.inputWidth;
         newOutput.textContent = initialValue;
-        newOutput.id = this.getID(outputID ?? `${labelText} Output`, true);
+        this.setID(outputID ?? `${labelText} Output`, newOutput);
         // label
         const newLabel = this.createLabel(labelText, newOutput.id);
         if (setLabelID) {
-            newLabel.id = this.getID(`${labelText} Label`, true);
+            this.setID(`${labelText} Label`, newLabel);
         }
         newCCContainer.appendChild(newLabel);
         newCCContainer.appendChild(newOutput);
@@ -403,7 +390,7 @@ export class Card {
      */
     addSectionTitle(titleText: string) {
         const newSectionTitle = document.createElement('div');
-        newSectionTitle.id = this.getID(titleText, true);
+        this.setID(titleText, newSectionTitle);
         newSectionTitle.textContent = titleText;
         newSectionTitle.className = 'tinyModSectionTitle';
         const titleContainer = document.createElement('div');
@@ -426,7 +413,7 @@ export class Card {
         for (let i = 0; i < buttonText.length; i++) {
             newButton = document.createElement('button');
             newButton.type = 'button';
-            newButton.id = this.getID(`${buttonText[i]} Button`, true);
+            this.setID(`${buttonText[i]} Button`, newButton);
             newButton.className = 'btn btn-primary m-1';
             newButton.style.width = '100%';
             newButton.textContent = buttonText[i];
@@ -450,7 +437,7 @@ export class Card {
         span.textContent = text;
         span.className = 'tinyModInfoText';
         if (id) {
-            span.id = this.getID(`${id} Info`, true);
+            this.setID(`${id} Info`, span);
         }
         span.style.display = 'block';
         container.appendChild(span);
@@ -482,12 +469,12 @@ export class Card {
      * @param {number} initialRadio The initial radio that is on
      * @param {string} imageSrc An optional string to specify the source of a label image, if '' an image is not added
      */
-    addRadio(labelText: string, height: number, radioName: string, radioLabels: string[], radioCallbacks: (() => void)[], initialRadio: number, imageSrc = '') {
+    addRadio(labelText: string, height: number, radioName: string, radioLabels: string[], radioCallbacks: ((e: any) => void)[], initialRadio: number, imageSrc = '') {
         const newCCContainer = this.createCCContainer();
         if (imageSrc && imageSrc !== '') {
             newCCContainer.appendChild(this.createImage(imageSrc, height));
         }
-        newCCContainer.id = this.getID(`${labelText} Radio Container`, true);
+        this.setID(`${labelText} Radio Container`, newCCContainer);
         newCCContainer.appendChild(this.createLabel(labelText, newCCContainer.id));
         const radioContainer = document.createElement('div');
         radioContainer.className = 'tinyModRadioContainer';
@@ -513,7 +500,7 @@ export class Card {
         newDiv.className = 'custom-control custom-radio custom-control-inline';
         const newRadio = document.createElement('input');
         newRadio.type = 'radio';
-        newRadio.id = this.getID(radioID, true);
+        this.setID(radioID, newRadio);
         newRadio.name = radioName;
         newRadio.className = 'custom-control-input';
         if (checked) {

@@ -27,12 +27,12 @@ export class TabCard extends Card {
         return this.addTab(name, img, null, null, card);
     }
 
-    addTab(title: any, img: any, height: any, inputWidth: any, card: Card | undefined) {
+    addTab(title: any, img: any, height: any, inputWidth: any, card: Card | undefined = undefined) {
         // update tab count
         const index = this.tabCount;
         this.tabCount++;
         // create tab id
-        const tabID = this.getID(`${this.idPrefix} ${title} tab`, true);
+        const tabID = `${this.idPrefix} ${title} tab`;
         // set header
         this.addTabHeader(tabID, title, img, () => this.onTabClick(index));
         // create, insert and return card
@@ -94,12 +94,12 @@ export class TabCard extends Card {
         // create img element
         const newImage = document.createElement('img');
         newImage.className = 'tinyModButtonImage';
-        newImage.id = this.idManager.getID(`${tabID}-image`, true);
+        this.setID(`${tabID}-image`, newImage);
         newImage.src = img;
         // create tab element
         const newTab = document.createElement('button');
         newTab.type = 'button';
-        newTab.id = this.idManager.getID(tabID, true);
+        this.setID(tabID, newTab);
         newTab.className = 'tinyModTabButton';
         newTab.dataset.tippyContent = title;
         newTab.onclick = callBack;
