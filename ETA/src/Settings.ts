@@ -163,8 +163,8 @@ export class Settings {
         return this.getTarget(current, this.get('GLOBAL_TARGET_MASTERY'), this.get('TARGET_MASTERY', skillID), 99, 170);
     }
 
-    getTargetPool(skillID: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillID), 100, 100);
+    getTargetPool(skillID: string, current: number, cap: number) {
+        return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillID), 100, cap);
     }
 
     private addSkillSetting(key: string, label: string, skillID: string): string {

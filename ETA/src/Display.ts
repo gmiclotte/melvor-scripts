@@ -34,17 +34,26 @@ export class Display {
         return new Date(date.getTime() + ms);
     }
 
-    // Format date 24 hour clock
+    sameYear(now: Date, then: Date) {
+        const format : {year: "2-digit" } = {year: "2-digit"};
+        return now.toLocaleString(undefined, format) === then.toLocaleString(undefined, format);
+    }
+
+    // Format date 24-hour clock
     dateFormat(now: Date, then: Date, is12h = this.settings.get('IS_12H_CLOCK')) {
-        let format = {weekday: "short", month: "short", day: "numeric"};
-        // @ts-ignore
+        // create the date
+        const format : {weekday: "short", month: "short", day: "numeric", year: "2-digit"|undefined}
+            = {weekday: "short", month: "short", day: "numeric", year: undefined};
+        if (!this.sameYear(now, then)) {
+            format.year = "2-digit";
+        }
         let date = then.toLocaleString(undefined, format);
-        // @ts-ignore
         if (date === now.toLocaleString(undefined, format)) {
             date = "";
         } else {
             date += " at ";
         }
+        // create the time of day
         let hours: number | string = then.getHours();
         let minutes: number | string = then.getMinutes();
         // convert to 12h clock if required

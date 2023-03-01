@@ -7,7 +7,6 @@ export function addModal(title: any, id: any, content: any) {
     // create dialog
     const modalDialog = document.createElement('div');
     modalDialog.className = 'modal-dialog';
-    modalDialog.style.display = 'flex';
     modal.appendChild(modalDialog);
 
     // create content wrapper

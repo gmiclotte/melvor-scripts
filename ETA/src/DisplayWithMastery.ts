@@ -24,14 +24,10 @@ export class DisplayWithMastery extends DisplayWithPool {
     }
 
     finalMastery(result: EtaSkillWithMastery) {
-        return result.masteryLevel + this.getProgressInLevel(result, result.masteryXp, result.masteryLevel, "mastery");
+        return result.virtualMasteryLevel + this.getProgressInLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
     }
 
     getProgressInLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
-        if (level >= 99 && type === "mastery") {
-            // mastery is capped at 99
-            return 0;
-        }
         return super.getProgressInLevel(result, currentXp, level, type);
     }
 }
