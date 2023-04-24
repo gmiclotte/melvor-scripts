@@ -4,5 +4,5 @@ export function setup({patch}) {
         return {timeDiff: originalTimeDiff, originalTimeDiff: originalTimeDiff};
     });
     // patch the max offline time message out
-    loadedLangJson.MENU_TEXT.MAX_OFFLINE_TIME = ' ';
+    loadedLangJson.MENU_TEXT_MAX_OFFLINE_TIME = ' ';
 }
