@@ -90,7 +90,9 @@ export class ETA extends TinyMod {
         // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);
         // Cartography not included
-        this.addSkillCalculators(EtaArchaeology, game.archaeology);
+        if (this.game.archaeology) {
+            this.addSkillCalculators(EtaArchaeology, game.archaeology);
+        }
 
         // we made it
         this.log('Loaded!');
@@ -109,7 +111,7 @@ export class ETA extends TinyMod {
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         // @ts-ignore
-        if(skill.id === game.cartography.id) {
+        if(game.cartography && skill.id === game.cartography.id) {
             // cartography is not implemented
             return;
         }
