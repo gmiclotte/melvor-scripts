@@ -26,6 +26,7 @@ import {MultiWoodcutting} from "./MultiWoodcutting";
 import {EtaAgility} from "./EtaAgility";
 import {MultiAgility} from "./MultiAgility";
 import {EtaAstrology} from "./EtaAstrology";
+import {EtaArchaeology} from "./EtaArchaeology";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -88,6 +89,8 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);
+        // Cartography not included
+        this.addSkillCalculators(EtaArchaeology, game.archaeology);
 
         // we made it
         this.log('Loaded!');
@@ -105,6 +108,11 @@ export class ETA extends TinyMod {
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+        // @ts-ignore
+        if(skill.id === game.cartography.id) {
+            // cartography is not implemented
+            return;
+        }
         // @ts-ignore
         if (!this.game.loopStarted) {
             //this.log('Game loop is not running, probably fastforwarding. Skip all ETA recomputes.');
@@ -253,6 +261,8 @@ export class ETA extends TinyMod {
                     return true;
                 }
                 return fish.id !== action.id;
+            case this.game.archaeology.id:
+                return this.game.archaeology.currentDigSite.id !== action.id;
         }
         // remainder of artisan skills
         if (this.artisanSkills.includes(skill)) {

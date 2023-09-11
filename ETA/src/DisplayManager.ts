@@ -92,9 +92,10 @@ export class DisplayManager {
         if (node === null) {
             return display;
         }
-        const index = this.game.woodcutting.actions.allObjects.findIndex((action: any) => action.id === actionID);
-        node = node[index + 1].parentNode;
-        node!.parentNode!.insertBefore(display.container, node!.nextSibling);
+        const tree = this.game.woodcutting.actions.allObjects.find((tree: any) => tree.id === actionID);
+        // @ts-ignore
+        node = woodcuttingMenu.treeMenus.get(tree).children[0];
+        node!.insertBefore(display.container, node!.children[1]);
         return display;
     }
 
@@ -106,9 +107,11 @@ export class DisplayManager {
         if (node === null) {
             return display;
         }
-        const index = this.game.fishing.areas.allObjects.findIndex((area: FishingArea) =>
+        const area = this.game.fishing.areas.allObjects.find((area: FishingArea) =>
             area.fish.find((fish: any) => fish.id === actionID) !== undefined);
-        node = node.children[index].children[0].children[0].children[3].children[0].children[1].children[1];
+        // @ts-ignore
+        node = fishingAreaMenus.get(area);
+        node = node.children[0].children[0].children[3].children[0].children[1].children[1];
         node.appendChild(display.container);
         return display;
     }
@@ -121,8 +124,10 @@ export class DisplayManager {
         if (node === null) {
             return display;
         }
-        const index = skill.actions.allObjects.findIndex((action: any) => action.id === actionID);
-        node = node.children[index].childNodes[1].childNodes[1].childNodes[1].childNodes[8];
+        const rock = skill.actions.getObjectByID(actionID);
+        // @ts-ignore
+        node = rockMenus.get(rock);
+        node = node.childNodes[1].childNodes[1].childNodes[1].childNodes[8];
         const parent = node.parentNode;
         parent!.insertBefore(display.container, node);
         return display;
@@ -155,7 +160,8 @@ export class DisplayManager {
         const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const area = this.npcAreaMap.get(actionID);
         // @ts-ignore
-        const node = document.getElementById(`thieving-area-panel-${area!.id}`)!.firstChild!.firstChild!.childNodes[2].firstChild!;
+        let node = thievingMenu.areaPanels.get(area).panelContainer;
+        node = node.childNodes[2].firstChild!;
         node.insertBefore(display.container, node.childNodes[1]);
         return display;
     }
@@ -173,8 +179,10 @@ export class DisplayManager {
     private createAstrologyDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
-        const index = this.game.astrology.actions.allObjects.findIndex((action: any) => action.id === actionID)
-        const parent = document.getElementById(`astrology-container-content`)!.children[index].children[0].children[0].children[4];
+        const constellation = this.game.astrology.actions.getObjectByID(actionID);
+        // @ts-ignore
+        const node = astrologyMenus.constellations.get(constellation);
+        const parent = node.children[0].children[0].children[4];
         parent.appendChild(display.container);
         return display;
     }
@@ -183,6 +191,16 @@ export class DisplayManager {
         const displayID = this.getDisplayID(skill, actionID);
         const display = new ResourceDisplayWithoutMastery(this, this.settings, this.game.bank, this.game.items, displayID);
         const node = document.getElementById('magic-screen-cast')!.children[0].children[1];
+        node.appendChild(display.container);
+        return display;
+    }
+
+    private createArchaeologyDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+        const digsite = skill.actions.getObjectByID(actionID);
+        // @ts-ignore
+        let node = archaeologyMenus.digSites.get(digsite).children[1].children[0].children[1].children[0].children[10];
         node.appendChild(display.container);
         return display;
     }
@@ -222,6 +240,8 @@ export class DisplayManager {
                 return this.createAstrologyDisplay(skill, actionID);
             case this.game.altMagic.id:
                 return this.createMagicDisplay(skill, actionID);
+            case this.game.archaeology.id:
+                return this.createArchaeologyDisplay(skill, actionID);
         }
         const displayID = this.getDisplayID(skill, actionID);
         return new Display(this, this.settings, this.game.bank, this.game.items, displayID);

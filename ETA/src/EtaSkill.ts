@@ -215,6 +215,9 @@ export class EtaSkill {
 
     modifyXP(amount: number) {
         amount *= 1 + this.getXPModifier() / 100;
+        if (this.modifiers.halfSkillXP > 0) {
+            amount /= 2;
+        }
         return amount;
     }
 
@@ -236,6 +239,9 @@ export class EtaSkill {
         const percentModifier = this.getPercentageIntervalModifier();
         interval *= 1 + percentModifier / 100;
         interval += flatModifier;
+        if (this.modifiers.halfSkillInterval > 0) {
+            interval /= 2;
+        }
         // @ts-ignore
         interval = roundToTickInterval(interval);
         return Math.max(interval, this.settings.get('minimalActionTime'));

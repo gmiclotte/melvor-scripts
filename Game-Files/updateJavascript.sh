@@ -20,7 +20,7 @@ mv ${dir}/* .
 mv ${dataDir}/ .
 mv ${parent}/version .
 rm -r ${parent}
-mkdir lib
+mkdir -p lib
 mv ./*.js lib
 
 # enable globstar for recursive globbing
