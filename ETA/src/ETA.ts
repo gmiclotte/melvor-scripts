@@ -213,6 +213,7 @@ export class ETA extends TinyMod {
         if (skillID !== this.game.agility.id && action.level > skill.level) {
             return true;
         }
+        const archID = this.game.archaeology ? this.game.archaeology.id : 'invalidArchID';
         switch (skillID) {
             case this.game.woodcutting.id:
             case this.game.mining.id:
@@ -263,7 +264,7 @@ export class ETA extends TinyMod {
                     return true;
                 }
                 return fish.id !== action.id;
-            case this.game.archaeology.id:
+            case archID:
                 return this.game.archaeology.currentDigSite.id !== action.id;
         }
         // remainder of artisan skills
