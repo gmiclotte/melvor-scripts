@@ -94,7 +94,7 @@ export class DisplayManager {
         }
         const tree = this.game.woodcutting.actions.allObjects.find((tree: any) => tree.id === actionID);
         // @ts-ignore
-        node = woodcuttingMenu.treeMenus.get(tree).children[0];
+        node = woodcuttingMenu.treeMenus.get(tree).children[1];
         node!.insertBefore(display.container, node!.children[1]);
         return display;
     }
