@@ -73,6 +73,7 @@ export class ETA extends TinyMod {
 
         // add skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
+        /*
         this.addSkillCalculators(EtaFishing, game.fishing);
         this.addSkillCalculators(EtaFiremaking, game.firemaking);
         this.addSkillCalculators(EtaCooking, game.cooking);
@@ -93,20 +94,25 @@ export class ETA extends TinyMod {
         if (this.game.archaeology) {
             this.addSkillCalculators(EtaArchaeology, game.archaeology);
         }
+         */
 
         // we made it
         this.log('Loaded!');
     }
 
     addSkillCalculators(constructor: etaSkillConstructor, skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
-        const skillMap = new Map<string, EtaSkill>();
-        skill.actions.forEach((action: any) => {
-            skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
-            this.displayManager.getDisplay(skill, action.id);
-        });
-        // @ts-ignore
-        const skillID = skill.id;
-        this.skillCalculators.set(skillID, skillMap);
+        try {
+            const skillMap = new Map<string, EtaSkill>();
+            skill.actions.forEach((action: any) => {
+                skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
+                this.displayManager.getDisplay(skill, action.id);
+            });
+            // @ts-ignore
+            const skillID = skill.id;
+            this.skillCalculators.set(skillID, skillMap);
+        } catch (e) {
+            this.log(e)
+        }
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
@@ -265,7 +271,7 @@ export class ETA extends TinyMod {
                 }
                 return fish.id !== action.id;
             case archID:
-                return this.game.archaeology.currentDigSite.id !== action.id;
+                return !this.game.archaeology.actions.getObjectByID(action.id).isDiscovered;
         }
         // remainder of artisan skills
         if (this.artisanSkills.includes(skill)) {

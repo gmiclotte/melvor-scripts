@@ -17,7 +17,7 @@ export class EtaFishing extends EtaSkillWithMastery {
             });
         });
     }
-
+/*
     get actionInterval() {
         const minTicks = this.getMinFishInterval() / this.TICK_INTERVAL;
         const maxTicks = this.getMaxFishInterval() / this.TICK_INTERVAL;
@@ -43,6 +43,7 @@ export class EtaFishing extends EtaSkillWithMastery {
     /***
      * Compute junk (1 xp) and no-junk (base xp) chances
      */
+    /*
     getJunkChance(): number {
         // Mastery Pool Tier 2: No longer catch junk
         // Mastery Level 65: No longer catch junk
@@ -68,4 +69,5 @@ export class EtaFishing extends EtaSkillWithMastery {
         amount = (amount * (100 - junkChance) + junkChance) / 100;
         return super.modifyXP(amount);
     }
+    */
 }

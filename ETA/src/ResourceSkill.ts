@@ -2,9 +2,10 @@ import {ResourceRates} from "./ResourceRates";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item} from "../../Game-Files/gameTypes/item";
-import type {Costs} from "../../Game-Files/gameTypes/skill";
 import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 import {EtaSkill, etaSkillConstructor} from "./EtaSkill";
+import {Currency} from "../../Game-Files/gameTypes/currency";
+import {EtaCosts} from "./EtaCosts";
 
 export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: BaseSkill) {
     return class extends baseSkill {
@@ -12,8 +13,8 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         public resourcesReached: boolean;
         public remainingResources: ResourceActionCounter;
         public finalXpMap: Map<string, number>;
-        protected costs: Costs;
-        protected costQuantityMap: Map<Item, number>;
+        protected originalCosts: EtaCosts;
+        protected currentCosts: EtaCosts;
 
         constructor(...args: any[]) {
             super(...args);
@@ -21,8 +22,9 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.remainingResources = ResourceActionCounter.emptyCounter;
             this.resourcesReached = false;
             // @ts-ignore
-            this.costs = new Costs(undefined);
-            this.costQuantityMap = new Map<Item, number>();
+            this.originalCosts = new EtaCosts();
+            // @ts-ignore
+            this.currentCosts = new EtaCosts();
             this.finalXpMap = new Map<string, number>();
         }
 
@@ -40,23 +42,29 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         init(game: Game) {
             super.init(game);
-            this.costs = this.getRecipeCosts();
-            this.costQuantityMap = new Map<Item, number>();
-            this.costs.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
-                this.costQuantityMap.set(cost.item, cost.quantity);
-            });
-            // actions performed
+            this.originalCosts = this.getRecipeCosts();
+
+            // set up total costs
+            this.currentCosts = this.getRecipeCosts();
+            this.currentCosts.addCosts(this.originalCosts);
+
+            // set up actions performed
             this.actionsTaken.reset();
-            this.costQuantityMap.forEach((_: number, item: Item) => {
-                this.actionsTaken.active.items.set(item, 0);
-            });
+
             // set up remaining resources
             this.remainingResources = ResourceActionCounter.emptyCounter;
-            this.remainingResources.gp = game.gp.amount;
-            this.remainingResources.sc = game.slayerCoins.amount;
-            this.costQuantityMap.forEach((_: number, item: Item) => {
-                this.remainingResources.items.set(item, game.bank.getQty(item));
+
+            // populate
+            this.originalCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
+                this.actionsTaken.active.items.set(cost.item, 0);
+                this.remainingResources.items.set(cost.item, game.bank.getQty(cost.item));
             });
+            this.originalCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
+                this.actionsTaken.active.currencies.set(cost.currency, cost.quantity);
+                // @ts-ignore
+                this.remainingResources.currencies.set(cost.currency, game.currencies.getObjectByID(cost.currency.id).amount);
+            })
+
             // flag to check if target was already reached
             this.resourcesReached = false;
         }
@@ -75,15 +83,12 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         attemptsToResourceCheckpoint() {
             const attemptsToCheckpoint: number[] = [];
-            this.costQuantityMap.forEach((quantity: number, item: Item) => {
-                attemptsToCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
-            });
-            if (this.costs.gp) {
-                attemptsToCheckpoint.push(this.remainingResources.gp / this.costs.gp);
-            }
-            if (this.costs.sc) {
-                attemptsToCheckpoint.push(this.remainingResources.sc / this.costs.sc);
-            }
+            this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
+                attemptsToCheckpoint.push((this.remainingResources.items.get(cost.item) ?? 0) / cost.quantity);
+            })
+            this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
+                attemptsToCheckpoint.push((this.remainingResources.currencies.get(cost.currency) ?? 0) / cost.quantity);
+            })
             const resourceSets = Math.min(...attemptsToCheckpoint);
             if (resourceSets <= 0) {
                 return 0;
@@ -102,12 +107,14 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         addCost(counter: ResourceActionCounter, attempts: number, preservation: number) {
             const resourceSetsUsed = attempts * (1 - preservation / 100);
-            this.costQuantityMap.forEach((quantity: number, item: Item) => {
-                const amt = counter.items.get(item) ?? 0;
-                counter.items.set(item, amt + quantity * resourceSetsUsed);
-            });
-            counter.gp += this.costs.gp * resourceSetsUsed;
-            counter.sc += this.costs.sc * resourceSetsUsed;
+            this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
+                const amt = counter.items.get(cost.item) ?? 0;
+                counter.items.set(cost.item,  amt + cost.quantity * resourceSetsUsed);
+            })
+            this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
+                const amt = counter.currencies.get(cost.currency) ?? 0;
+                counter.currencies.set(cost.currency,  amt + cost.quantity * resourceSetsUsed);
+            })
         }
 
         setFinalValues() {
@@ -117,14 +124,15 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 this.finalXpMap = this.getXpMap();
                 this.resourcesReached = true;
             }
-            this.costs = this.getRecipeCosts();
+            this.originalCosts = this.getRecipeCosts();
         }
 
         getPreservationChance(chance: number): number {
-            chance += this.modifiers.increasedGlobalPreservationChance
-                - this.modifiers.decreasedGlobalPreservationChance
-                + this.getSkillModifierValue('increasedSkillPreservationChance')
-                - this.getSkillModifierValue('decreasedSkillPreservationChance');
+            chance += this.modifiers.getValue(
+                "melvorD:skillPreservationChance" /* ModifierIDs.skillPreservationChance */,
+                this.getActionModifierQuery()
+            );
+            chance += this.modifiers.bypassGlobalPreservationChance;
             chance = Math.min(chance, this.getPreservationCap());
             if (chance < 0) {
                 return 0;
@@ -134,9 +142,10 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         getPreservationCap() {
             const baseCap = 80;
-            let modifier = 0;
-            modifier += this.getSkillModifierValue('increasedSkillPreservationCap');
-            modifier -= this.getSkillModifierValue('decreasedSkillPreservationCap');
+            const modifier = this.modifiers.getValue(
+                "melvorD:skillPreservationCap" /* ModifierIDs.skillPreservationCap */,
+                this.getActionModifierQuery()
+            );
             return baseCap + modifier;
         }
 

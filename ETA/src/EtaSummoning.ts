@@ -20,25 +20,23 @@ export class EtaSummoning extends ResourceSkillWithMastery {
 
     getNonShardCostReductionModifier() {
         if (this.action.id === "melvorF:Salamander" && this.modifiers.disableSalamanderItemReduction) {
-            return 0;
-        }
-        const masteryLevel = this.masteryLevel;
-        let modifier = 0;
-        // Non-Shard Cost reduction that scales with mastery level
-        modifier += Math.floor(masteryLevel / 10) * 5;
-        // Level 99 Mastery: +5% Non Shard Cost Reduction
-        if (masteryLevel >= 99) {
-            modifier += 5;
+            return 100;
         }
         // Equipped summon cost reduction
-        const equippedModifier = this.modifiers.decreasedNonShardCostForEquippedTablets
-            - this.modifiers.increasedNonShardCostForEquippedTablets;
-        const summon1 = this.player.equipment.slots.Summon1;
-        const summon2 = this.player.equipment.slots.Summon2;
-        if (this.action.product === summon1.item || this.action.product === summon2.item) {
-            modifier += equippedModifier;
+        let modifier = 100;
+        modifier -= this.modifiers.getValue(
+            "melvorD:nonShardSummoningCostReduction" /* ModifierIDs.nonShardSummoningCostReduction */,
+            this.getActionModifierQuery()
+        );
+        // mastery
+        const masteryLevel = this.masteryLevel;
+        // Non-Shard Cost reduction that scales with mastery level
+        modifier -= Math.floor(masteryLevel / 10) * 5;
+        // Level 99 Mastery: 5% Non Shard Cost Reduction
+        if (masteryLevel >= 99) {
+            modifier -= 5;
         }
-        return modifier;
+        return Math.max(0, modifier);
     }
 
     modifyItemCost(item: Item, quantity: number) {
@@ -53,7 +51,10 @@ export class EtaSummoning extends ResourceSkillWithMastery {
                 quantity--;
             }
             // Generic Shard Cost Decrease modifier
-            quantity += this.modifiers.increasedSummoningShardCost - this.modifiers.decreasedSummoningShardCost;
+            quantity -= this.modifiers.getValue(
+                "melvorD:flatSummoningShardCost" /* ModifierIDs.flatSummoningShardCost */,
+                this.getActionModifierQuery()
+            );
             // Tier 2 Mastery Pool: +1 Shard Cost Reduction for Tier 1 and Tier 2 Tablets
             if ((this.action.tier === 1 || this.action.tier === 2) && this.isPoolTierActive(1)) {
                 quantity--;

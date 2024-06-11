@@ -24,7 +24,7 @@ export class EtaSkillWithPool extends EtaSkill {
         this.currentRates = RatesWithPool.emptyRates;
         this.initial = RatesWithPool.emptyRates;
         // @ts-ignore
-        this.masteryCheckpoints = [...masteryCheckpoints, Infinity];
+        this.masteryCheckpoints = [10, 25, 50, 95, Infinity];
         // flag to check if target was already reached
         this.poolReached = false;
     }
@@ -138,7 +138,7 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     poolXpToPercentWithModifiers(poolXp: number) {
-        return this.poolXpToPercent(poolXp) + this.modifiers.increasedMasteryPoolProgress;
+        return this.poolXpToPercent(poolXp) + this.modifiers.masteryPoolProgress;
     }
 
     getXpMap() {

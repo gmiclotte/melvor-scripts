@@ -8,7 +8,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
     constructor(game: Game, crafting: Crafting, action: any, settings: Settings) {
         super(game, crafting, action, settings);
     }
-
+/*
     get masteryModifiedInterval() {
         return 1650;
     }
@@ -52,4 +52,6 @@ export class EtaCrafting extends ResourceSkillWithMastery {
         }
         return quantity;
     }
+    
+ */
 }

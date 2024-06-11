@@ -7,7 +7,7 @@ export class EtaHerblore extends ResourceSkillWithMastery {
     constructor(game: Game, herblore: Herblore, action: any, settings: Settings) {
         super(game, herblore, action, settings);
     }
-
+/*
     get masteryModifiedInterval() {
         return 1700;
     }
@@ -39,4 +39,5 @@ export class EtaHerblore extends ResourceSkillWithMastery {
         }
         return modifier;
     }
+ */
 }

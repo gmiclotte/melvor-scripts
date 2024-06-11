@@ -142,14 +142,18 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     }
 
     getMasteryXPModifier() {
-        let modifier = this.modifiers.increasedGlobalMasteryXP - this.modifiers.decreasedGlobalMasteryXP;
-        modifier += this.getSkillModifierValue('increasedMasteryXP');
-        modifier -= this.getSkillModifierValue('decreasedMasteryXP');
+        let modifier = this.modifiers.getValue(
+            "melvorD:masteryXP" /* ModifierIDs.masteryXP */,
+            this.getActionModifierQuery()
+        );
         this.astrology.masteryXPConstellations.forEach((constellation: AstrologyRecipe) => {
-            const modValue = this.getSkillModifierValue(constellation.masteryXPModifier);
+            // TODO
+            /*
+            const modValue = this.modifiers.getValue(constellation.masteryXPModifier.id, this.modQuery);
             if (modValue > 0) {
                 modifier += modValue * constellation.maxValueModifiers;
             }
+             */
         });
         return modifier;
     }

@@ -8,7 +8,7 @@ export class EtaArchaeology extends EtaSkillWithMastery {
     constructor(game: Game, archaeology: Archaeology, action: any, settings: Settings) {
         super(game, archaeology, action, settings);
     }
-
+/*
     get actionInterval() {
         return this.modifyInterval(this.skill.baseInterval);
     }
@@ -94,4 +94,6 @@ export class EtaArchaeology extends EtaSkillWithMastery {
         }
         return modifier;
     }
+
+ */
 }

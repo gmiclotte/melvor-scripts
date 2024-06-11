@@ -7,7 +7,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
     constructor(game: Game, cooking: Cooking, action: any, settings: Settings) {
         super(game, cooking, action, settings);
     }
-
+/*
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
     }
@@ -56,4 +56,5 @@ export class EtaCooking extends ResourceSkillWithMastery {
         }
         return super.getPreservationChance(chance);
     }
+    */
 }

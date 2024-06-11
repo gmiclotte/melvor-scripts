@@ -9,17 +9,19 @@ export class EtaThieving extends EtaSkillWithMastery {
     }
 
     get avoidStunChance() {
-        let chance = 0;
-        chance += this.modifiers.increasedChanceToAvoidThievingStuns;
-        return chance;
+        return this.modifiers.getValue(
+            "melvorD:thievingStunAvoidanceChance" /* ModifierIDs.thievingStunAvoidanceChance */,
+            this.getActionModifierQuery()
+        );
     }
 
     get stunInterval() {
         let interval = this.skill.baseStunInterval;
-        let modifier = 0;
-        modifier -= this.modifiers.decreasedThievingStunIntervalPercent;
-        modifier += this.modifiers.increasedThievingStunIntervalPercent;
-        interval *= 1 + modifier / 100;
+        interval *= 1 + this.modifiers.getValue(
+            "melvorD:thievingStunInterval" /* ModifierIDs.thievingStunInterval */,
+            this.getActionModifierQuery()
+        ) / 100;
+
         // @ts-ignore
         interval = roundToTickInterval(interval);
         return Math.max(interval, this.settings.get('minimalActionTime'));
@@ -58,8 +60,10 @@ export class EtaThieving extends EtaSkillWithMastery {
         if (this.isPoolTierActive(3)) {
             stealth += 100;
         }
-        stealth += this.modifiers.increasedThievingStealth;
-        stealth -= this.modifiers.decreasedThievingStealth;
+        stealth += this.modifiers.getValue(
+            "melvorD:thievingStealth" /* ModifierIDs.thievingStealth */,
+            this.getActionModifierQuery()
+        );
         return stealth;
     }
 

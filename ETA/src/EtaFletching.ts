@@ -8,7 +8,7 @@ export class EtaFletching extends ResourceSkillWithMastery {
     constructor(game: Game, fletching: Fletching, action: any, settings: Settings) {
         super(game, fletching, action, settings);
     }
-
+/*
     get masteryModifiedInterval() {
         return 1300;
     }
@@ -71,4 +71,5 @@ export class EtaFletching extends ResourceSkillWithMastery {
         }
         return quantity;
     }
+ */
 }

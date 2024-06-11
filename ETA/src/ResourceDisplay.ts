@@ -2,6 +2,7 @@ import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {ResourceSkillWithMastery, ResourceSkillWithoutMastery} from "./ResourceSkill";
 import {Display, displayConstructor} from "./Display";
+import type {Currency} from "../../Game-Files/gameTypes/currency";
 import type {Item} from "../../Game-Files/gameTypes/item";
 
 function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: BaseDisplay) {
@@ -38,12 +39,10 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
                     req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
                 }
             )
-            if (resources.sc > 0) {
-                req += `<span>${this.formatNumber(Math.ceil(resources.sc))}</span><img class="skill-icon-xs mr-2" src="assets/media/main/slayer_coins.svg">`;
-            }
-            if (resources.gp > 0) {
-                req += `<span>${this.formatNumber(Math.ceil(resources.gp))}</span><img class="skill-icon-xs mr-2" src="assets/media/main/coins.svg">`;
-            }
+            resources.currencies.forEach((quantity: number, currency: Currency) => {
+                    req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${currency.media}">`;
+                }
+            )
             return `<br/>Requires: ${req}`;
         }
 

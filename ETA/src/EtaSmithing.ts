@@ -8,7 +8,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
     constructor(game: Game, smithing: Smithing, action: any, settings: Settings) {
         super(game, smithing, action, settings);
     }
-
+    /*
     get masteryModifiedInterval() {
         return 1700;
     }
@@ -49,4 +49,5 @@ export class EtaSmithing extends ResourceSkillWithMastery {
         }
         return quantity;
     }
+    */
 }

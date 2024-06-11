@@ -22,7 +22,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         this.productionID = AltMagicProductionID;
         this.runeCostQuantityMap = new Map<Item, number>();
     }
-
+    /*
     get runePreservationChance() {
         const runePreservation = this.modifiers.increasedRunePreservation
             - this.modifiers.decreasedRunePreservation
@@ -66,7 +66,8 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
     attemptsToResourceCheckpoint() {
         const attemptsToRuneCheckpoint: number[] = [];
         this.runeCostQuantityMap.forEach((quantity: number, item: Item) => {
-            const itemCost = this.costQuantityMap.get(item) ?? 0;
+            // @ts-ignore
+            const itemCost = this.currentCosts._items.getObjectByID(item.id).amount ?? 0;
             quantity = quantity * (1 - this.runePreservationChance) + itemCost;
             attemptsToRuneCheckpoint.push((this.remainingResources.items.get(item) ?? 0) / quantity);
         });
@@ -141,4 +142,5 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         });
         return costs;
     }
+     */
 }

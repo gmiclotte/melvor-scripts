@@ -8,7 +8,7 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
         super(game, firemaking, action, settings);
     }
-
+/*
     get masteryModifiedInterval() {
         return this.action.baseInterval * 0.6;
     }
@@ -60,4 +60,5 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         }
         return modifier;
     }
+ */
 }

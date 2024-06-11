@@ -1,4 +1,4 @@
-import type {PlayerModifiers, SkillModifierObject} from "../../Game-Files/gameTypes/modifier";
+import type {PlayerModifierTable} from "../../Game-Files/gameTypes/modifierTable";
 import {Rates} from "./Rates";
 import {Targets} from "./Targets";
 import {Settings} from "./Settings";
@@ -22,7 +22,7 @@ export class EtaSkill {
     public currentRates: Rates;
     // targets reached
     public skillReached: boolean;
-    protected readonly modifiers: PlayerModifiers;
+    protected readonly modifiers: PlayerModifierTable;
     protected readonly settings: Settings;
     protected currentRatesSet: boolean;
     // other
@@ -205,33 +205,29 @@ export class EtaSkill {
 
     xpToLevel(xp: number): number {
         // @ts-ignore 2304
-        return exp.xp_to_level(xp) - 1;
+        return exp.xpToLevel(xp) - 1;
     }
 
     levelToXp(level: number): number {
         // @ts-ignore 2304
-        return exp.level_to_xp(level) + 0.00001;
+        return exp.levelToXP(level) + 0.00001;
     }
 
     modifyXP(amount: number) {
         amount *= 1 + this.getXPModifier() / 100;
-        if (this.modifiers.halfSkillXP > 0) {
+        if (this.modifiers.halveSkillXP > 0) {
             amount /= 2;
         }
         return amount;
     }
 
     getXPModifier() {
-        return this.modifiers.increasedGlobalSkillXP
-            - this.modifiers.decreasedGlobalSkillXP
-            + this.modifiers.increasedNonCombatSkillXP
-            - this.modifiers.decreasedNonCombatSkillXP
-            + this.getSkillModifierValue('increasedSkillXP')
-            - this.getSkillModifierValue('decreasedSkillXP');
-    }
-
-    getSkillModifierValue(modifierID: string): number {
-        return this.modifiers.getSkillModifierValue(modifierID as keyof SkillModifierObject<any>, this.skill);
+        let modifier = this.modifiers.getValue(
+            "melvorD:skillXP" /* ModifierIDs.skillXP */,
+            this.getActionModifierQuery()
+        );
+        modifier += this.modifiers.nonCombatSkillXP;
+        return modifier;
     }
 
     modifyInterval(interval: number): number {
@@ -239,7 +235,7 @@ export class EtaSkill {
         const percentModifier = this.getPercentageIntervalModifier();
         interval *= 1 + percentModifier / 100;
         interval += flatModifier;
-        if (this.modifiers.halfSkillInterval > 0) {
+        if (this.modifiers.halveSkillInterval > 0) {
             interval /= 2;
         }
         // @ts-ignore
@@ -248,20 +244,26 @@ export class EtaSkill {
     }
 
     getFlatIntervalModifier() {
-        return this.getSkillModifierValue('increasedSkillInterval')
-            - this.getSkillModifierValue('decreasedSkillInterval');
+        return this.modifiers.getValue(
+            "melvorD:flatSkillInterval" /* ModifierIDs.flatSkillInterval */,
+            this.getActionModifierQuery()
+        );
     }
 
     getPercentageIntervalModifier() {
-        return this.getSkillModifierValue('increasedSkillIntervalPercent')
-            - this.getSkillModifierValue('decreasedSkillIntervalPercent')
-            + this.modifiers.increasedGlobalSkillIntervalPercent
-            - this.modifiers.decreasedGlobalSkillIntervalPercent;
+        return this.modifiers.getValue(
+            "melvorD:skillInterval" /* ModifierIDs.skillInterval */,
+            this.getActionModifierQuery()
+        );
     }
 
     getXpMap() {
         const levels = new Map<string, number>();
         levels.set('skillXp', this.skillXp);
         return levels;
+    }
+
+    getActionModifierQuery() {
+        return this.skill.getActionModifierQuery(this.action)
     }
 }

@@ -3,12 +3,12 @@ import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaAgility} from "./EtaAgility";
-import type {PlayerModifiers} from "../../Game-Files/gameTypes/modifier";
+// TODO import type {PlayerModifiers} from "../../Game-Files/gameTypes/modifier";
 import {MultiRates} from "./MultiRates";
 
 export class MultiAgility extends MultiActionSkill {
     public calculators: Map<string, EtaAgility>;
-    protected modifiers: PlayerModifiers;
+    // TODO protected modifiers: PlayerModifiers;
 
     constructor(game: Game, agility: Agility, actions: any[], settings: Settings) {
         super(game, agility, actions, settings);
@@ -23,7 +23,7 @@ export class MultiAgility extends MultiActionSkill {
             this.calculators.set(action.id, calculator);
         });
     }
-
+/*
     get actionInterval() {
         let sumTime = 0;
         this.calculators.forEach((calculator: EtaAgility) => {
@@ -62,4 +62,5 @@ export class MultiAgility extends MultiActionSkill {
         });
         super.addAttempts(gainsPerAction, attempts);
     }
+    */
 }

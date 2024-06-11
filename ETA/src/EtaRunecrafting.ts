@@ -8,7 +8,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
         super(game, runecrafting, action, settings);
     }
-
+/*
     get masteryModifiedInterval() {
         return 1700;
     }
@@ -54,4 +54,6 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
             modifier += 5;
         return modifier;
     }
+
+ */
 }

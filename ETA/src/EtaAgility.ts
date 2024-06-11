@@ -2,27 +2,22 @@ import type {Agility} from "../../Game-Files/gameTypes/agility";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {
-    MappedModifiers,
-    PlayerModifiers,
-    SkillModifierObject,
-    StandardModifierObject
-} from "../../Game-Files/gameTypes/modifier";
+import type {PlayerModifierTable} from "../../Game-Files/gameTypes/modifierTable";
 
 export class EtaAgility extends EtaSkillWithMastery {
     public was99Mastery: boolean;
     public updatedModifiers: boolean;
-    public modifiers!: PlayerModifiers;
+    public modifiers!: PlayerModifierTable;
     public courseDuration: number;
 
     constructor(game: Game, agility: Agility, action: any, settings: Settings) {
         super(game, agility, action, settings);
         this.was99Mastery = false;
         this.updatedModifiers = false;
-        this.modifiers = EtaAgility.cloneModifiers(game.modifiers);
+        //this.modifiers = EtaAgility.cloneModifiers(game.modifiers);
         this.courseDuration = Infinity;
     }
-
+/*
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
     }
@@ -32,9 +27,9 @@ export class EtaAgility extends EtaSkillWithMastery {
         return this.courseDuration === Infinity ? this.actionInterval : this.courseDuration;
     }
 
-    static cloneModifiers(modifiers: PlayerModifiers) {
+    static cloneModifiers(modifiers: PlayerModifierTable) {
         const modifierObject: any = {};
-        modifiers.getActiveModifiers().map(x => {
+        modifiers.getActiveModifiers().map((x: any) => {
             const split = x.name.split(':');
             const id = split.shift()!;
             return {id: id, skillID: split.join(':')}
@@ -55,8 +50,8 @@ export class EtaAgility extends EtaSkillWithMastery {
         })
         // copy to new PlayerModifiers object
         // @ts-ignore
-        const clonedModifiers = new PlayerModifiers();
-        clonedModifiers.addModifiers(modifierObject);
+        const clonedModifiers = new PlayerModifierTable();
+        // TODO clonedModifiers.addModifiers(modifierObject);
         return clonedModifiers;
     }
 
@@ -105,6 +100,7 @@ export class EtaAgility extends EtaSkillWithMastery {
     }
 
     /** Gets the change in debuff modifiers after obtaining 99 mastery */
+    /*
     getObstacleModifierDebuffChange(): MappedModifiers {
         // @ts-ignore
         const modifiers = new MappedModifiers();
@@ -114,4 +110,5 @@ export class EtaAgility extends EtaSkillWithMastery {
         modifiers.addModifiers(this.action.modifiers, -negMult, 0);
         return modifiers;
     }
+    */
 }
