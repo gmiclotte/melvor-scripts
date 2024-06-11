@@ -33,7 +33,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         // Non-Shard Cost reduction that scales with mastery level
         modifier -= Math.floor(masteryLevel / 10) * 5;
         // Level 99 Mastery: 5% Non Shard Cost Reduction
-        if (masteryLevel >= 99) {
+        if (this.checkMasteryMilestone(99)) {
             modifier -= 5;
         }
         return Math.max(0, modifier);
@@ -43,11 +43,11 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         const masteryLevel = this.masteryLevel;
         if (item.type === 'Shard') {
             // Level 50 Mastery: +1 Shard Cost Reduction
-            if (masteryLevel >= 50) {
+            if (this.checkMasteryMilestone(50)) {
                 quantity--;
             }
             // Level 99 Mastery: +1 Shard Cost Reduction
-            if (masteryLevel >= 99) {
+            if (this.checkMasteryMilestone(99)) {
                 quantity--;
             }
             // Generic Shard Cost Decrease modifier

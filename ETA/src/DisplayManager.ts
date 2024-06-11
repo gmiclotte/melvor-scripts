@@ -111,7 +111,7 @@ export class DisplayManager {
             area.fish.find((fish: any) => fish.id === actionID) !== undefined);
         // @ts-ignore
         node = fishingAreaMenus.get(area);
-        node = node.children[0].children[0].children[3].children[0].children[1].children[1];
+        node = node.children[0].children[1].children[1].children[0].children[1].children[1];
         node.appendChild(display.container);
         return display;
     }

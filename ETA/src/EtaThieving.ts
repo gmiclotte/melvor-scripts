@@ -69,7 +69,7 @@ export class EtaThieving extends EtaSkillWithMastery {
 
     getFlatIntervalModifier() {
         let modifier = super.getFlatIntervalModifier();
-        if (this.masteryLevel >= 50) {
+        if (this.checkMasteryMilestone(50)) {
             modifier -= 200;
         }
         if (this.isPoolTierActive(1)) {

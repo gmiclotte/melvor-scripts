@@ -57,14 +57,14 @@ export class EtaAgility extends EtaSkillWithMastery {
 
     init(game: Game) {
         super.init(game);
-        this.was99Mastery = this.masteryLevel >= 99;
+        this.was99Mastery = this.checkMasteryMilestone(99);
         this.updatedModifiers = false;
         this.modifiers = EtaAgility.cloneModifiers(game.modifiers);
     }
 
     progress() {
         super.progress();
-        if (this.was99Mastery && !this.updatedModifiers && this.masteryLevel >= 99) {
+        if (this.was99Mastery && !this.updatedModifiers && this.checkMasteryMilestone(99)) {
             this.modifiers.addMappedModifiers(this.getObstacleModifierDebuffChange());
             this.updatedModifiers = true;
         }
@@ -106,7 +106,7 @@ export class EtaAgility extends EtaSkillWithMastery {
         const modifiers = new MappedModifiers();
         const masteryLevel = this.masteryLevel;
         // Level 99 Mastery: Debuffs are halved for obstacle
-        const negMult = masteryLevel >= 99 ? 0.5 : 1;
+        const negMult = checkMasteryMilestone(99) ? 0.5 : 1;
         modifiers.addModifiers(this.action.modifiers, -negMult, 0);
         return modifiers;
     }

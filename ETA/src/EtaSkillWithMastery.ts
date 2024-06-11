@@ -36,6 +36,10 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
      * mastery methods
      */
 
+    get initialMasteryLevel(): number {
+        return this.xpToLevel(this.initial.mastery);
+    }
+
     get masteryLevel(): number {
         return Math.min(99, this.virtualMasteryLevel);
     }
@@ -147,13 +151,10 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
             this.getActionModifierQuery()
         );
         this.astrology.masteryXPConstellations.forEach((constellation: AstrologyRecipe) => {
-            // TODO
-            /*
-            const modValue = this.modifiers.getValue(constellation.masteryXPModifier.id, this.modQuery);
+            const modValue = this.modifiers.getValue(constellation.masteryXPModifier.id, this.skill.modQuery);
             if (modValue > 0) {
                 modifier += modValue * constellation.maxValueModifiers;
             }
-             */
         });
         return modifier;
     }
@@ -162,5 +163,13 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         const levels = super.getXpMap();
         levels.set('masteryXp', this.masteryXp);
         return levels;
+    }
+
+    checkMasteryMilestone(milestoneLevel: number) {
+        if (this.initialMasteryLevel >= milestoneLevel) {
+            // already reached initially, so should be included in the PlayerModifierTable
+            return false;
+        }
+        return this.masteryLevel >= milestoneLevel;
     }
 }

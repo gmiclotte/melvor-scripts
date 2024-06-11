@@ -16,7 +16,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
     getPreservationChance(chance: number): number {
         const masteryLevel = this.masteryLevel;
         chance += (masteryLevel - 1) * 0.2;
-        if (masteryLevel >= 99) {
+        if (checkMasteryMilestone(99)) {
             chance += 5;
         }
         if (this.isPoolTierActive(1)) {

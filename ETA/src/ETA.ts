@@ -73,8 +73,8 @@ export class ETA extends TinyMod {
 
         // add skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
-        /*
         this.addSkillCalculators(EtaFishing, game.fishing);
+/*
         this.addSkillCalculators(EtaFiremaking, game.firemaking);
         this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
@@ -194,12 +194,18 @@ export class ETA extends TinyMod {
         }
         // create new multi action calculators
         if (skillID === this.game.woodcutting.id) {
-            calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
+            return
+            // TODO
+            //  calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
         } else if (skillID === this.game.agility.id) {
-            calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
+            return
+            // TODO
+            //  calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
         } else {
             return;
         }
+        /*
+        TODO
         this.skillMultiCalculators.set(skillID, calculator);
         this.displayManager.getDisplay(skill);
         this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
@@ -208,6 +214,7 @@ export class ETA extends TinyMod {
                 this.displayManager.injectHTML(sub, new Date())
             });
         }
+         */
     }
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {

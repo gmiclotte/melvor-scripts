@@ -78,7 +78,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
         const attemptsToMasteryCheckpoints: number[] = [];
         const weights = this.weights;
         this.calculators.forEach((calculator, actionID) => {
-            if (calculator.masteryLevel >= 99) {
+            if (calculator.checkMasteryMilestone(99)) {
                 return;
             }
             const rates = gainsPerAction.rateMap.get(actionID)!;

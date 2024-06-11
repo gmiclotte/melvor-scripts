@@ -14,7 +14,7 @@ export class EtaWoodcutting extends EtaSkillWithMastery {
 
     getFlatIntervalModifier() {
         let modifier = super.getFlatIntervalModifier();
-        if (this.masteryLevel >= 99) {
+        if (this.checkMasteryMilestone(99)) {
             modifier -= 200;
         }
         return modifier;

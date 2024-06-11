@@ -27,7 +27,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         if (this.action.product instanceof EquipmentItem && item.type === 'Rune') {
             const masteryLevel = this.masteryLevel;
             let runeCostReduction = Math.floor(masteryLevel / 10) * 0.05;
-            if (masteryLevel >= 99) {
+            if (checkMasteryMilestone(99)) {
                 runeCostReduction += 0.15;
             }
             quantity = Math.floor(quantity * (1 - runeCostReduction));

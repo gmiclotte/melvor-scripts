@@ -46,7 +46,7 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
             // see Firemaking.computeProvidedStats
             modifier += 5;
         }
-        if (this.masteryLevel >= 99 && this.skill.getMasteryLevel(this.action) < 99) {
+        if (this.checkMasteryMilestone(99) && this.skill.getMasteryLevel(this.action) < 99) {
             // see Firemaking.computeProvidedStats
             modifier += 0.25;
         }

@@ -16,7 +16,7 @@ export class EtaFletching extends ResourceSkillWithMastery {
     getPreservationChance(chance: number) {
         const masteryLevel = this.masteryLevel;
         chance += 0.2 * (masteryLevel - 1);
-        if (masteryLevel >= 99) {
+        if (checkMasteryMilestone(99)) {
             chance += 5;
         }
         return super.getPreservationChance(chance);

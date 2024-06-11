@@ -35,6 +35,6 @@ export class DisplayWithPool extends Display {
     }
 
     finalPool(result: EtaSkillWithPool) {
-        return result.poolProgress;
+        return result.getMasteryPoolProgress;
     }
 }

@@ -17,7 +17,7 @@ export class EtaFishing extends EtaSkillWithMastery {
             });
         });
     }
-/*
+
     get actionInterval() {
         const minTicks = this.getMinFishInterval() / this.TICK_INTERVAL;
         const maxTicks = this.getMaxFishInterval() / this.TICK_INTERVAL;
@@ -43,18 +43,17 @@ export class EtaFishing extends EtaSkillWithMastery {
     /***
      * Compute junk (1 xp) and no-junk (base xp) chances
      */
-    /*
     getJunkChance(): number {
         // Mastery Pool Tier 2: No longer catch junk
         // Mastery Level 65: No longer catch junk
-        if (this.isPoolTierActive(1) || this.masteryLevel >= 65) {
+        if (this.isPoolTierActive(1) || this.checkMasteryMilestone(65)) {
             return 0;
         }
         // get junk chance
         let junkChance = this.area.junkChance;
-        junkChance -= this.modifiers.increasedBonusFishingSpecialChance;
+        junkChance -= this.modifiers.getValue("melvorD:bonusFishingSpecialChance" /* ModifierIDs.bonusFishingSpecialChance */, this.getActionModifierQuery());
         // Mastery Level 50: +3% bonus to special chance from junk chance
-        if (this.masteryLevel >= 50) {
+        if (this.checkMasteryMilestone(50)) {
             junkChance -= 3;
         }
         if (junkChance <= 0) {
@@ -69,5 +68,4 @@ export class EtaFishing extends EtaSkillWithMastery {
         amount = (amount * (100 - junkChance) + junkChance) / 100;
         return super.modifyXP(amount);
     }
-    */
 }

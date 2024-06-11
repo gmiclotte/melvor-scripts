@@ -43,7 +43,7 @@ export class MultiAgility extends MultiActionSkill {
     progress() {
         super.progress();
         this.calculators.forEach(calculator => {
-            if (calculator.was99Mastery && !calculator.updatedModifiers && calculator.masteryLevel >= 99) {
+            if (calculator.was99Mastery && !calculator.updatedModifiers && calculator.checkMasteryMilestone(99)) {
                 this.modifiers.addMappedModifiers(calculator.getObstacleModifierDebuffChange());
                 calculator.updatedModifiers = true;
             }

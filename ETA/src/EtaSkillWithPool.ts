@@ -33,12 +33,16 @@ export class EtaSkillWithPool extends EtaSkill {
      * pool methods
      */
 
-    get poolProgress() {
+    get getInitialMasteryPoolProgress() {
+        return this.poolXpToPercentWithModifiers(this.initial.pool);
+    }
+
+    get getMasteryPoolProgress() {
         return this.poolXpToPercentWithModifiers(this.poolXp);
     }
 
     get nextPoolCheckpoint() {
-        const poolProgress = this.poolProgress;
+        const poolProgress = this.getMasteryPoolProgress;
         const checkPoint = this.masteryCheckpoints.find((checkPoint: number) => checkPoint > poolProgress) ?? Infinity;
         if (poolProgress < this.targets.poolPercent && poolProgress < checkPoint) {
             return this.targets.poolPercent;
@@ -47,7 +51,7 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     get nextPoolCheckpointXp() {
-        return this.nextPoolCheckpoint / 100 * this.skill.getMasteryPoolCap(this.action.realm);
+        return this.nextPoolCheckpoint / 100 * this.skill.getBaseMasteryPoolCap(this.action.realm);
     }
 
     /***
@@ -130,11 +134,15 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     isPoolTierActive(tier: number) {
-        return this.poolProgress >= this.masteryCheckpoints[tier];
+        if (this.getInitialMasteryPoolProgress >= this.masteryCheckpoints[tier]) {
+            // already reached initially, so should be included in the PlayerModifierTable
+            return false;
+        }
+        return this.getMasteryPoolProgress >= this.masteryCheckpoints[tier];
     }
 
     poolXpToPercent(poolXp: number) {
-        return (100 * poolXp) / this.skill.getMasteryPoolCap(this.action.realm);
+        return (100 * poolXp) / this.skill.getBaseMasteryPoolCap(this.action.realm);
     }
 
     poolXpToPercentWithModifiers(poolXp: number) {
