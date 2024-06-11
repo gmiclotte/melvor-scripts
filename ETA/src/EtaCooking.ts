@@ -7,7 +7,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
     constructor(game: Game, cooking: Cooking, action: any, settings: Settings) {
         super(game, cooking, action, settings);
     }
-/*
+
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
     }
@@ -24,12 +24,10 @@ export class EtaCooking extends ResourceSkillWithMastery {
         const masteryLevel = this.masteryLevel;
         // @ts-ignore
         let chance = Cooking.baseSuccessChance;
-        chance += this.modifiers.increasedChanceSuccessfulCook
-            - this.modifiers.decreasedChanceSuccessfulCook;
-        chance += masteryLevel * 0.6;
+        chance += this.modifiers.getValue("melvorD:successfulCookChance" /* ModifierIDs.successfulCookChance */, this.getActionModifierQuery());
         let chanceCap = 100;
         // Pig + Mole Synergy: Cap success rate at 75%
-        chanceCap -= this.modifiers.decreasedCookingSuccessCap;
+        chanceCap += this.modifiers.cookingSuccessCap;
         chance = Math.min(chance, chanceCap);
         if (chance < 0) {
             return 0;
@@ -56,5 +54,4 @@ export class EtaCooking extends ResourceSkillWithMastery {
         }
         return super.getPreservationChance(chance);
     }
-    */
 }

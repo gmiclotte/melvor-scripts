@@ -20,6 +20,9 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
 
         injectResourceTimeElement(result: ResourceSkillWithoutMastery, now: Date) {
             const resourceActionsTaken = result.actionsTaken.resources;
+            if (!resourceActionsTaken) {
+                return;
+            }
             if (resourceActionsTaken.actions === 0) {
                 this.element.textContent += "\r\nNo resources!";
             } else {
@@ -34,6 +37,9 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
         }
 
         resourcesLeftToHTML(resources: ResourceActionCounter) {
+            if (resources.items === undefined) {
+                return '';
+            }
             let req = '';
             resources.items.forEach((quantity: number, item: Item) => {
                     req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
@@ -47,6 +53,9 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
         }
 
         finalLevel(result: ResourceSkillWithMastery) {
+            if (result.finalXpMap === undefined) {
+                return super.finalLevel(result);
+            }
             const skillXp = result.finalXpMap.get('skillXp')!;
             const skillLevel = result.xpToLevel(skillXp);
             return skillLevel + this.getProgressInLevel(result, skillXp, skillLevel, 'skill');
@@ -54,10 +63,16 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
         }
 
         finalPool(result: ResourceSkillWithMastery) {
+            if (result.finalXpMap === undefined) {
+                return result.getMasteryPoolProgress;
+            }
             return result.poolXpToPercentWithModifiers(result.finalXpMap.get('poolXp')!);
         }
 
         finalMastery(result: ResourceSkillWithMastery) {
+            if (result.finalXpMap === undefined) {
+                return result.virtualMasteryLevel + this.getProgressInLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
+            }
             const masteryXp = result.finalXpMap.get('masteryXp')!;
             const masteryLevel = result.xpToLevel(masteryXp);
             if (masteryLevel >= 99) {

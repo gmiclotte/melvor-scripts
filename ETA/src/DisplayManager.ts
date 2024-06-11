@@ -98,7 +98,7 @@ export class DisplayManager {
         const node = document.querySelector(query);
         if (node !== null) {
             const displayID = this.getDisplayID(skill, actionID);
-            display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+            display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
             node!.parentNode!.insertBefore(display.container, node);
         }
         return display
