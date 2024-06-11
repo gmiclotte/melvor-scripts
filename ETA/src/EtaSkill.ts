@@ -205,7 +205,7 @@ export class EtaSkill {
 
     xpToLevel(xp: number): number {
         // @ts-ignore 2304
-        return exp.xpToLevel(xp) - 1;
+        return exp.xpToLevel(xp) ;
     }
 
     levelToXp(level: number): number {
