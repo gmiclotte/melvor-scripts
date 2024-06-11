@@ -7,7 +7,7 @@ export class EtaMining extends EtaSkillWithMastery {
     constructor(game: Game, mining: Mining, action: any, settings: Settings) {
         super(game, mining, action, settings);
     }
-/*
+
     get maxRockHP() {
         const rock = this.action;
         if (rock.fixedMaxHP !== undefined) {
@@ -17,24 +17,19 @@ export class EtaMining extends EtaSkillWithMastery {
         if (this.isPoolTierActive(3)) {
             rockHP += 10;
         }
-        const activePotion = this.skill.activePotion;
-        if (activePotion !== undefined &&
-            [
-                "melvorF:Perfect_Swing_Potion_I", // ItemIDs.Perfect_Swing_Potion_I
-                "melvorF:Perfect_Swing_Potion_II", // ItemIDs.Perfect_Swing_Potion_II
-                "melvorF:Perfect_Swing_Potion_III", // ItemIDs.Perfect_Swing_Potion_III
-                "melvorF:Perfect_Swing_Potion_IV", // ItemIDs.Perfect_Swing_Potion_IV
-            ].includes(activePotion.id)) {
-            rockHP += this.modifiers.increasedMiningNodeHPWithPerfectSwing;
-        }
-        rockHP += this.masteryLevel;
-        rockHP += this.modifiers.increasedMiningNodeHP - this.modifiers.decreasedMiningNodeHP;
+        rockHP += this.masteryLevel - this.initialMasteryLevel;
+        rockHP += this.modifiers.getValue(
+            "melvorD:flatMiningNodeHP" /* ModifierIDs.flatMiningNodeHP */,
+            this.getActionModifierQuery()
+        )
         return Math.max(rockHP, 1);
     }
 
     get rockHPPreserveChance() {
-        return this.modifiers.increasedChanceNoDamageMining
-            - this.modifiers.decreasedChanceNoDamageMining;
+        return this.modifiers.getValue(
+            "melvorD:noMiningNodeDamageChance" /* ModifierIDs.noMiningNodeDamageChance */,
+            this.getActionModifierQuery()
+        );
     }
 
     get averageAttemptTime() {
@@ -82,5 +77,4 @@ export class EtaMining extends EtaSkillWithMastery {
         }
         return modifier;
     }
-    */
 }

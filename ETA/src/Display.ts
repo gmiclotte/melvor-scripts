@@ -30,6 +30,10 @@ export class Display {
         this.formatNumber = formatNumber;
     }
 
+    get isHookedUp() {
+        return this.container.parentElement !== null;
+    }
+
     addMSToDate(date: Date, ms: number) {
         return new Date(date.getTime() + ms);
     }

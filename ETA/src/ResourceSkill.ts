@@ -152,31 +152,49 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         getRecipeCosts() {
             // @ts-ignore
             const costs = new Costs(undefined);
-            this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
-                const quantity = this.modifyItemCost(cost.item, cost.quantity);
+            this.action.itemCosts.forEach((cost :{ item:Item, quantity :number}) => {
+                let quantity = this.modifyItemCost(cost.item, cost.quantity);
                 if (quantity > 0) {
                     costs.addItem(cost.item, quantity);
                 }
             });
-            if (this.action.gpCost > 0) {
-                costs.addGP(this.modifyGPCost());
-            }
-            if (this.action.scCost > 0) {
-                costs.addSlayerCoins(this.modifySCCost());
-            }
+            this.action.currencyCosts.forEach((cost:{ currency:Currency, quantity :number}) => {
+                let quantity = this.modifyCurrencyCost(cost.currency, cost.quantity);
+                if (quantity > 0) {
+                    costs.addCurrency(cost.currency, quantity);
+                }
+            });
             return costs;
         }
 
-        modifyItemCost(_: Item, quantity: number) {
-            return quantity;
+        getUncappedCostReduction(item: Item|undefined) {
+            return this.modifiers.getValue("melvorD:skillCostReduction", // ModifierIDs.skillCostReduction
+                this.getActionModifierQuery()
+            );
         }
 
-        modifyGPCost() {
-            return this.action.gpCost;
+        getCostReduction(item:Item|undefined=undefined) {
+            return Math.min(80, this.getUncappedCostReduction(item));
         }
 
-        modifySCCost() {
-            return this.action.scCost;
+        getFlatCostReduction(item: Item|undefined=undefined) {
+            return 0;
+        }
+
+        modifyItemCost(item:Item|undefined, quantity:number) {
+            const costReduction = this.getCostReduction(item);
+            quantity *= 1 - costReduction / 100;
+            quantity = Math.ceil(quantity);
+            quantity -= this.getFlatCostReduction();
+            return Math.max(1, quantity);
+        }
+
+        modifyCurrencyCost(currency:Currency, quantity: number) {
+            const costReduction = this.getCostReduction();
+            quantity *= 1 - costReduction / 100;
+            quantity = Math.ceil(quantity);
+            quantity -= this.getFlatCostReduction();
+            return Math.max(1, quantity);
         }
     }
 }

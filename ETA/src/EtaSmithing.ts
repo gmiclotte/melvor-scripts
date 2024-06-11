@@ -8,7 +8,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
     constructor(game: Game, smithing: Smithing, action: any, settings: Settings) {
         super(game, smithing, action, settings);
     }
-    /*
+
     get masteryModifiedInterval() {
         return 1700;
     }
@@ -16,7 +16,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
     getPreservationChance(chance: number) {
         const masteryLevel = this.masteryLevel;
         chance += Math.floor(masteryLevel / 20) * 5;
-        if (checkMasteryMilestone(99)) {
+        if (this.checkMasteryMilestone(99)) {
             chance += 10;
         }
         if (this.isPoolTierActive(1)) {
@@ -24,9 +24,6 @@ export class EtaSmithing extends ResourceSkillWithMastery {
         }
         if (this.isPoolTierActive(2)) {
             chance += 5;
-        }
-        if (this.action.category.id === "melvorD:DragonGear") {
-            chance += this.modifiers.increasedSmithingDragonGearPreservation;
         }
         return super.getPreservationChance(chance);
     }
@@ -39,15 +36,21 @@ export class EtaSmithing extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    modifyItemCost(item: Item, quantity: number) {
+    getUncappedCostReduction(item: Item) {
+        let reduction = super.getUncappedCostReduction(item);
         // @ts-ignore
-        if (item.id === "melvorD:Coal_Ore") {
-            // @ts-ignore
-            quantity = applyModifier(quantity, this.modifiers.decreasedSmithingCoalCost, 2);
-            quantity -= this.modifiers.decreasedFlatSmithingCoalCost;
-            return quantity;
+        if (item !== undefined && item.id == "melvorD:Coal_Ore" /* ItemIDs.Coal_Ore */) {
+            reduction -= this.modifiers.smithingCoalCost;
         }
-        return quantity;
+        return reduction;
     }
-    */
+
+    getFlatCostReduction(item: Item) {
+        let reduction = super.getFlatCostReduction(item);
+        // @ts-ignore
+        if (item !== undefined && item.id == "melvorD:Coal_Ore" /* ItemIDs.Coal_Ore */) {
+            reduction -= this.modifiers.flatSmithingCoalCost;
+        }
+        return reduction;
+    }
 }

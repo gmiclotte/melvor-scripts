@@ -74,11 +74,11 @@ export class ETA extends TinyMod {
         // add skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
         this.addSkillCalculators(EtaFishing, game.fishing);
-/*
-        this.addSkillCalculators(EtaFiremaking, game.firemaking);
+        // this.addSkillCalculators(EtaFiremaking, game.firemaking);
         this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
+        /*
         this.addSkillCalculators(EtaThieving, game.thieving);
         // Farming not included
         this.addSkillCalculators(EtaFletching, game.fletching);
@@ -170,6 +170,10 @@ export class ETA extends TinyMod {
     }
 
     computeAndInjectHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any) {
+        const display = this.displayManager.getDisplay(skill, action.id);
+        if (display === undefined) {
+            return;
+        }
         // @ts-ignore
         const skillID = skill.id;
         const calculator = this.skillCalculators.get(skillID)!.get(action.id);
@@ -181,7 +185,7 @@ export class ETA extends TinyMod {
             // already computing
             return;
         }
-        this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
+        this.displayManager.injectHTML(display, this.timeRemaining(calculator), new Date());
     }
 
     computeAndInjectMultiHTML(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actions: any[], injectSubCalcs: boolean) {
