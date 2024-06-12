@@ -54,6 +54,10 @@ export class EtaSkill {
         return this.xpToLevel(this.skillXp);
     }
 
+    skip() {
+        return false;
+    }
+
     /***
      * Interval methods
      */

@@ -26,6 +26,10 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.finalXpMap = new Map<string, number>();
         }
 
+        skip() {
+            return this.action !== this.skill.selectedRecipe;
+        }
+
         get noResourceCheckpointLeft() {
             return this.attemptsToResourceCheckpoint() <= 0;
         }

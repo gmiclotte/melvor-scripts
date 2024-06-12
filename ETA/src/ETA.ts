@@ -91,7 +91,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaMagic, game.altMagic);
         // Cartography not included
         if (this.game.archaeology) {
-            // this.addSkillCalculators(EtaArchaeology, game.archaeology);
+            this.addSkillCalculators(EtaArchaeology, game.archaeology);
         }
         /*
         if (this.game.harvesting) {
@@ -227,6 +227,11 @@ export class ETA extends TinyMod {
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {
         // @ts-ignore
         const skillID = skill.id;
+        // check if this calculator wants to skip
+        const calculator = this.skillCalculators.get(skillID)!.get(action.id);
+        if (calculator!.skip()) {
+            return true;
+        }
         // skip actions for which we do not have the level requirement
         // agility actions do not have a level requirement comparable to skill level
         // TODO: check other requirements ?
