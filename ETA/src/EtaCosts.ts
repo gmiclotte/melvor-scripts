@@ -6,12 +6,10 @@ export class EtaCosts {
 
     _items: Map<Item, number>;
     _currencies: Map<Currency, number>;
-    _source: string;
 
     constructor() {
         this._items = new Map();
         this._currencies = new Map();
-        this._source = 'Unknown';
     }
     /** Returns true if all of the costs are zero */
     get isFree() {
@@ -24,13 +22,6 @@ export class EtaCosts {
     addCurrency(currency:any, quantity:number) {
         var _a;
         this._currencies.set(currency, quantity + ((_a = this._currencies.get(currency)) !== null && _a !== void 0 ? _a : 0));
-    }
-    setSource(source:string) {
-        this._source = source;
-    }
-    setSourceIfUnknown(source:string) {
-        if (this._source === 'Unknown')
-            this._source = source;
     }
     /**
      * Adds an ItemCurrencyLikes costs to the costs.

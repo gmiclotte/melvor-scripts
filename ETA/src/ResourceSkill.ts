@@ -42,10 +42,10 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
         init(game: Game) {
             super.init(game);
-            this.originalCosts = this.getRecipeCosts();
+            this.originalCosts = this.getCurrentRecipeCosts();
 
             // set up total costs
-            this.currentCosts = this.getRecipeCosts();
+            this.currentCosts = this.getCurrentRecipeCosts();
             this.currentCosts.addCosts(this.originalCosts);
 
             // set up actions performed
@@ -124,7 +124,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 this.finalXpMap = this.getXpMap();
                 this.resourcesReached = true;
             }
-            this.originalCosts = this.getRecipeCosts();
+            this.originalCosts = this.getCurrentRecipeCosts();
         }
 
         getPreservationChance(chance: number): number {
@@ -147,6 +147,10 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 this.getActionModifierQuery()
             );
             return baseCap + modifier;
+        }
+
+        getCurrentRecipeCosts() {
+            return this.getRecipeCosts();
         }
 
         getRecipeCosts() {

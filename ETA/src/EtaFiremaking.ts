@@ -2,13 +2,13 @@ import type {Firemaking} from "../../Game-Files/gameTypes/firemakingTicks";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {Costs} from "../../Game-Files/gameTypes/skill";
+import {EtaCosts} from "./EtaCosts";
 
 export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
         super(game, firemaking, action, settings);
     }
-/*
+
     get masteryModifiedInterval() {
         return this.action.baseInterval * 0.6;
     }
@@ -21,9 +21,8 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         return super.actionXP() * (1 + this.skill.bonfireBonusXP / 100);
     }
 
-    getRecipeCosts() {
-        // @ts-ignore
-        const costs = new Costs(undefined);
+    getCurrentRecipeCosts() {
+        const costs = new EtaCosts();
         costs.addItem(this.action.log, 1);
         return costs;
     }
@@ -42,23 +41,12 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         if (this.isPoolTierActive(0)) {
             modifier += 5;
         }
-        if (this.isPoolTierActive(3) && !this.skill.isPoolTierActive(3)) {
-            // see Firemaking.computeProvidedStats
+        if (this.isPoolTierActive(3)) {
             modifier += 5;
         }
-        if (this.checkMasteryMilestone(99) && this.skill.getMasteryLevel(this.action) < 99) {
-            // see Firemaking.computeProvidedStats
+        if (this.checkMasteryMilestone(99)) {
             modifier += 0.25;
         }
         return modifier;
     }
-
-    getXPModifier() {
-        let modifier = super.getXPModifier();
-        if (this.skill.isBearDevilActive) {
-            modifier += 5;
-        }
-        return modifier;
-    }
- */
 }

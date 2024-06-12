@@ -74,7 +74,7 @@ export class ETA extends TinyMod {
         // add skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
         this.addSkillCalculators(EtaFishing, game.fishing);
-        // this.addSkillCalculators(EtaFiremaking, game.firemaking);
+        this.addSkillCalculators(EtaFiremaking, game.firemaking);
         this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
