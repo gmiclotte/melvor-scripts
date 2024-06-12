@@ -85,7 +85,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
         this.addSkillCalculators(EtaHerblore, game.herblore);
         this.addSkillCalculators(EtaAgility, game.agility);
-        // this.addSkillCalculators(EtaSummoning, game.summoning);
+        this.addSkillCalculators(EtaSummoning, game.summoning);
         this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);

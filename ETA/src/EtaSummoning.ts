@@ -5,6 +5,7 @@ import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item} from "../../Game-Files/gameTypes/item";
 import type {Player} from "../../Game-Files/gameTypes/player";
 import type {Costs} from "../../Game-Files/gameTypes/skill";
+import {Currency} from "../../Game-Files/gameTypes/currency";
 
 export class EtaSummoning extends ResourceSkillWithMastery {
     private readonly player: Player;
@@ -13,7 +14,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         super(game, summoning, action, settings);
         this.player = game.combat.player;
     }
-/*
+
     get masteryModifiedInterval() {
         return this.skill.masteryModifiedInterval;
     }
@@ -28,10 +29,9 @@ export class EtaSummoning extends ResourceSkillWithMastery {
             "melvorD:nonShardSummoningCostReduction", // ModifierIDs.nonShardSummoningCostReduction
             this.getActionModifierQuery()
         );
-        // mastery
-        const masteryLevel = this.masteryLevel;
         // Non-Shard Cost reduction that scales with mastery level
-        modifier -= Math.floor(masteryLevel / 10) * 5;
+        const changeIn10MasteryLevel = Math.floor(this.masteryLevel / 10) - Math.floor(this.initialMasteryLevel / 10);
+        modifier -= changeIn10MasteryLevel * 5;
         // Level 99 Mastery: 5% Non Shard Cost Reduction
         if (this.checkMasteryMilestone(99)) {
             modifier -= 5;
@@ -39,45 +39,53 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return Math.max(0, modifier);
     }
 
-    // TODO change to get[Flat]CostReduction
-    modifyItemCost(item: Item, quantity: number) {
-        const masteryLevel = this.masteryLevel;
-        if (item.type === 'Shard') {
-            // Level 50 Mastery: +1 Shard Cost Reduction
-            if (this.checkMasteryMilestone(50)) {
-                quantity--;
-            }
-            // Level 99 Mastery: +1 Shard Cost Reduction
-            if (this.checkMasteryMilestone(99)) {
-                quantity--;
-            }
-            // Generic Shard Cost Decrease modifier
-            quantity -= this.modifiers.getValue(
-                "melvorD:flatSummoningShardCost", // ModifierIDs.flatSummoningShardCost
-                this.getActionModifierQuery()
-            );
-            // Tier 2 Mastery Pool: +1 Shard Cost Reduction for Tier 1 and Tier 2 Tablets
-            if ((this.action.tier === 1 || this.action.tier === 2) && this.isPoolTierActive(1)) {
-                quantity--;
-            }
-            // Tier 4 Mastery Pool: +1 Shard Cost Reduction for Tier 3 Tablets
-            if (this.action.tier === 3 && this.isPoolTierActive(3)) {
-                quantity--;
-            }
+    getFlatCostReduction(item:Item|undefined) {
+        let reduction = super.getFlatCostReduction(item);
+        if (item === undefined || item.type !== 'Shard') {
+            return reduction;
         }
-        return Math.max(1, quantity);
+        // handle shards
+        reduction -= this.modifiers.getValue(
+            "melvorD:flatSummoningShardCost" /* ModifierIDs.flatSummoningShardCost */,
+            this.getActionModifierQuery()
+        );
+        // Level 50 Mastery: +1 Shard Cost Reduction
+        if (this.checkMasteryMilestone(50)) {
+            reduction--;
+        }
+        // Level 99 Mastery: +1 Shard Cost Reduction
+        if (this.checkMasteryMilestone(99)) {
+            reduction--;
+        }
+        // Tier 2 Mastery Pool: +1 Shard Cost Reduction for Tier 1 and Tier 2 Tablets
+        if ((this.action.tier === 1 || this.action.tier === 2) && this.isPoolTierActive(1)) {
+            reduction--;
+        }
+        // Tier 4 Mastery Pool: +1 Shard Cost Reduction for Tier 3 Tablets
+        if (this.action.tier === 3 && this.isPoolTierActive(3)) {
+            reduction--;
+        }
+        // grab modifier reductions
+        switch (this.action.tier) {
+            case 1:
+                reduction -= this.modifiers.flatTier1SummoningShardCost;
+                break;
+            case 2:
+                reduction -= this.modifiers.flatTier2SummoningShardCost;
+                break;
+            case 3:
+                reduction -= this.modifiers.flatTier3SummoningShardCost;
+                break;
+        }
+        return reduction;
     }
 
-    modifyGPCost() {
-        let gpCost = super.modifyGPCost();
-        gpCost *= 1 - this.getNonShardCostReductionModifier() / 100;
-        return Math.max(1, Math.floor(gpCost));
-    }
-
-    modifySCCost() {
-        let scCost = super.modifySCCost();
-        scCost *= 1 - this.getNonShardCostReductionModifier() / 100;
-        return Math.max(1, Math.floor(scCost));
+    modifyCurrencyCost(currency:Currency, quantity:number) {
+        quantity = super.modifyCurrencyCost(currency, quantity);
+        const modifier = this.getNonShardCostReductionModifier();
+        // @ts-ignore
+        quantity = applyModifier(quantity, modifier, 3);
+        return Math.max(1, Math.floor(quantity));
     }
 
     getPreservationChance(chance: number) {
@@ -96,20 +104,23 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    addNonShardCosts(altID: number, costs: Costs) {
-        const item = this.action.nonShardItemCosts[altID];
-        const salePrice = Math.max(20, item.sellsFor);
+    addNonShardCosts(costs:Costs) {
+        const nonShardItem = this.skill.selectedNonShardCosts.get(this.action) ?? this.action.nonShardItemCosts[0];
+        const salePrice = Math.max(20, nonShardItem.sellsFor.quantity);
+        const modifier = this.getNonShardCostReductionModifier();
+        const recipeCost = nonShardItem.sellsFor.currency.id === "melvorItA:AbyssalPieces" /* CurrencyIDs.AbyssalPieces */
+            // @ts-ignore
+            ? Summoning.recipeAPCost : Summoning.recipeGPCost;
         // @ts-ignore
-        const itemValueRequired = Summoning.recipeGPCost * (1 - this.getNonShardCostReductionModifier() / 100);
+        const itemValueRequired = applyModifier(recipeCost, modifier, 3);
         const qtyToAdd = Math.max(1, Math.floor(itemValueRequired / salePrice));
-        costs.addItem(item, qtyToAdd);
+        costs.addItem(nonShardItem, qtyToAdd);
     }
 
     getAltRecipeCosts() {
-        const altID = this.skill.setAltRecipes.get(this.action) ?? 0;
         const costs = super.getRecipeCosts();
         if (this.action.nonShardItemCosts.length > 0) {
-            this.addNonShardCosts(altID, costs);
+            this.addNonShardCosts(costs);
         }
         return costs;
     }
@@ -117,5 +128,4 @@ export class EtaSummoning extends ResourceSkillWithMastery {
     getRecipeCosts() {
         return this.getAltRecipeCosts();
     }
-    */
 }
