@@ -84,7 +84,7 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaCrafting, game.crafting);
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
         this.addSkillCalculators(EtaHerblore, game.herblore);
-        // this.addSkillCalculators(EtaAgility, game.agility);
+        this.addSkillCalculators(EtaAgility, game.agility);
         // this.addSkillCalculators(EtaSummoning, game.summoning);
         this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
@@ -151,8 +151,8 @@ export class ETA extends TinyMod {
                     break;
                 case this.game.agility.id:
                     actions = [];
-                    for (let i = 0; i < this.game.agility.builtObstacles.size; i++) {
-                        const obstacle = this.game.agility.builtObstacles.get(i);
+                    for (let i = 0; i < this.game.agility.activeCourse.builtObstacles.size; i++) {
+                        const obstacle = this.game.agility.activeCourse.builtObstacles.get(i);
                         if (obstacle === undefined) {
                             break;
                         }
@@ -246,22 +246,12 @@ export class ETA extends TinyMod {
                 // compute all actions for woodcutting, mining, and astrology
                 return false;
             case this.game.agility.id:
-                if (this.game.agility.getObstacleLevel(action.category) > skill.level) {
+                if (action.level > skill.level) {
                     return true;
                 }
                 // only compute selected obstacles for agility
-                const built = this.game.agility.builtObstacles.get(action.category);
-                if (built === undefined || built.id !== action.id) {
-                    return true;
-                }
-                // only compute obstacles that are not part of the current active course
-                for (let category = 0; category < action.category; category++) {
-                    const built = this.game.agility.builtObstacles.get(category);
-                    if (built === undefined) {
-                        return false;
-                    }
-                }
-                return true;
+                const built = this.game.agility.activeCourse.builtObstacles.get(action.category);
+                return built === undefined || built.id !== action.id;
             case this.game.altMagic.id:
                 // only compute selected spell for magic
                 return this.game.altMagic.selectedSpell === undefined
@@ -308,7 +298,7 @@ export class ETA extends TinyMod {
             return actions.length < 1;
         }
         if (skillID === this.game.agility.id) {
-            return this.game.agility.builtObstacles.get(0) === undefined;
+            return this.game.agility.activeCourse.builtObstacles.get(0) === undefined;
         }
         return true;
     }
