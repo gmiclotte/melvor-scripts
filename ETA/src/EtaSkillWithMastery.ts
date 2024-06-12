@@ -37,7 +37,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
      */
 
     get initialMasteryLevel(): number {
-        return this.xpToLevel(this.initial.mastery);
+        return Math.min(99, this.xpToLevel(this.initial.mastery));
     }
 
     get masteryLevel(): number {

@@ -17,7 +17,8 @@ export class EtaMining extends EtaSkillWithMastery {
         if (this.isPoolTierActive(3)) {
             rockHP += 10;
         }
-        rockHP += this.masteryLevel - this.initialMasteryLevel;
+        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
+        rockHP += changeInMasteryLevel;
         rockHP += this.modifiers.getValue(
             "melvorD:flatMiningNodeHP" /* ModifierIDs.flatMiningNodeHP */,
             this.getActionModifierQuery()

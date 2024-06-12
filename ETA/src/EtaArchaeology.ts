@@ -94,6 +94,5 @@ export class EtaArchaeology extends EtaSkillWithMastery {
         }
         return modifier;
     }
-
- */
+    */
 }

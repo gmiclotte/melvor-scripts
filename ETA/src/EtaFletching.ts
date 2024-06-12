@@ -8,15 +8,14 @@ export class EtaFletching extends ResourceSkillWithMastery {
     constructor(game: Game, fletching: Fletching, action: any, settings: Settings) {
         super(game, fletching, action, settings);
     }
-/*
     get masteryModifiedInterval() {
-        return 1300;
+        return this.skill.masteryModifiedInterval;
     }
 
     getPreservationChance(chance: number) {
-        const masteryLevel = this.masteryLevel;
-        chance += 0.2 * (masteryLevel - 1);
-        if (checkMasteryMilestone(99)) {
+        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
+        chance += 0.2 * changeInMasteryLevel;
+        if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
         return super.getPreservationChance(chance);
@@ -26,10 +25,6 @@ export class EtaFletching extends ResourceSkillWithMastery {
         let modifier = super.getFlatIntervalModifier();
         if (this.isPoolTierActive(3)) {
             modifier -= 200;
-        }
-        if (this.doesRecipeMakeArrows()) {
-            modifier -= this.modifiers.decreasedFletchingIntervalWithArrows
-                + this.modifiers.increasedFletchingIntervalWithArrows;
         }
         return modifier;
     }
@@ -61,15 +56,4 @@ export class EtaFletching extends ResourceSkillWithMastery {
         }
         return costs;
     }
-
-    modifyItemCost(item: Item, quantity: number) {
-        // @ts-ignore
-        if (this.action.product instanceof EquipmentItem && this.action.product.ammoType === AmmoTypeID.Javelins) {
-            const modifier = this.modifiers.increasedJavelinResourceCost - this.modifiers.decreasedJavelinResourceCost;
-            // @ts-ignore
-            quantity = applyModifier(quantity, modifier);
-        }
-        return quantity;
-    }
- */
 }

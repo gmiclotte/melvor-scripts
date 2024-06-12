@@ -7,7 +7,7 @@ export class EtaAstrology extends EtaSkillWithMastery {
     constructor(game: Game, astrology: Astrology, action: any, settings: Settings) {
         super(game, astrology, action, settings);
     }
-/*
+
     get actionInterval() {
         // @ts-ignore
         return this.modifyInterval(Astrology.baseInterval);
@@ -20,6 +20,4 @@ export class EtaAstrology extends EtaSkillWithMastery {
         }
         return modifier;
     }
-
- */
 }

@@ -78,21 +78,24 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaCooking, game.cooking);
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
-        /*
         this.addSkillCalculators(EtaThieving, game.thieving);
         // Farming not included
         this.addSkillCalculators(EtaFletching, game.fletching);
         this.addSkillCalculators(EtaCrafting, game.crafting);
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
         this.addSkillCalculators(EtaHerblore, game.herblore);
-        this.addSkillCalculators(EtaAgility, game.agility);
-        this.addSkillCalculators(EtaSummoning, game.summoning);
+        // this.addSkillCalculators(EtaAgility, game.agility);
+        // this.addSkillCalculators(EtaSummoning, game.summoning);
         this.addSkillCalculators(EtaAstrology, game.astrology);
         // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);
         // Cartography not included
         if (this.game.archaeology) {
-            this.addSkillCalculators(EtaArchaeology, game.archaeology);
+            // this.addSkillCalculators(EtaArchaeology, game.archaeology);
+        }
+        /*
+        if (this.game.harvesting) {
+            this.addSkillCalculators(EtaHarvesting, game.harvesting);
         }
          */
 

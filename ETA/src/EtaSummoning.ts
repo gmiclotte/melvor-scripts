@@ -13,9 +13,9 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         super(game, summoning, action, settings);
         this.player = game.combat.player;
     }
-
+/*
     get masteryModifiedInterval() {
-        return 4850;
+        return this.skill.masteryModifiedInterval;
     }
 
     getNonShardCostReductionModifier() {
@@ -25,7 +25,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         // Equipped summon cost reduction
         let modifier = 100;
         modifier -= this.modifiers.getValue(
-            "melvorD:nonShardSummoningCostReduction" /* ModifierIDs.nonShardSummoningCostReduction */,
+            "melvorD:nonShardSummoningCostReduction", // ModifierIDs.nonShardSummoningCostReduction
             this.getActionModifierQuery()
         );
         // mastery
@@ -39,6 +39,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return Math.max(0, modifier);
     }
 
+    // TODO change to get[Flat]CostReduction
     modifyItemCost(item: Item, quantity: number) {
         const masteryLevel = this.masteryLevel;
         if (item.type === 'Shard') {
@@ -52,7 +53,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
             }
             // Generic Shard Cost Decrease modifier
             quantity -= this.modifiers.getValue(
-                "melvorD:flatSummoningShardCost" /* ModifierIDs.flatSummoningShardCost */,
+                "melvorD:flatSummoningShardCost", // ModifierIDs.flatSummoningShardCost
                 this.getActionModifierQuery()
             );
             // Tier 2 Mastery Pool: +1 Shard Cost Reduction for Tier 1 and Tier 2 Tablets
@@ -116,4 +117,5 @@ export class EtaSummoning extends ResourceSkillWithMastery {
     getRecipeCosts() {
         return this.getAltRecipeCosts();
     }
+    */
 }

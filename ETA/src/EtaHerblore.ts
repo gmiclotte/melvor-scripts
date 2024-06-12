@@ -7,15 +7,15 @@ export class EtaHerblore extends ResourceSkillWithMastery {
     constructor(game: Game, herblore: Herblore, action: any, settings: Settings) {
         super(game, herblore, action, settings);
     }
-/*
+
     get masteryModifiedInterval() {
-        return 1700;
+        return this.skill.masteryModifiedInterval;
     }
 
     getPreservationChance(chance: number) {
-        const masteryLevel = this.masteryLevel;
-        chance += (masteryLevel - 1) * 0.2;
-        if (checkMasteryMilestone(99)) {
+        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
+        chance += changeInMasteryLevel * 0.2;
+        if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
         if (this.isPoolTierActive(2)) {
@@ -39,5 +39,4 @@ export class EtaHerblore extends ResourceSkillWithMastery {
         }
         return modifier;
     }
- */
 }

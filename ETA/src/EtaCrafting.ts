@@ -8,23 +8,18 @@ export class EtaCrafting extends ResourceSkillWithMastery {
     constructor(game: Game, crafting: Crafting, action: any, settings: Settings) {
         super(game, crafting, action, settings);
     }
-/*
     get masteryModifiedInterval() {
-        return 1650;
+        return this.skill.masteryModifiedInterval;
     }
 
     getPreservationChance(chance: number): number {
         const masteryLevel = this.masteryLevel;
         chance += (masteryLevel - 1) * 0.2;
-        if (checkMasteryMilestone(99)) {
+        if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
         if (this.isPoolTierActive(1)) {
             chance += 5;
-        }
-        const categoryID = this.action.category.id;
-        if (categoryID === "melvorF:Necklaces" || categoryID === "melvorF:Rings") {
-            chance += this.modifiers.increasedCraftingJewelryPreservation;
         }
         return super.getPreservationChance(chance);
     }
@@ -45,13 +40,13 @@ export class EtaCrafting extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    modifyItemCost(item: Item, quantity: number) {
-        if (this.action.category.id === "melvorF:Dragonhide") {
-            quantity -= this.modifiers.decreasedFlatCraftingDragonhideCost;
-            quantity = Math.max(1, quantity);
+    getFlatCostReduction(item: Item) {
+        let reduction = super.getFlatCostReduction(item);
+        // TODO: Convert to category scoped modifier
+        // Monkey + Pig Synergy: Dragonhide cost reduced by 1. Minimum 1.
+        if (this.action.category.id === "melvorF:Dragonhide" /* CraftingCategoryIDs.Dragonhide */) {
+            reduction += this.modifiers.flatCraftingDragonhideCost;
         }
-        return quantity;
+        return reduction;
     }
-    
- */
 }

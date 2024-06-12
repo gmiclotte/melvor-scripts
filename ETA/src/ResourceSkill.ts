@@ -21,9 +21,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.actionsTaken = new ResourceActionCounterWrapper();
             this.remainingResources = ResourceActionCounter.emptyCounter;
             this.resourcesReached = false;
-            // @ts-ignore
             this.originalCosts = new EtaCosts();
-            // @ts-ignore
             this.currentCosts = new EtaCosts();
             this.finalXpMap = new Map<string, number>();
         }
@@ -46,7 +44,6 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
 
             // set up total costs
             this.currentCosts = this.getCurrentRecipeCosts();
-            this.currentCosts.addCosts(this.originalCosts);
 
             // set up actions performed
             this.actionsTaken.reset();
@@ -89,7 +86,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
                 attemptsToCheckpoint.push((this.remainingResources.currencies.get(cost.currency) ?? 0) / cost.quantity);
             })
-            const resourceSets = Math.min(...attemptsToCheckpoint);
+            const resourceSets = Math.min(...attemptsToCheckpoint, Infinity);
             if (resourceSets <= 0) {
                 return 0;
             }

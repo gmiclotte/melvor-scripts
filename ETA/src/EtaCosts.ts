@@ -83,11 +83,11 @@ export class EtaCosts {
     }
     /** Adds another costs object's costs to this one */
     addCosts(costs: EtaCosts) {
-        costs._currencies.forEach((quantity, currency:Currency) => {
-            this.addCurrency(currency, quantity);
-        });
         costs._items.forEach((quantity, item:Item) => {
             this.addItem(item, quantity);
+        });
+        costs._currencies.forEach((quantity, currency:Currency) => {
+            this.addCurrency(currency, quantity);
         });
     }
 }

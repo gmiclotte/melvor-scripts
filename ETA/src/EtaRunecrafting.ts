@@ -8,9 +8,9 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
         super(game, runecrafting, action, settings);
     }
-/*
+
     get masteryModifiedInterval() {
-        return 1700;
+        return this.skill.masteryModifiedInterval;
     }
 
     actionXP() {
@@ -22,28 +22,21 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return xp;
     }
 
-    modifyItemCost(item: Item, quantity: number) {
+    getUncappedCostReduction(item:Item) {
+        let reduction = super.getUncappedCostReduction(item);
         // @ts-ignore
-        if (this.action.product instanceof EquipmentItem && item.type === 'Rune') {
-            const masteryLevel = this.masteryLevel;
-            let runeCostReduction = Math.floor(masteryLevel / 10) * 0.05;
-            if (checkMasteryMilestone(99)) {
-                runeCostReduction += 0.15;
-            }
-            quantity = Math.floor(quantity * (1 - runeCostReduction));
+        if (item instanceof RuneItem) {
+            reduction += this.modifiers.getValue(
+                "melvorD:runecraftingRuneCostReduction" /* ModifierIDs.runecraftingRuneCostReduction */,
+                this.getActionModifierQuery()
+            );
         }
-        return Math.max(1, quantity);
+        return reduction;
     }
 
     getPreservationChance(chance: number) {
         if (this.isPoolTierActive(2)) {
             chance += 10;
-        }
-        if (this.action.product.type === 'Magic Staff') {
-            chance += this.modifiers.increasedRunecraftingStavePreservation;
-        } else if (this.action.category.id === "melvorF:StandardRunes"
-            || this.action.category.id === "melvorF:CombinationRunes") {
-            chance += this.modifiers.increasedRunecraftingEssencePreservation;
         }
         return super.getPreservationChance(chance);
     }
@@ -54,6 +47,4 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
             modifier += 5;
         return modifier;
     }
-
- */
 }

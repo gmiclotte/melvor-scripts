@@ -10,7 +10,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
     }
 
     get masteryModifiedInterval() {
-        return 1700;
+        return this.skill.masteryModifiedInterval;
     }
 
     getPreservationChance(chance: number) {
