@@ -35,7 +35,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
     }
 
     skip() {
-        return this.action !== this.skill.selectedSpell && this.action.realm !== this.skill.currentRealm;
+        return this.action !== this.skill.selectedSpell || this.action.realm !== this.skill.currentRealm;
     }
 
     actionXP(realmID: string): number {

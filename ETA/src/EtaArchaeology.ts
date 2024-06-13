@@ -20,7 +20,7 @@ export class EtaArchaeology extends EtaSkillWithMastery {
     }
 
     skip() {
-        return (this.map === undefined || this.action.selectedTools.length === 0) && this.action.realm !== this.skill.currentRealm;
+        return (this.map === undefined || this.action.selectedTools.length === 0) || this.action.realm !== this.skill.currentRealm;
     }
 
     getBaseSkillXPForDigSite() {
