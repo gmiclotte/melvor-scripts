@@ -1,4 +1,4 @@
-import {Harvesting, HarvestingProduct} from "../../Game-Files/gameTypes/harvesting";
+import type {Harvesting, HarvestingProduct} from "../../Game-Files/gameTypes/harvesting";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
@@ -20,12 +20,14 @@ export class EtaHarvesting extends EtaSkillWithMastery {
     // other
     private readonly products: HarvestingProduct[];
     private readonly intensityWeights: number[];
+    private totalWeight: number;
 
     constructor(game: Game, Harvesting: Harvesting, action: any, settings: Settings) {
         super(game, Harvesting, action, settings);
         this.products = this.action.products;
         this.intensityMilestones = this.products.map((product: HarvestingProduct) => product.minIntensityPercent);
         this.intensityWeights = this.products.map((product: HarvestingProduct) => product.weight);
+        this.totalWeight = this.intensityWeights.reduce((a, b) => a + b, 0);
         this.intensity = 0;
         this.targets = this.getTargets();
         this.currentRates = RatesWithIntensity.emptyRates;
@@ -74,7 +76,13 @@ export class EtaHarvesting extends EtaSkillWithMastery {
     }
 
     get successRate() {
-        return 40 / 100;
+        let weight = 0;
+        this.products.forEach((product: HarvestingProduct, index: number) => {
+            if (product.minIntensityPercent <= this.intensityPercentage) {
+                weight += product.weight;
+            }
+        });
+        return weight / this.totalWeight;
     }
 
     getTargets() {
@@ -136,26 +144,4 @@ export class EtaHarvesting extends EtaSkillWithMastery {
             gains.intensity / gains.ms,
         );
     }
-
-    /*
-    xp() {
-
-        if (veinItem.minIntensityPercent <= vein.intensityPercent) {
-            const baseQuantity = vein.baseQuantity * this.getVeinBaseRewardQuantity(vein);
-            let veinQty = this.modifyPrimaryProductQuantity(veinItem.item, baseQuantity, vein);
-            veinQty *= impDevilMult;
-            if (veinQty > 0) {
-                rewards.addItem(veinItem.item, veinQty);
-                this.game.stats.Harvesting.add(2, // HarvestingStats.PrimaryItemsGained
-            veinQty);
-                this.addCurrencyFromPrimaryProductGain(rewards, veinItem.item, veinQty, vein);
-            }
-            actionEvent.productQuantity = veinQty;
-            rewards.addXP(this, vein.baseExperience, vein);
-            rewards.addAbyssalXP(this, vein.baseAbyssalExperience, vein);
-            this.addCommonRewards(rewards, vein);
-        }
-    }
-*/
-
 }

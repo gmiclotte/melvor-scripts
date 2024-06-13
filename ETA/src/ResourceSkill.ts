@@ -6,6 +6,7 @@ import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceAct
 import {EtaSkill, etaSkillConstructor} from "./EtaSkill";
 import type {Currency} from "../../Game-Files/gameTypes/currency";
 import {EtaCosts} from "./EtaCosts";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: BaseSkill) {
     return class extends baseSkill {
@@ -34,7 +35,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             return !this.resourcesReached && this.noResourceCheckpointLeft;
         }
 
-        activeRealm() {
+        activeRealm(): Realm {
             return this.skill.selectedRecipe.realm;
         }
 

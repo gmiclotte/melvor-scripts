@@ -5,6 +5,7 @@ import type {Item} from "../../Game-Files/gameTypes/item";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {EtaCosts} from "./EtaCosts";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaMagic extends ResourceSkillWithoutMastery {
     protected originalRuneCosts: EtaCosts;
@@ -34,8 +35,8 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         return Math.min(preserveChance, 80) / 100;
     }
 
-    activeRealm() {
-        return 'melvorD:Melvor';
+    activeRealm(): Realm {
+        return this.skill.selectedSpell.realm;
     }
 
     skip() {

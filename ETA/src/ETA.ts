@@ -116,6 +116,9 @@ export class ETA extends TinyMod {
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+        if (skill.actions === undefined) {
+            return;
+        }
         // @ts-ignore
         if (game.cartography && skill.id === game.cartography.id) {
             // cartography is not implemented
@@ -225,7 +228,11 @@ export class ETA extends TinyMod {
         // @ts-ignore
         const skillID = skill.id;
         // check if this calculator wants to skip
-        const calculator = this.skillCalculators.get(skillID)!.get(action.id);
+        const calculators = this.skillCalculators.get(skillID);
+        if (!calculators) {
+            return true;
+        }
+        const calculator = calculators.get(action.id);
         if (!calculator) {
             return true;
         }

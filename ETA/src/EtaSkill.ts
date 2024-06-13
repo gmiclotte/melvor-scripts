@@ -4,6 +4,7 @@ import {Targets} from "./Targets";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ActionCounterWrapper} from "./ActionCounter";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
 
@@ -48,10 +49,6 @@ export class EtaSkill {
         // flag to check if target was already reached
         this.skillReached = false;
         this.isComputing = false;
-
-        if (!this.activeRealm()) {
-            console.log('Failed to determine active realm for skill', this.skill.id);
-        }
     }
 
     get levelReqReached(): boolean {
@@ -98,7 +95,7 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
-    activeRealm() {
+    activeRealm(): Realm {
         return this.skill.currentRealm;
     }
 
@@ -137,6 +134,9 @@ export class EtaSkill {
     }
 
     init(game: Game) {
+        if (!this.activeRealm()) {
+            console.log('Failed to determine active realm for skill', this.skill.id);
+        }
         const realmID = this.action.realm.id;
         this.isComputing = true;
         // get initial values

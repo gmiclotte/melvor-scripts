@@ -1,11 +1,13 @@
-import type {Archaeology, ArchaeologyTool} from "../../Game-Files/gameTypes/archaeology";
+import type {Archaeology, ArchaeologyTool, ArtefactWeightRange} from "../../Game-Files/gameTypes/archaeology";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import type {DigSiteMap} from "../../Game-Files/gameTypes/cartography";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaArchaeology extends EtaSkillWithMastery {
 
+    private realm: Realm;
     private map: DigSiteMap | undefined;
 
     constructor(game: Game, archaeology: Archaeology, action: any, settings: Settings) {
@@ -13,14 +15,15 @@ export class EtaArchaeology extends EtaSkillWithMastery {
         if (this.action.selectedMapIndex > -1) {
             this.map = this.action.maps[this.action.selectedMapIndex];
         }
+        this.realm = game.realms.getObjectByID('melvorD:Melvor');
     }
 
     get actionInterval() {
         return this.modifyInterval(this.skill.baseInterval);
     }
 
-    activeRealm() {
-        return 'melvorD:Melvor';
+    activeRealm(): Realm {
+        return this.realm;
     }
 
     skip() {
