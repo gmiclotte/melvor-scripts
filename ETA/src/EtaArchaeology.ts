@@ -32,25 +32,30 @@ export class EtaArchaeology extends EtaSkillWithMastery {
         return this.getBaseSkillXPForDigSite() * 50;
     }
 
-    actionXP(): number {
-        let modifier = super.getXPModifier();
+    actionXP(realmID:string): number {
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            let modifier = super.getMelvorXPModifier();
 
-        // chance and xp for nothing
-        const pArtefact = this.chanceForArtefact();
-        const pNothing = 1 - pArtefact;
-        const xpNothing = this.getBaseSkillXPForDigSite() * (1 + modifier /100 );
+            // chance and xp for nothing
+            const pArtefact = this.chanceForArtefact();
+            const pNothing = 1 - pArtefact;
+            const xpNothing = this.getBaseSkillXPForDigSite() * (1 + modifier /100 );
 
-        // chance and xp for common rarity
-        const pCommon = this.chanceForArtefact(true);
-        const modCommon = modifier + this.modifiers.archaeologyCommonItemSkillXP;
-        const xpCommon = this.getArtefactSkillXPForDigSite() * (1 + modCommon / 100);
+            // chance and xp for common rarity
+            const pCommon = this.chanceForArtefact(true);
+            const modCommon = modifier + this.modifiers.archaeologyCommonItemSkillXP;
+            const xpCommon = this.getArtefactSkillXPForDigSite() * (1 + modCommon / 100);
 
-        // chance and xp for higher rarity
-        const pHigher = pArtefact - pCommon;
-        const xpHigher = this.getArtefactSkillXPForDigSite() * (1 + modifier /100 );
+            // chance and xp for higher rarity
+            const pHigher = pArtefact - pCommon;
+            const xpHigher = this.getArtefactSkillXPForDigSite() * (1 + modifier /100 );
 
-        // compute weighted average
-        return pNothing * xpNothing + pCommon * xpCommon + pHigher * xpHigher;
+            // compute weighted average
+            return pNothing * xpNothing + pCommon * xpCommon + pHigher * xpHigher;
+        }else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return 0; // there are no Abyssal actions for this skill
+        }
+        return 0;
     }
 
     chanceForArtefact(common: boolean = false) {

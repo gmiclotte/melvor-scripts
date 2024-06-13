@@ -24,8 +24,8 @@ export class EtaHerblore extends ResourceSkillWithMastery {
         return super.getPreservationChance(chance);
     }
 
-    getXPModifier() {
-        let modifier = super.getXPModifier();
+    getMelvorXPModifier() {
+        let modifier = super.getMelvorXPModifier();
         if (this.isPoolTierActive(1)) {
             modifier += 3;
         }

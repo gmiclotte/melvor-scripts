@@ -14,7 +14,7 @@ export class Targets {
         }
         // target level
         const currentLevel = current.skill.level;
-        this.skillLevel = settings.getTargetLevel(current.skill.id, currentLevel);
+        this.skillLevel = settings.getTargetLevel(current.action.realm.id, current.skill.id, currentLevel);
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
 

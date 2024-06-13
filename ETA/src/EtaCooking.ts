@@ -2,7 +2,6 @@ import type {Cooking} from "../../Game-Files/gameTypes/cooking";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaCooking extends ResourceSkillWithMastery {
     constructor(game: Game, cooking: Cooking, action: any, settings: Settings) {
@@ -49,9 +48,10 @@ export class EtaCooking extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    modifyXP(amount: number) {
-        // full xp for successful actions, no xp for failed actions
-        return super.modifyXP(amount);
+    modifyMelvorXP(amount: number) {
+        // TODO: check if this works properly
+        //  full xp for successful actions, no xp for failed actions
+        return super.modifyMelvorXP(amount);
     }
 
     getPreservationChance(chance: number) {

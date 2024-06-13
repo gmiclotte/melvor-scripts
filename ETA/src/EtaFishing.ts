@@ -63,10 +63,10 @@ export class EtaFishing extends EtaSkillWithMastery {
         return junkChance;
     }
 
-    modifyXP(amount: number) {
+    modifyMelvorXP(amount: number) {
         // apply junk chance
         const junkChance = this.getJunkChance();
         amount = (amount * (100 - junkChance) + junkChance) / 100;
-        return super.modifyXP(amount);
+        return super.modifyMelvorXP(amount);
     }
 }

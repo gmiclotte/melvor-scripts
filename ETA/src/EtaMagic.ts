@@ -39,12 +39,28 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         return Math.min(preserveChance, 80) / 100;
     }
 
-    actionXP(): number {
-        let xp = this.action.baseExperience;
+    actionXP(realmID:string): number {
+        let xp;
+
+        // base xp
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            xp = this.action.baseExperience;
+        }        else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+             xp = this.action.baseAbyssalExperience;
+        }
+
+        // modifyXP
         if (this.action.produces === this.productionID.MagicXP && this.skill.selectedConversionItem) {
             xp += this.skill.selectedConversionItem.sellsFor.quantity * 0.03;
         }
-        return this.modifyXP(xp);
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return this.modifyMelvorXP(xp);
+        }        else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return this.modifyAbyssalXP(xp);
+        }
+
+        // invalid realm
+        return 0;
     }
 
     init(game: Game) {
@@ -97,8 +113,8 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         return 0;
     }
 
-    getXPModifier() {
-        let modifier = super.getXPModifier();
+    getMelvorXPModifier() {
+        let modifier = super.getMelvorXPModifier();
         modifier += this.game.modifiers.altMagicSkillXP + this.game.modifiers.nonCombatSkillXP;
         return modifier;
     }

@@ -14,8 +14,8 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return this.skill.masteryModifiedInterval;
     }
 
-    actionXP() {
-        let xp = super.actionXP();
+    actionXP(realmID: string) {
+        let xp = super.actionXP(realmID);
         // Tier 2 Mastery Pool Checkpoint: 250% base xp when making runes
         if (this.skill.isMakingRunes && this.isPoolTierActive(1)) {
             xp *= 2.5;

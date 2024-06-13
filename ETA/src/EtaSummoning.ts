@@ -8,11 +8,9 @@ import type {Costs} from "../../Game-Files/gameTypes/skill";
 import type {Currency} from "../../Game-Files/gameTypes/currency";
 
 export class EtaSummoning extends ResourceSkillWithMastery {
-    private readonly player: Player;
 
     constructor(game: Game, summoning: Summoning, action: any, settings: Settings) {
         super(game, summoning, action, settings);
-        this.player = game.combat.player;
     }
 
     get masteryModifiedInterval() {

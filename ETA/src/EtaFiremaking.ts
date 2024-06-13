@@ -18,8 +18,13 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         return this.modifyInterval(this.action.baseInterval);
     }
 
-    actionXP() {
-        return super.actionXP() * (1 + this.skill.bonfireBonusXP / 100);
+    actionXP(realmID:string) {
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return super.actionXP(realmID) * (1 + this.skill.bonfireBonusXP / 100);
+        }else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return super.actionXP(realmID) * (1 + this.skill.bonfireBonusAXP / 100);
+        }
+        return 0;
     }
 
     getCurrentRecipeCosts() {

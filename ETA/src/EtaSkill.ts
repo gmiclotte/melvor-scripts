@@ -86,15 +86,20 @@ export class EtaSkill {
 
     gainsPerAction() {
         return new Rates(
-            this.actionXP(),
+            this.actionXP(this.action.realm.id),
             this.successRate,
             this.averageAttemptTime,
             1, // unit
         );
     }
 
-    actionXP(): number {
-        return this.modifyXP(this.action.baseExperience);
+    actionXP(realmID:string): number {
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return this.modifyMelvorXP(this.action.baseExperience);
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return this.modifyAbyssalXP(this.action.baseExperience);
+        }
+        return 0;
     }
 
     completed() {
@@ -106,12 +111,18 @@ export class EtaSkill {
     }
 
     init(game: Game) {
+        const realmID = this.action.realm.id;
         this.isComputing = true;
         // get initial values
         // actions performed
         this.actionsTaken.reset();
         // current xp
-        this.skillXp = this.skill.xp;
+        this.skillXp = 0;
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            this.skillXp = this.skill.xp;
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            this.skillXp = this.skill.abyssalXP;
+        }
         // initial
         this.initial = new Rates(
             this.skillXp,
@@ -218,20 +229,36 @@ export class EtaSkill {
         return exp.levelToXP(level) + 0.00001;
     }
 
-    modifyXP(amount: number) {
-        amount *= 1 + this.getXPModifier() / 100;
+    modifyMelvorXP(amount: number) {
+        amount *= 1 + this.getMelvorXPModifier() / 100;
         if (this.modifiers.halveSkillXP > 0) {
             amount /= 2;
         }
         return amount;
     }
 
-    getXPModifier() {
+    modifyAbyssalXP(amount: number) {
+        amount *= 1 + this.getAbyssalXPModifier() / 100;
+        return amount;
+    }
+
+    getMelvorXPModifier() {
         let modifier = this.modifiers.getValue(
             "melvorD:skillXP" /* ModifierIDs.skillXP */,
             this.getActionModifierQuery()
         );
         modifier += this.modifiers.nonCombatSkillXP;
+        return modifier;
+    }
+
+    getAbyssalXPModifier() {
+        let modifier = this.modifiers.getValue(
+            "melvorD:abyssalSkillXP" /* ModifierIDs.abyssalSkillXP */,
+            this.getActionModifierQuery()
+        );
+        if (this.skill.isCombat) {
+            modifier += this.modifiers.abyssalCombatSkillXP;
+        }
         return modifier;
     }
 

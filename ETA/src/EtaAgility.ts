@@ -32,8 +32,8 @@ export class EtaAgility extends EtaSkillWithMastery {
         return modifier;
     }
 
-    getXPModifier() {
-        let modifier = super.getXPModifier();
+    getMelvorXPModifier() {
+        let modifier = super.getMelvorXPModifier();
         // TODO recompute negative exp modifiers on this obstacle at mastery 99
         return modifier;
     }

@@ -7,6 +7,32 @@ export class Settings {
     private readonly ctx: any;
     private readonly generalSettings: any;
     private readonly skillSettings: Map<string, any>;
+    public readonly generalSettingsArray: {
+        numerical: {
+            type: string,
+            name: string,
+            label: string,
+            hint: string,
+            default: number,
+            min: number,
+            max: number,
+        }[];
+        toggles: {
+            type: string,
+            name: string,
+            label: string,
+            hint: string,
+            default: boolean,
+        }[];
+        targets: {
+            type: string,
+            name: string,
+            label: string,
+            hint: string,
+            default: number[],
+        }[];
+    };
+    public readonly skillTargetsSettingsArray: {name:string, label:string}[];
 
     constructor(ctx: any, game: Game) {
         this.ctx = ctx;
@@ -22,71 +48,86 @@ export class Settings {
         } catch (_: any) {
             console.warn('Failed to define settings type \'numberArray\'');
         }
+        // setting arrays
+        this.generalSettingsArray = {
+            toggles: [
+                {
+                    type: 'switch',
+                    name: 'IS_12H_CLOCK',
+                    label: 'Use 12h clock',
+                    hint: 'Use 12h clock (AM/PM), instead of 24h clock.',
+                    default: false,
+                },
+                {
+                    type: 'switch',
+                    name: 'SHOW_XP_RATE',
+                    label: 'Show XP rates',
+                    hint: 'Show XP rates.',
+                    default: true,
+                },
+                {
+                    type: 'switch',
+                    name: 'SHOW_ACTION_TIME',
+                    label: 'Show action times',
+                    hint: 'Show action times.',
+                    default: true,
+                },
+            ],
+            numerical: [
+                {
+                    type: 'number',
+                    name: 'minimalActionTime',
+                    label: 'Minimal action time in ms',
+                    hint: 'Minimal action time in ms.',
+                    default: 250,
+                    min: 0,
+                    max: Infinity,
+                },
+            ],
+            targets: [
+                {
+                    type: 'numberArray',
+                    name: 'GLOBAL_TARGET_LEVEL',
+                    label: 'Global level targets',
+                    hint: 'Global level targets.',
+                    default: [99, 120],
+                },
+                {
+                    type: 'numberArray',
+                    name: 'GLOBAL_TARGET_ABYSSAL',
+                    label: 'Global abyssal level targets',
+                    hint: 'Global abyssal level targets.',
+                    default: [99, 120],
+                },
+                {
+                    type: 'numberArray',
+                    name: 'GLOBAL_TARGET_MASTERY',
+                    label: 'Global mastery targets',
+                    hint: 'Global mastery targets.',
+                    default: [99],
+                },
+                {
+                    type: 'numberArray',
+                    name: 'GLOBAL_TARGET_POOL',
+                    label: 'Global pool targets (%)',
+                    hint: 'Global pool targets (%).',
+                    default: [100],
+                },
+            ],
+        };
+
+        this.skillTargetsSettingsArray = [
+            {name: 'LEVEL', label: 'Level targets'},
+            {name: 'ABYSSAL', label: 'Abyssal level targets'},
+            {name: 'MASTERY', label: 'Mastery targets'},
+            {name: 'POOL', label: 'Pool targets (%)'},
+        ];
+
         // general settings
         this.generalSettings = ctx.settings.section('General');
-        // toggles
-        this.generalSettings.add([
-            {
-                type: 'switch',
-                name: 'IS_12H_CLOCK',
-                label: 'Use 12h clock',
-                hint: 'Use 12h clock (AM/PM), instead of 24h clock.',
-                default: false,
-            },
-            {
-                type: 'switch',
-                name: 'SHOW_XP_RATE',
-                label: 'Show XP rates',
-                hint: 'Show XP rates.',
-                default: true,
-            },
-            {
-                type: 'switch',
-                name: 'SHOW_ACTION_TIME',
-                label: 'Show action times',
-                hint: 'Show action times.',
-                default: true,
-            },
-        ]);
-        // numerical settings
-        this.generalSettings.add([
-            {
-                type: 'number',
-                name: 'minimalActionTime',
-                min: 0,
-                max: Infinity,
-                label: 'Minimal action time in ms',
-                hint: 'Minimal action time in ms.',
-                default: 250,
-            },
-        ]);
-        /*
-            targets
-         */
-        // Default global target level / mastery / pool% is 99 / 99 / 100
-        this.generalSettings.add([
-            {
-                type: 'numberArray',
-                name: 'GLOBAL_TARGET_LEVEL',
-                label: 'Global level targets',
-                hint: 'Global level targets.',
-                default: [99],
-            },
-            {
-                type: 'numberArray',
-                name: 'GLOBAL_TARGET_MASTERY',
-                label: 'Global mastery targets',
-                hint: 'Global mastery targets.',
-                default: [99],
-            },
-            {
-                type: 'numberArray',
-                name: 'GLOBAL_TARGET_POOL',
-                label: 'Global pool targets (%)',
-                hint: 'Global pool targets (%).',
-                default: [100],
-            },
-        ]);
+        this.generalSettings.add(this.generalSettingsArray.toggles);
+        this.generalSettings.add(this.generalSettingsArray.numerical);
+        this.generalSettings.add(this.generalSettingsArray.targets);
         // skillSettings
         this.skillList = game.skills.filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => skill.actions)
             // @ts-ignore
@@ -96,12 +137,8 @@ export class Settings {
         this.skillList.forEach((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => {
             // @ts-ignore
             const skillID = skill.id;
-            [
-                {id: 'LEVEL', label: 'Level targets'},
-                {id: 'MASTERY', label: 'Mastery targets'},
-                {id: 'POOL', label: 'Pool targets (%)'},
-            ].forEach(target => {
-                const key = 'TARGET_' + target.id;
+            this.skillTargetsSettingsArray.forEach(target => {
+                const key = 'TARGET_' + target.name;
                 this.addSkillSetting(key, target.label, skillID);
             });
         });
@@ -155,8 +192,12 @@ export class Settings {
         return Math.ceil(target);
     }
 
-    getTargetLevel(skillID: string, current: number) {
-        return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillID), 99, 170);
+    getTargetLevel(realmID: string, skillID: string, current: number) {
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillID), 99, 170);
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return this.getTarget(current, this.get('GLOBAL_TARGET_ABYSSAL'), this.get('TARGET_ABYSSAL', skillID), 99, 170);
+        }
     }
 
     getTargetMastery(skillID: string, current: number) {

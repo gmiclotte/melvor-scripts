@@ -86,8 +86,8 @@ export class EtaThieving extends EtaSkillWithMastery {
         return modifier;
     }
 
-    getXPModifier() {
-        let modifier = super.getXPModifier();
+    getMelvorXPModifier() {
+        let modifier = super.getMelvorXPModifier();
         if (this.isPoolTierActive(0)) {
             modifier += 3;
         }

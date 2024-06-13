@@ -321,17 +321,13 @@ export class ETA extends TinyMod {
 
     addToggles(): void {
         this.togglesCard = new Card(this.idManager, this.content, '', '150px', true);
-        const titles = new Map<string, string>()
-        titles.set('IS_12H_CLOCK', 'Use 12h clock');
-        titles.set('SHOW_XP_RATE', 'Show XP rates');
-        titles.set('SHOW_ACTION_TIME', 'Show action times');
-        titles.forEach((value, key) => {
+        this.settings.generalSettingsArray.toggles.forEach(toggle => {
             this.togglesCard.addToggleRadio(
-                value,
-                key,
+                toggle.label,
+                toggle.name,
                 this.settings,
-                key,
-                this.settings.get(key),
+                toggle.name,
+                this.settings.get(toggle.name),
             );
         });
     }
@@ -339,17 +335,14 @@ export class ETA extends TinyMod {
     addGlobalTargetInputs() {
         this.globalTargetsCard = new Card(this.idManager, this.content, '', '150px', true);
         // targets
-        [
-            {id: 'LEVEL', label: 'Global level targets', defaultValue: [99, 120]},
-            {id: 'MASTERY', label: 'Global mastery targets', defaultValue: [99]},
-            {id: 'POOL', label: 'Global pool targets (%)', defaultValue: [100]},
-        ].forEach(target => {
-            const globalKey = 'GLOBAL_TARGET_' + target.id;
+        // other numerical settings
+        this.settings.generalSettingsArray.targets.forEach(target => {
+            const globalKey = target.name;
             this.globalTargetsCard.addNumberArrayInput(
                 target.label,
                 this.settings,
                 globalKey,
-                target.defaultValue,
+                target.default,
                 () => this.settings.get(globalKey),
                 (_: any, __: string, result: any) => {
                     this.settings.set(globalKey, result);
@@ -357,11 +350,8 @@ export class ETA extends TinyMod {
                 },
             );
         });
-        // other numerical settings
-        [
-            {id: 'minimalActionTime', label: 'Minimal action time in ms', defaultValue: 250},
-        ].forEach(numerical => {
-            const key = numerical.id;
+        this.settings.generalSettingsArray.numerical.forEach(numerical => {
+            const key = numerical.name;
             this.globalTargetsCard.addNumberInput(
                 numerical.label,
                 this.settings.get(key),
@@ -370,13 +360,13 @@ export class ETA extends TinyMod {
                 (event: any) => {
                     let value = parseInt(event.currentTarget.value);
                     if (isNaN(value)) {
-                        value = numerical.defaultValue;
+                        value = numerical.default;
                     }
                     if (value < 0) {
-                        value = numerical.defaultValue;
+                        value = numerical.default;
                     }
                     if (value > Infinity) {
-                        value = numerical.defaultValue;
+                        value = numerical.default;
                     }
                     this.settings.set(key, value);
                     recomputeEverySkill();
@@ -392,12 +382,9 @@ export class ETA extends TinyMod {
             const skillID = skill.id;
             const card = this.skillTargetCard.addTab(skillID, skill.media, '', '150px', undefined);
             card.addSectionTitle(skill.name);
-            [
-                {id: 'LEVEL', label: 'Level targets'},
-                {id: 'MASTERY', label: 'Mastery targets'},
-                {id: 'POOL', label: 'Pool targets (%)'},
-            ].forEach(target => {
-                const key = 'TARGET_' + target.id;
+            this.settings.skillTargetsSettingsArray.forEach(target => {
+                console.log(target)
+                const key = 'TARGET_' + target.name;
                 card.addNumberArrayInput(
                     target.label,
                     this.settings,
