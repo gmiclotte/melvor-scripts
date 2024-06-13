@@ -3,12 +3,14 @@ export class ActionCounterWrapper {
     public skill: ActionCounter;
     public mastery: ActionCounter;
     public pool: ActionCounter;
+    public intensity: ActionCounter;
 
     constructor() {
         this.active = this.empty;
         this.skill = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
+        this.intensity = this.empty;
     }
 
     get empty() {
@@ -20,6 +22,7 @@ export class ActionCounterWrapper {
         this.skill = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
+        this.intensity = this.empty;
     }
 }
 

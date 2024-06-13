@@ -29,7 +29,7 @@ export class Settings {
             default: number[],
         }[];
     };
-    public readonly skillTargetsSettingsArray: { name: string, label: string }[];
+    public readonly skillTargetsSettingsArray: { name: string, label: string, whiteList: string[] | undefined }[];
     private readonly ctx: any;
     private readonly generalSettings: any;
     private readonly skillSettings: Map<string, any>;
@@ -117,10 +117,11 @@ export class Settings {
         };
 
         this.skillTargetsSettingsArray = [
-            {name: 'LEVEL', label: 'Level targets'},
-            {name: 'ABYSSAL', label: 'Abyssal level targets'},
-            {name: 'MASTERY', label: 'Mastery targets'},
-            {name: 'POOL', label: 'Pool targets (%)'},
+            {name: 'LEVEL', label: 'Level targets', whiteList: undefined},
+            {name: 'ABYSSAL', label: 'Abyssal level targets', whiteList: undefined},
+            {name: 'MASTERY', label: 'Mastery targets', whiteList: undefined},
+            {name: 'POOL', label: 'Pool targets (%)', whiteList: undefined},
+            {name: 'INTENSITY', label: 'Intensity targets', whiteList: ['melvorItA:Harvesting']},
         ];
 
         // general settings
@@ -138,6 +139,9 @@ export class Settings {
             // @ts-ignore
             const skillID = skill.id;
             this.skillTargetsSettingsArray.forEach(target => {
+                if (target.whiteList !== undefined && !target.whiteList.includes(skillID)) {
+                    return;
+                }
                 const key = 'TARGET_' + target.name;
                 this.addSkillSetting(key, target.label, skillID);
             });
@@ -206,6 +210,10 @@ export class Settings {
 
     getTargetPool(skillID: string, current: number, cap: number) {
         return this.getTarget(current, this.get('GLOBAL_TARGET_POOL'), this.get('TARGET_POOL', skillID), 100, cap);
+    }
+
+    getTargetIntensity(skillID: string, current: number, milestones: number[]) {
+        return this.getTarget(current, milestones, this.get('TARGET_INTENSITY', skillID), 100, 100);
     }
 
     private addSkillSetting(key: string, label: string, skillID: string): string {

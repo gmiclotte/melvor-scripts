@@ -8,6 +8,7 @@ import type {MasteryAction} from "../../Game-Files/gameTypes/mastery2";
 import type {ThievingArea} from "../../Game-Files/gameTypes/thieving2";
 import {DisplayWithPool} from "./DisplayWithPool";
 import {EtaSkill} from "./EtaSkill";
+import {DisplayWithIntensity} from "./DisplayWithIntensity";
 
 export class DisplayManager {
     private readonly game: Game;
@@ -98,7 +99,23 @@ export class DisplayManager {
         const node = document.querySelector(query);
         if (node !== null) {
             const displayID = this.getDisplayID(skill, actionID);
-            display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+            // @ts-ignore
+            switch (skill.id) {
+                case 'melvorD:Woodcutting':
+                case 'melvorD:Fishing':
+                case 'melvorD:Mining':
+                case 'melvorAoD:Thieving':
+                case 'melvorAoD:Agility':
+                case 'melvorAoD:Astrology':
+                case 'melvorAoD:Archaeology':
+                    display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+                    break;
+                case 'melvorItA:Harvesting':
+                    display = new DisplayWithIntensity(this, this.settings, this.game.bank, this.game.items, displayID);
+                    break;
+                default:
+                    display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+            }
             node!.parentNode!.insertBefore(display.container, node);
         }
         return display

@@ -82,7 +82,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
                 return;
             }
             const rates = gainsPerAction.rateMap.get(actionID)!;
-            const requiredForMasteryCheckPoint = calculator.xpToNextLevel(calculator.masteryLevel, calculator.masteryXp);
+            const requiredForMasteryCheckPoint = calculator.masteryXpToNextLevel(calculator.masteryLevel, calculator.masteryXp);
             attemptsToMasteryCheckpoints.push(
                 requiredForMasteryCheckPoint
                 / rates.mastery

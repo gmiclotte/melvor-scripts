@@ -48,6 +48,10 @@ export class EtaSkill {
         // flag to check if target was already reached
         this.skillReached = false;
         this.isComputing = false;
+
+        if (!this.activeRealm()) {
+            console.log('Failed to determine active realm for skill', this.skill.id);
+        }
     }
 
     get levelReqReached(): boolean {
@@ -94,8 +98,12 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
+    activeRealm() {
+        return this.skill.currentRealm;
+    }
+
     skip() {
-        return this.action.realm !== this.skill.currentRealm;
+        return this.action.realm !== this.activeRealm();
     }
 
     /***
@@ -184,9 +192,11 @@ export class EtaSkill {
 
     xpToNextLevel(level: number, xp: number): number {
         const nextXp = this.levelToXp(level + 1);
-        /*if (nextXp === xp) {
-            return this.xpToNextLevel(level + 1, xp);
-        }*/
+        return nextXp - xp;
+    }
+
+    masteryXpToNextLevel(level: number, xp: number): number {
+        const nextXp = this.masteryLevelToXp(level + 1);
         return nextXp - xp;
     }
 
@@ -259,6 +269,16 @@ export class EtaSkill {
             return abyssalExp.levelToXP(level) + 0.00001;
         }
         return 1;
+    }
+
+    masteryXpToLevel(xp: number): number {
+        // @ts-ignore 2304
+        return exp.xpToLevel(xp);
+    }
+
+    masteryLevelToXp(level: number): number {
+        // @ts-ignore 2304
+        return exp.levelToXP(level) + 0.00001;
     }
 
     modifyMelvorXP(amount: number) {

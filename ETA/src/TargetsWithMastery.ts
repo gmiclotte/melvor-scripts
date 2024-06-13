@@ -11,14 +11,12 @@ export class TargetsWithMastery extends TargetsWithPool {
         if (current.action === undefined) {
             this.masteryLevel = 0;
             this.masteryXp = 0;
-            this.poolPercent = 0;
-            this.poolXp = 0;
             return this;
         }
         // target mastery
         const currentMastery = current.skill.getMasteryLevel(current.action);
         this.masteryLevel = settings.getTargetMastery(current.skill.id, currentMastery);
-        this.masteryXp = this.current.levelToXp(this.masteryLevel);
+        this.masteryXp = this.current.masteryLevelToXp(this.masteryLevel);
     }
 
     masteryCompleted(): boolean {

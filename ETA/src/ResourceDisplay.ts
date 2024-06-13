@@ -74,7 +74,7 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
                 return result.virtualMasteryLevel + this.getProgressInLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
             }
             const masteryXp = result.finalXpMap.get('masteryXp')!;
-            const masteryLevel = result.xpToLevel(masteryXp);
+            const masteryLevel = result.masteryXpToLevel(masteryXp);
             if (masteryLevel >= 99) {
                 return 99;
             }

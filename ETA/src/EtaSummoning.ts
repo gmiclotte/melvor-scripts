@@ -62,7 +62,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
             reduction--;
         }
         if (this.isAbyssalPoolTierActive(1)) {
-            reduction-=3;
+            reduction -= 3;
         }
         // grab modifier reductions
         switch (this.action.tier) {

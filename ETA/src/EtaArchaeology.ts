@@ -19,8 +19,12 @@ export class EtaArchaeology extends EtaSkillWithMastery {
         return this.modifyInterval(this.skill.baseInterval);
     }
 
+    activeRealm() {
+        return 'melvorD:Melvor';
+    }
+
     skip() {
-        return (this.map === undefined || this.action.selectedTools.length === 0) || this.action.realm !== this.skill.currentRealm;
+        return (this.map === undefined || this.action.selectedTools.length === 0) || this.action.realm !== this.activeRealm();
     }
 
     getBaseSkillXPForDigSite() {

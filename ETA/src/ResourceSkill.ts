@@ -34,8 +34,12 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             return !this.resourcesReached && this.noResourceCheckpointLeft;
         }
 
+        activeRealm() {
+            return this.skill.selectedRecipe.realm;
+        }
+
         skip() {
-            return this.action !== this.skill.selectedRecipe || this.action.realm !== this.skill.currentRealm;
+            return this.action !== this.skill.selectedRecipe || this.action.realm !== this.activeRealm();
         }
 
         completed() {

@@ -34,8 +34,12 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         return Math.min(preserveChance, 80) / 100;
     }
 
+    activeRealm() {
+        return 'melvorD:Melvor';
+    }
+
     skip() {
-        return this.action !== this.skill.selectedSpell || this.action.realm !== this.skill.currentRealm;
+        return this.action !== this.skill.selectedSpell || this.action.realm !== this.activeRealm();
     }
 
     actionXP(realmID: string): number {

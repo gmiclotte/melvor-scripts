@@ -37,7 +37,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
      */
 
     get initialMasteryLevel(): number {
-        return Math.min(99, this.xpToLevel(this.initial.mastery));
+        return Math.min(99, this.masteryXpToLevel(this.initial.mastery));
     }
 
     get masteryLevel(): number {
@@ -53,7 +53,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     }
 
     get virtualMasteryLevel(): number {
-        return this.xpToLevel(this.masteryXp);
+        return this.masteryXpToLevel(this.masteryXp);
     }
 
     get totalCurrentMasteryLevel() {
@@ -133,7 +133,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     attemptsToCheckpoint(gainsPerAction: RatesWithMastery) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
-        const requiredForMasteryCheckPoint = this.xpToNextLevel(this.virtualMasteryLevel, this.masteryXp);
+        const requiredForMasteryCheckPoint = this.masteryXpToNextLevel(this.virtualMasteryLevel, this.masteryXp);
         const attemptsToMasteryCheckpoint = requiredForMasteryCheckPoint / gainsPerAction.mastery / gainsPerAction.successRate;
         return Math.ceil(Math.min(
             super.attemptsToCheckpoint(gainsPerAction),
