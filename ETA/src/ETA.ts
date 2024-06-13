@@ -381,7 +381,6 @@ export class ETA extends TinyMod {
             const card = this.skillTargetCard.addTab(skillID, skill.media, '', '150px', undefined);
             card.addSectionTitle(skill.name);
             this.settings.skillTargetsSettingsArray.forEach(target => {
-                console.log(target)
                 const key = 'TARGET_' + target.name;
                 card.addNumberArrayInput(
                     target.label,
