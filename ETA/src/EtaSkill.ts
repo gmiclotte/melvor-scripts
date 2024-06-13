@@ -76,7 +76,7 @@ export class EtaSkill {
     }
 
     skip() {
-        return false;
+        return this.action.realm !== this.skill.currentRealm;
     }
 
     /***
@@ -96,7 +96,7 @@ export class EtaSkill {
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             return this.modifyMelvorXP(this.action.baseExperience);
         } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
-            return this.modifyAbyssalXP(this.action.baseExperience);
+            return this.modifyAbyssalXP(this.action.baseAbyssalExperience);
         }
         return 0;
     }
