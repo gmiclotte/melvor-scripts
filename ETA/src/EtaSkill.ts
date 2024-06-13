@@ -50,6 +50,21 @@ export class EtaSkill {
         this.isComputing = false;
     }
 
+    get levelReqReached(): boolean {
+        return this.action.level <= this.skill.level
+            && this.action.abyssalLevel <= this.skill.abyssalLevel;
+    }
+
+    get actionLevel(): number {
+        const realmID = this.action.realm.id;
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return this.action.level;
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return this.action.abyssalLevel;
+        }
+        return 0;
+    }
+
     get skillLevel(): number {
         return this.xpToLevel(this.skillXp);
     }

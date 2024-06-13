@@ -25,6 +25,7 @@ import {MultiActionSkill} from "./MultiActionSkill";
 import {EtaAgility} from "./EtaAgility";
 import {EtaAstrology} from "./EtaAstrology";
 import {EtaArchaeology} from "./EtaArchaeology";
+import {EtaHarvesting} from "./EtaHarvesting";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -91,11 +92,9 @@ export class ETA extends TinyMod {
         if (this.game.archaeology) {
             this.addSkillCalculators(EtaArchaeology, game.archaeology);
         }
-        /*
         if (this.game.harvesting) {
             this.addSkillCalculators(EtaHarvesting, game.harvesting);
         }
-         */
 
         // we made it
         this.log('Loaded!');
@@ -227,26 +226,26 @@ export class ETA extends TinyMod {
         const skillID = skill.id;
         // check if this calculator wants to skip
         const calculator = this.skillCalculators.get(skillID)!.get(action.id);
-        if (calculator!.skip()) {
+        if (!calculator) {
+            return true;
+        }
+        if (calculator.skip()) {
             return true;
         }
         // skip actions for which we do not have the level requirement
-        // agility actions do not have a level requirement comparable to skill level
-        // TODO: check other requirements ?
-        if (skillID !== this.game.agility.id && action.level > skill.level) {
+        if (!calculator.levelReqReached) {
             return true;
         }
-        const archID = this.game.archaeology ? this.game.archaeology.id : 'invalidArchID';
+        const archID = this.game.archaeology ? this.game.archaeology.id : 'invalidID';
+        const harvestingID = this.game.harvesting ? this.game.harvesting.id : 'invalidID';
         switch (skillID) {
             case this.game.woodcutting.id:
             case this.game.mining.id:
             case this.game.astrology.id:
-                // compute all actions for woodcutting, mining, and astrology
+            case harvestingID:
+                // compute all actions for woodcutting, mining, astrology, and harvesting
                 return false;
             case this.game.agility.id:
-                if (action.level > skill.level) {
-                    return true;
-                }
                 // only compute selected obstacles for agility
                 const built = this.game.agility.activeCourse.builtObstacles.get(action.category);
                 return built === undefined || built.id !== action.id;
