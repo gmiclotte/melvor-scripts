@@ -34,6 +34,7 @@ export class EtaSkill {
         this.action = action;
         this.modifiers = game.modifiers;
         this.settings = settings;
+        this.initial = Rates.emptyRates;
         this.targets = this.getTargets();
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
@@ -41,7 +42,6 @@ export class EtaSkill {
         this.currentRatesSet = false;
         this.attemptsPerHour = 0;
         this.currentRates = Rates.emptyRates;
-        this.initial = Rates.emptyRates;
         this.infiniteActions = false;
         // @ts-ignore
         this.TICK_INTERVAL = TICK_INTERVAL;
@@ -52,6 +52,10 @@ export class EtaSkill {
 
     get skillLevel(): number {
         return this.xpToLevel(this.skillXp);
+    }
+
+    get initialVirtualLevel(): number {
+        return this.xpToLevel(this.initial.xp);
     }
 
     /***
@@ -219,13 +223,27 @@ export class EtaSkill {
      */
 
     xpToLevel(xp: number): number {
-        // @ts-ignore 2304
-        return exp.xpToLevel(xp);
+        const realmID = this.action.realm.id;
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            // @ts-ignore 2304
+            return exp.xpToLevel(xp);
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            // @ts-ignore 2304
+            return abyssalExp.xpToLevel(xp);
+        }
+        return 1;
     }
 
     levelToXp(level: number): number {
-        // @ts-ignore 2304
-        return exp.levelToXP(level) + 0.00001;
+        const realmID = this.action.realm.id;
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            // @ts-ignore 2304
+            return exp.levelToXP(level) + 0.00001;
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            // @ts-ignore 2304
+            return abyssalExp.levelToXP(level) + 0.00001;
+        }
+        return 1;
     }
 
     modifyMelvorXP(amount: number) {

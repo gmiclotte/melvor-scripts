@@ -81,7 +81,7 @@ export class EtaSkillWithPool extends EtaSkill {
         super.init(game);
         // get initial values
         // current pool xp
-        this.poolXp = this.skill._masteryPoolXP.get(this.action.realm);
+        this.poolXp = this.skill.getMasteryPoolXP(this.action.realm);
         // initial
         this.initial = RatesWithPool.addPoolToRates(
             this.initial,
@@ -141,8 +141,12 @@ export class EtaSkillWithPool extends EtaSkill {
         return this.getMasteryPoolProgress >= this.masteryCheckpoints[tier];
     }
 
+    getBaseMasteryPoolCap() {
+        return this.skill.getBaseMasteryPoolCap(this.action.realm);
+    }
+
     poolXpToPercent(poolXp: number) {
-        return (100 * poolXp) / this.skill.getBaseMasteryPoolCap(this.action.realm);
+        return (100 * poolXp) / this.getBaseMasteryPoolCap();
     }
 
     poolXpToPercentWithModifiers(poolXp: number) {

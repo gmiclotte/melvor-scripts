@@ -13,7 +13,7 @@ export class Targets {
             return this;
         }
         // target level
-        const currentLevel = current.skill.level;
+        const currentLevel = current.initialVirtualLevel;
         this.skillLevel = settings.getTargetLevel(current.action.realm.id, current.skill.id, currentLevel);
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
