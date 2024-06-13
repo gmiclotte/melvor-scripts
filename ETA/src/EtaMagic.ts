@@ -30,6 +30,10 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         this.AltMagicConsumptionID = AltMagicConsumptionID;
     }
 
+    skip() {
+        return this.action !== this.skill.selectedSpell;
+    }
+
     get runePreservationChance() {
         let preserveChance = this.modifiers.getRunePreservationChance();
         preserveChance += this.game.modifiers.altMagicRunePreservationChance;
