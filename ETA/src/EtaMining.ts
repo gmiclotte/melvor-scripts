@@ -14,11 +14,10 @@ export class EtaMining extends EtaSkillWithMastery {
             return rock.fixedMaxHP;
         }
         let rockHP = this.skill.baseRockHP;
-        if (this.isPoolTierActive(3)) {
+        if (this.isMelvorPoolTierActive(3)) {
             rockHP += 10;
         }
-        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
-        rockHP += changeInMasteryLevel;
+        rockHP += this.changeInMasteryLevel;
         rockHP += this.modifiers.getValue(
             "melvorD:flatMiningNodeHP" /* ModifierIDs.flatMiningNodeHP */,
             this.getActionModifierQuery()
@@ -53,7 +52,7 @@ export class EtaMining extends EtaSkillWithMastery {
         const effectiveRockHP = this.maxRockHP / rockHPDivisor;
         // respawn interval
         let respawnInterval = this.action.baseRespawnInterval;
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1) || this.isAbyssalPoolTierActive(1)) {
             respawnInterval *= 0.9;
         }
         // @ts-ignore
@@ -73,7 +72,10 @@ export class EtaMining extends EtaSkillWithMastery {
 
     getFlatIntervalModifier() {
         let modifier = super.getFlatIntervalModifier();
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2)) {
+            modifier -= 200;
+        }
+        if (this.isAbyssalPoolTierActive(3)) {
             modifier -= 200;
         }
         return modifier;

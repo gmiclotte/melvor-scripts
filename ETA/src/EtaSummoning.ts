@@ -27,8 +27,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
             this.getActionModifierQuery()
         );
         // Non-Shard Cost reduction that scales with mastery level
-        const changeIn10MasteryLevel = Math.floor(this.masteryLevel / 10) - Math.floor(this.initialMasteryLevel / 10);
-        modifier -= changeIn10MasteryLevel * 5;
+        modifier -= this.changeIn10MasteryLevel * 5;
         // Level 99 Mastery: 5% Non Shard Cost Reduction
         if (this.checkMasteryMilestone(99)) {
             modifier -= 5;
@@ -55,12 +54,15 @@ export class EtaSummoning extends ResourceSkillWithMastery {
             reduction--;
         }
         // Tier 2 Mastery Pool: +1 Shard Cost Reduction for Tier 1 and Tier 2 Tablets
-        if ((this.action.tier === 1 || this.action.tier === 2) && this.isPoolTierActive(1)) {
+        if ((this.action.tier === 1 || this.action.tier === 2) && this.isMelvorPoolTierActive(1)) {
             reduction--;
         }
         // Tier 4 Mastery Pool: +1 Shard Cost Reduction for Tier 3 Tablets
-        if (this.action.tier === 3 && this.isPoolTierActive(3)) {
+        if (this.action.tier === 3 && this.isMelvorPoolTierActive(3)) {
             reduction--;
+        }
+        if (this.isAbyssalPoolTierActive(1)) {
+            reduction-=3;
         }
         // grab modifier reductions
         switch (this.action.tier) {
@@ -87,7 +89,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
 
     getPreservationChance(chance: number) {
         // Tier 3 Mastery Pool: +10% Resource Preservation chance
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2) || this.isAbyssalPoolTierActive(2)) {
             chance += 10;
         }
         return super.getPreservationChance(chance);
@@ -95,7 +97,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;

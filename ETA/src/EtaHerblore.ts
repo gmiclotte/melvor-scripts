@@ -13,20 +13,22 @@ export class EtaHerblore extends ResourceSkillWithMastery {
     }
 
     getPreservationChance(chance: number) {
-        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
-        chance += changeInMasteryLevel * 0.2;
+        chance += this.changeInMasteryLevel * 0.2;
         if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2)) {
             chance += 5;
+        }
+        if (this.isAbyssalPoolTierActive(1)) {
+            chance += 10;
         }
         return super.getPreservationChance(chance);
     }
 
     getMelvorXPModifier() {
         let modifier = super.getMelvorXPModifier();
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1)) {
             modifier += 3;
         }
         return modifier;
@@ -34,7 +36,7 @@ export class EtaHerblore extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;

@@ -97,7 +97,7 @@ export class Settings {
                     name: 'GLOBAL_TARGET_ABYSSAL',
                     label: 'Global abyssal level targets',
                     hint: 'Global abyssal level targets.',
-                    default: [99, 120],
+                    default: [60],
                 },
                 {
                     type: 'numberArray',

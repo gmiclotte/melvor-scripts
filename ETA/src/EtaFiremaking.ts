@@ -34,19 +34,19 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
 
     getPercentageIntervalModifier() {
         let modifier = super.getPercentageIntervalModifier();
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1) || this.isAbyssalPoolTierActive(2)) {
             modifier -= 10;
         }
-        modifier -= this.masteryLevel * 0.1;
+        modifier -= this.changeInMasteryLevel * 0.1;
         return modifier;
     }
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
-        if (this.isPoolTierActive(3)) {
+        if (this.isMelvorPoolTierActive(3)) {
             modifier += 5;
         }
         if (this.checkMasteryMilestone(99)) {

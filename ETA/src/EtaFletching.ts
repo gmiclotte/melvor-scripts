@@ -14,8 +14,7 @@ export class EtaFletching extends ResourceSkillWithMastery {
     }
 
     getPreservationChance(chance: number) {
-        const changeInMasteryLevel = this.masteryLevel - this.initialMasteryLevel;
-        chance += 0.2 * changeInMasteryLevel;
+        chance += 0.2 * this.changeInMasteryLevel;
         if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
@@ -24,7 +23,10 @@ export class EtaFletching extends ResourceSkillWithMastery {
 
     getFlatIntervalModifier() {
         let modifier = super.getFlatIntervalModifier();
-        if (this.isPoolTierActive(3)) {
+        if (this.isMelvorPoolTierActive(3)) {
+            modifier -= 200;
+        }
+        if (this.isAbyssalPoolTierActive(3)) {
             modifier -= 200;
         }
         return modifier;
@@ -40,7 +42,7 @@ export class EtaFletching extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;

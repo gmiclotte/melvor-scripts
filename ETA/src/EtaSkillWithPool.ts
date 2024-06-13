@@ -14,7 +14,7 @@ export class EtaSkillWithPool extends EtaSkill {
     public currentRates: RatesWithPool;
     // targets reached
     public poolReached: boolean;
-    protected readonly masteryCheckpoints: number[];
+    protected readonly poolCheckpoints: number[];
 
     constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         const args: [Game, any, any, Settings] = [game, skill, action, settings];
@@ -24,7 +24,7 @@ export class EtaSkillWithPool extends EtaSkill {
         this.currentRates = RatesWithPool.emptyRates;
         this.initial = RatesWithPool.emptyRates;
         // @ts-ignore
-        this.masteryCheckpoints = [10, 25, 50, 95, Infinity];
+        this.poolCheckpoints = [10, 25, 50, 95, Infinity];
         // flag to check if target was already reached
         this.poolReached = false;
     }
@@ -43,7 +43,7 @@ export class EtaSkillWithPool extends EtaSkill {
 
     get nextPoolCheckpoint() {
         const poolProgress = this.getMasteryPoolProgress;
-        const checkPoint = this.masteryCheckpoints.find((checkPoint: number) => checkPoint > poolProgress) ?? Infinity;
+        const checkPoint = this.poolCheckpoints.find((checkPoint: number) => checkPoint > poolProgress) ?? Infinity;
         if (poolProgress < this.targets.poolPercent && poolProgress < checkPoint) {
             return this.targets.poolPercent;
         }
@@ -133,12 +133,20 @@ export class EtaSkillWithPool extends EtaSkill {
         return masteryXp / 4;
     }
 
+    isMelvorPoolTierActive(tier: number) {
+        return this.action.realm.id === "melvorD:Melvor" /* RealmIDs.Melvor */ && this.isPoolTierActive(tier);
+    }
+
+    isAbyssalPoolTierActive(tier: number) {
+        return this.action.realm.id === "melvorItA:Abyssal" /* RealmIDs.Abyssal */ && this.isPoolTierActive(tier);
+    }
+
     isPoolTierActive(tier: number) {
-        if (this.getInitialMasteryPoolProgress >= this.masteryCheckpoints[tier]) {
+        if (this.getInitialMasteryPoolProgress >= this.poolCheckpoints[tier]) {
             // already reached initially, so should be included in the PlayerModifierTable
             return false;
         }
-        return this.getMasteryPoolProgress >= this.masteryCheckpoints[tier];
+        return this.getMasteryPoolProgress >= this.poolCheckpoints[tier];
     }
 
     getBaseMasteryPoolCap() {

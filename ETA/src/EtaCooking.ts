@@ -42,7 +42,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;
@@ -55,7 +55,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
     }
 
     getPreservationChance(chance: number) {
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2) || this.isAbyssalPoolTierActive(2)) {
             chance += 10;
         }
         return super.getPreservationChance(chance);

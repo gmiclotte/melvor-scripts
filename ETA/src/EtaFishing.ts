@@ -34,7 +34,7 @@ export class EtaFishing extends EtaSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;
@@ -46,7 +46,7 @@ export class EtaFishing extends EtaSkillWithMastery {
     getJunkChance(): number {
         // Mastery Pool Tier 2: No longer catch junk
         // Mastery Level 65: No longer catch junk
-        if (this.isPoolTierActive(1) || this.checkMasteryMilestone(65)) {
+        if (this.isMelvorPoolTierActive(1) || this.checkMasteryMilestone(65)) {
             return 0;
         }
         // get junk chance

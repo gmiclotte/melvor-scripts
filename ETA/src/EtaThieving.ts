@@ -54,11 +54,17 @@ export class EtaThieving extends EtaSkillWithMastery {
         if (this.checkMasteryMilestone(99)) {
             stealth += 75;
         }
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             stealth += 30;
         }
-        if (this.isPoolTierActive(3)) {
+        if (this.isMelvorPoolTierActive(3)) {
             stealth += 100;
+        }
+        if (this.isAbyssalPoolTierActive(2)) {
+            stealth += 40;
+        }
+        if (this.isAbyssalPoolTierActive(3)) {
+            stealth += 125;
         }
         stealth += this.modifiers.getValue(
             "melvorD:thievingStealth" /* ModifierIDs.thievingStealth */,
@@ -72,7 +78,10 @@ export class EtaThieving extends EtaSkillWithMastery {
         if (this.checkMasteryMilestone(50)) {
             modifier -= 200;
         }
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1)) {
+            modifier -= 200;
+        }
+        if (this.isAbyssalPoolTierActive(2)) {
             modifier -= 200;
         }
         return modifier;
@@ -88,7 +97,7 @@ export class EtaThieving extends EtaSkillWithMastery {
 
     getMelvorXPModifier() {
         let modifier = super.getMelvorXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 3;
         }
         return modifier;
@@ -96,7 +105,7 @@ export class EtaThieving extends EtaSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1)) {
             modifier += 3;
         }
         return modifier;

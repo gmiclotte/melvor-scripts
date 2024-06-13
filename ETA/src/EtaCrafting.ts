@@ -19,7 +19,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
         if (this.checkMasteryMilestone(99)) {
             chance += 5;
         }
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1)) {
             chance += 5;
         }
         return super.getPreservationChance(chance);
@@ -27,7 +27,10 @@ export class EtaCrafting extends ResourceSkillWithMastery {
 
     getFlatIntervalModifier() {
         let modifier = super.getFlatIntervalModifier();
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2)) {
+            modifier -= 200;
+        }
+        if (this.isAbyssalPoolTierActive(3)) {
             modifier -= 200;
         }
         return modifier;
@@ -35,7 +38,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;

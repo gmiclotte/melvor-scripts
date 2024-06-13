@@ -27,8 +27,7 @@ export class EtaAgility extends EtaSkillWithMastery {
     getPercentageIntervalModifier() {
         let modifier = super.getPercentageIntervalModifier();
         // Mastery Level Scaling: Every 10 levels, reduce the interval by 3%
-        const changeIn10MasteryLevel = Math.floor(this.masteryLevel / 10) - Math.floor(this.initialMasteryLevel / 10);
-        modifier -= changeIn10MasteryLevel * 3;
+        modifier -= this.changeIn10MasteryLevel * 3;
         return modifier;
     }
 
@@ -40,7 +39,7 @@ export class EtaAgility extends EtaSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         // TODO recompute negative mastery modifiers on this obstacle at mastery 99

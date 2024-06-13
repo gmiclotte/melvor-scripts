@@ -16,8 +16,11 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     actionXP(realmID: string) {
         let xp = super.actionXP(realmID);
         // Tier 2 Mastery Pool Checkpoint: 250% base xp when making runes
-        if (this.skill.isMakingRunes && this.isPoolTierActive(1)) {
+        if (this.skill.isMakingRunes && this.isMelvorPoolTierActive(1)) {
             xp *= 2.5;
+        }
+        if (this.skill.isMakingRunes && this.isAbyssalPoolTierActive(1)) {
+            xp *= 1.25;
         }
         return xp;
     }
@@ -35,7 +38,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     }
 
     getPreservationChance(chance: number) {
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2)) {
             chance += 10;
         }
         return super.getPreservationChance(chance);
@@ -43,7 +46,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
 
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0))
+        if (this.isMelvorPoolTierActive(0))
             modifier += 5;
         return modifier;
     }

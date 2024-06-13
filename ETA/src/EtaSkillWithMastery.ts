@@ -44,6 +44,14 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return Math.min(99, this.virtualMasteryLevel);
     }
 
+    get changeInMasteryLevel() {
+        return this.masteryLevel - this.initialMasteryLevel;
+    }
+
+    get changeIn10MasteryLevel() {
+        return Math.floor(this.masteryLevel / 10) - Math.floor(this.initialMasteryLevel / 10);
+    }
+
     get virtualMasteryLevel(): number {
         return this.xpToLevel(this.masteryXp);
     }
@@ -156,6 +164,9 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
                 modifier += modValue * constellation.maxValueModifiers;
             }
         });
+        if (this.isAbyssalPoolTierActive(0)) {
+            modifier += 6;
+        }
         return modifier;
     }
 

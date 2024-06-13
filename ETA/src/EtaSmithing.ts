@@ -19,18 +19,29 @@ export class EtaSmithing extends ResourceSkillWithMastery {
         if (this.checkMasteryMilestone(99)) {
             chance += 10;
         }
-        if (this.isPoolTierActive(1)) {
+        if (this.isMelvorPoolTierActive(1)) {
             chance += 5;
         }
-        if (this.isPoolTierActive(2)) {
+        if (this.isMelvorPoolTierActive(2)) {
             chance += 5;
+        }
+        if (this.isAbyssalPoolTierActive(1)) {
+            chance += 10;
         }
         return super.getPreservationChance(chance);
     }
 
+    getPreservationCap() {
+        let cap = super.getPreservationCap();
+        if (this.isAbyssalPoolTierActive(3)) {
+            cap += 2;
+        }
+        return cap;
+    }
+
     getMasteryXPModifier() {
         let modifier = super.getMasteryXPModifier();
-        if (this.isPoolTierActive(0)) {
+        if (this.isMelvorPoolTierActive(0)) {
             modifier += 5;
         }
         return modifier;
