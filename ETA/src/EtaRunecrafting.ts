@@ -2,7 +2,8 @@ import type {Runecrafting} from "../../Game-Files/gameTypes/runecrafting";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {EquipmentItem, Item} from "../../Game-Files/gameTypes/item";
+import type {Item, RuneItem} from "../../Game-Files/gameTypes/item";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {

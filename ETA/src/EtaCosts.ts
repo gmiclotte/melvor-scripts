@@ -1,6 +1,6 @@
-import {ItemCurrencyLike} from "../../Game-Files/gameTypes/skill";
-import {Item} from "../../Game-Files/gameTypes/item";
-import {Currency} from "../../Game-Files/gameTypes/currency";
+import type {ItemCurrencyLike} from "../../Game-Files/gameTypes/skill";
+import type {Item} from "../../Game-Files/gameTypes/item";
+import type {Currency} from "../../Game-Files/gameTypes/currency";
 
 export class EtaCosts {
 

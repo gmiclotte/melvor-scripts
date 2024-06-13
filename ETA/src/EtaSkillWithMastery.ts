@@ -3,7 +3,7 @@ import {TargetsWithMastery} from "./TargetsWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
-import {Astrology, AstrologyRecipe} from "../../Game-Files/gameTypes/astrology";
+import type {Astrology, AstrologyRecipe} from "../../Game-Files/gameTypes/astrology";
 
 export class EtaSkillWithMastery extends EtaSkillWithPool {
     // trackers

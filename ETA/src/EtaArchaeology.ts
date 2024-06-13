@@ -2,8 +2,8 @@ import type {Archaeology} from "../../Game-Files/gameTypes/archaeology";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import {ArchaeologyTool} from "../../Game-Files/gameTypes/archaeology";
-import {DigSiteMap} from "../../Game-Files/gameTypes/cartography";
+import type {ArchaeologyTool} from "../../Game-Files/gameTypes/archaeology";
+import type {DigSiteMap} from "../../Game-Files/gameTypes/cartography";
 
 export class EtaArchaeology extends EtaSkillWithMastery {
 

@@ -2,6 +2,7 @@ import type {Cooking} from "../../Game-Files/gameTypes/cooking";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaCooking extends ResourceSkillWithMastery {
     constructor(game: Game, cooking: Cooking, action: any, settings: Settings) {

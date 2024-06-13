@@ -4,6 +4,7 @@ import {Targets} from "./Targets";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ActionCounterWrapper} from "./ActionCounter";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
 

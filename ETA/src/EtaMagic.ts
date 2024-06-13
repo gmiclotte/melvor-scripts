@@ -5,8 +5,7 @@ import type {Item} from "../../Game-Files/gameTypes/item";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {EtaCosts} from "./EtaCosts";
-import {ResourceRates} from "./ResourceRates";
-import {Currency} from "../../Game-Files/gameTypes/currency";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaMagic extends ResourceSkillWithoutMastery {
     private game: Game;

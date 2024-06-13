@@ -1,6 +1,6 @@
 import {ActionCounter, ActionCounterWrapper} from "./ActionCounter";
 import type {Item} from "../../Game-Files/gameTypes/item";
-import {Currency, CurrencyEvents} from "../../Game-Files/gameTypes/currency";
+import type {Currency, CurrencyEvents} from "../../Game-Files/gameTypes/currency";
 
 export class ResourceActionCounterWrapper extends ActionCounterWrapper {
     public active!: ResourceActionCounter;

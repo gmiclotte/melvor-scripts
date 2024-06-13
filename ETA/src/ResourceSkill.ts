@@ -4,7 +4,7 @@ import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item} from "../../Game-Files/gameTypes/item";
 import {ResourceActionCounter, ResourceActionCounterWrapper} from "./ResourceActionCounter";
 import {EtaSkill, etaSkillConstructor} from "./EtaSkill";
-import {Currency} from "../../Game-Files/gameTypes/currency";
+import type {Currency} from "../../Game-Files/gameTypes/currency";
 import {EtaCosts} from "./EtaCosts";
 
 export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: BaseSkill) {

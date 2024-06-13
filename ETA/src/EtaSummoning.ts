@@ -5,7 +5,7 @@ import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item} from "../../Game-Files/gameTypes/item";
 import type {Player} from "../../Game-Files/gameTypes/player";
 import type {Costs} from "../../Game-Files/gameTypes/skill";
-import {Currency} from "../../Game-Files/gameTypes/currency";
+import type {Currency} from "../../Game-Files/gameTypes/currency";
 
 export class EtaSummoning extends ResourceSkillWithMastery {
     private readonly player: Player;

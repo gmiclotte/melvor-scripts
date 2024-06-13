@@ -3,6 +3,7 @@ import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaCosts} from "./EtaCosts";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
