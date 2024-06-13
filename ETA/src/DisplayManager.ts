@@ -29,12 +29,12 @@ export class DisplayManager {
         this.displays.clear();
     }
 
-    public getCachedDisplay (skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display|undefined {
+    public getCachedDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display | undefined {
         const displayID = this.getDisplayID(skill, ...actionIDs);
         return this.displays.get(displayID)
     }
 
-    public getDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display|undefined {
+    public getDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, ...actionIDs: string[]): Display | undefined {
         let display = this.getCachedDisplay(skill, ...actionIDs);
         if (display && display.isHookedUp) {
             // display already exists
@@ -91,7 +91,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createSkillDisplayAtMasteryBar(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery|undefined {
+    private createSkillDisplayAtMasteryBar(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery | undefined {
         let display;
         // @ts-ignore
         const query = `[data-skill-id="${skill.id}"][data-action-id="${actionID}"]`;
@@ -112,7 +112,7 @@ export class DisplayManager {
         return display;
     }
 
-    private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display|undefined {
+    private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display | undefined {
         // create new display
         // @ts-ignore
         if (skill.id === this.game.altMagic.id) {

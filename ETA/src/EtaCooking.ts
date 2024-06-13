@@ -8,11 +8,6 @@ export class EtaCooking extends ResourceSkillWithMastery {
         super(game, cooking, action, settings);
     }
 
-    skip() {
-        const category =  this.action.category;
-        return this.action !== this.skill.selectedRecipes.get(category);
-    }
-
     get actionInterval() {
         return this.modifyInterval(this.action.baseInterval);
     }
@@ -38,6 +33,11 @@ export class EtaCooking extends ResourceSkillWithMastery {
             return 0;
         }
         return chance / 100;
+    }
+
+    skip() {
+        const category = this.action.category;
+        return this.action !== this.skill.selectedRecipes.get(category);
     }
 
     getMasteryXPModifier() {

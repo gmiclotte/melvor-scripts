@@ -3,7 +3,6 @@ import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item, RuneItem} from "../../Game-Files/gameTypes/item";
-import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaRunecrafting extends ResourceSkillWithMastery {
     constructor(game: Game, runecrafting: Runecrafting, action: any, settings: Settings) {
@@ -23,7 +22,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return xp;
     }
 
-    getUncappedCostReduction(item:Item) {
+    getUncappedCostReduction(item: Item) {
         let reduction = super.getUncappedCostReduction(item);
         // @ts-ignore
         if (item instanceof RuneItem) {

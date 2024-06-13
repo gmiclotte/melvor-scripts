@@ -4,7 +4,6 @@ import {Targets} from "./Targets";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ActionCounterWrapper} from "./ActionCounter";
-import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => BaseSkill;
 
@@ -55,10 +54,6 @@ export class EtaSkill {
         return this.xpToLevel(this.skillXp);
     }
 
-    skip() {
-        return false;
-    }
-
     /***
      * Interval methods
      */
@@ -80,6 +75,10 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
+    skip() {
+        return false;
+    }
+
     /***
      * Get and set rates
      */
@@ -93,7 +92,7 @@ export class EtaSkill {
         );
     }
 
-    actionXP(realmID:string): number {
+    actionXP(realmID: string): number {
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             return this.modifyMelvorXP(this.action.baseExperience);
         } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
@@ -221,7 +220,7 @@ export class EtaSkill {
 
     xpToLevel(xp: number): number {
         // @ts-ignore 2304
-        return exp.xpToLevel(xp) ;
+        return exp.xpToLevel(xp);
     }
 
     levelToXp(level: number): number {

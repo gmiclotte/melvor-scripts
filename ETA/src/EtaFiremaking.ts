@@ -3,7 +3,6 @@ import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {EtaCosts} from "./EtaCosts";
-import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaFiremaking extends ResourceSkillWithMastery {
     constructor(game: Game, firemaking: Firemaking, action: any, settings: Settings) {
@@ -18,10 +17,10 @@ export class EtaFiremaking extends ResourceSkillWithMastery {
         return this.modifyInterval(this.action.baseInterval);
     }
 
-    actionXP(realmID:string) {
+    actionXP(realmID: string) {
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             return super.actionXP(realmID) * (1 + this.skill.bonfireBonusXP / 100);
-        }else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
             return super.actionXP(realmID) * (1 + this.skill.bonfireBonusAXP / 100);
         }
         return 0;

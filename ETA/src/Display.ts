@@ -39,14 +39,14 @@ export class Display {
     }
 
     sameYear(now: Date, then: Date) {
-        const format : {year: "2-digit" } = {year: "2-digit"};
+        const format: { year: "2-digit" } = {year: "2-digit"};
         return now.toLocaleString(undefined, format) === then.toLocaleString(undefined, format);
     }
 
     // Format date 24-hour clock
     dateFormat(now: Date, then: Date, is12h = this.settings.get('IS_12H_CLOCK')) {
         // create the date
-        const format : {weekday: "short", month: "short", day: "numeric", year: "2-digit"|undefined}
+        const format: { weekday: "short", month: "short", day: "numeric", year: "2-digit" | undefined }
             = {weekday: "short", month: "short", day: "numeric", year: undefined};
         if (!this.sameYear(now, then)) {
             format.year = "2-digit";

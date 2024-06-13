@@ -4,9 +4,6 @@ import type {MasteryAction} from "../../Game-Files/gameTypes/mastery2";
 
 export class Settings {
     public readonly skillList: SkillWithMastery<MasteryAction, MasterySkillData>[];
-    private readonly ctx: any;
-    private readonly generalSettings: any;
-    private readonly skillSettings: Map<string, any>;
     public readonly generalSettingsArray: {
         numerical: {
             type: string,
@@ -32,7 +29,10 @@ export class Settings {
             default: number[],
         }[];
     };
-    public readonly skillTargetsSettingsArray: {name:string, label:string}[];
+    public readonly skillTargetsSettingsArray: { name: string, label: string }[];
+    private readonly ctx: any;
+    private readonly generalSettings: any;
+    private readonly skillSettings: Map<string, any>;
 
     constructor(ctx: any, game: Game) {
         this.ctx = ctx;

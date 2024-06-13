@@ -1,14 +1,6 @@
 import {ETA, recomputeEverySkill, recomputeSkill} from './ETA';
 import type {GatheringSkill} from "../../Game-Files/gameTypes/skill";
-import type {ArtisanSkill} from "../../Game-Files/gameTypes/artisanSkill";
-import type {Fletching} from "../../Game-Files/gameTypes/fletching";
-import type {Summoning} from "../../Game-Files/gameTypes/summoning";
 import type {SidebarItem} from "../../Game-Files/gameTypes/sidebar";
-import type {AltMagic} from "../../Game-Files/gameTypes/altMagic";
-import type {Fishing} from "../../Game-Files/gameTypes/fishing";
-import type {Firemaking} from "../../Game-Files/gameTypes/firemakingTicks";
-import type {Cooking} from "../../Game-Files/gameTypes/cooking";
-import type {Thieving} from "../../Game-Files/gameTypes/thieving2";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 

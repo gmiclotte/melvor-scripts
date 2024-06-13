@@ -1,6 +1,6 @@
 import {ActionCounter, ActionCounterWrapper} from "./ActionCounter";
 import type {Item} from "../../Game-Files/gameTypes/item";
-import type {Currency, CurrencyEvents} from "../../Game-Files/gameTypes/currency";
+import type {Currency} from "../../Game-Files/gameTypes/currency";
 
 export class ResourceActionCounterWrapper extends ActionCounterWrapper {
     public active!: ResourceActionCounter;
@@ -26,7 +26,7 @@ export class ResourceActionCounterWrapper extends ActionCounterWrapper {
 
 export class ResourceActionCounter extends ActionCounter {
     public items: Map<Item, number>;
-    public currencies : Map<Currency, number>
+    public currencies: Map<Currency, number>
 
     constructor(items: Map<Item, number>, currencies: Map<Currency, number>,
                 ms: number, actions: number, unit: number) {

@@ -2,7 +2,6 @@ import type {Agility} from "../../Game-Files/gameTypes/agility";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {PlayerModifierTable} from "../../Game-Files/gameTypes/modifierTable";
 
 export class EtaAgility extends EtaSkillWithMastery {
     public courseDuration: number;
@@ -20,6 +19,7 @@ export class EtaAgility extends EtaSkillWithMastery {
     get averageAttemptTime() {
         return this.courseDuration === Infinity ? this.actionInterval : this.courseDuration;
     }
+
     init(game: Game) {
         super.init(game);
     }

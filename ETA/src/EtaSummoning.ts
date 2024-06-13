@@ -3,7 +3,6 @@ import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import type {Item} from "../../Game-Files/gameTypes/item";
-import type {Player} from "../../Game-Files/gameTypes/player";
 import type {Costs} from "../../Game-Files/gameTypes/skill";
 import type {Currency} from "../../Game-Files/gameTypes/currency";
 
@@ -37,7 +36,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return Math.max(0, modifier);
     }
 
-    getFlatCostReduction(item:Item|undefined) {
+    getFlatCostReduction(item: Item | undefined) {
         let reduction = super.getFlatCostReduction(item);
         if (item === undefined || item.type !== 'Shard') {
             return reduction;
@@ -78,7 +77,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return reduction;
     }
 
-    modifyCurrencyCost(currency:Currency, quantity:number) {
+    modifyCurrencyCost(currency: Currency, quantity: number) {
         quantity = super.modifyCurrencyCost(currency, quantity);
         const modifier = this.getNonShardCostReductionModifier();
         // @ts-ignore
@@ -102,7 +101,7 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    addNonShardCosts(costs:Costs) {
+    addNonShardCosts(costs: Costs) {
         const nonShardItem = this.skill.selectedNonShardCosts.get(this.action) ?? this.action.nonShardItemCosts[0];
         const salePrice = Math.max(20, nonShardItem.sellsFor.quantity);
         const modifier = this.getNonShardCostReductionModifier();

@@ -5,14 +5,13 @@ import type {Item} from "../../Game-Files/gameTypes/item";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import {ResourceActionCounter} from "./ResourceActionCounter";
 import {EtaCosts} from "./EtaCosts";
-import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class EtaMagic extends ResourceSkillWithoutMastery {
+    protected originalRuneCosts: EtaCosts;
+    protected currentRuneCosts: EtaCosts;
     private game: Game;
     private consumptionID: any;
     private productionID: any;
-    protected originalRuneCosts: EtaCosts;
-    protected currentRuneCosts: EtaCosts;
     private AltMagicConsumptionID: any;
 
     constructor(game: Game, magic: AltMagic, action: any, settings: Settings) {
@@ -29,24 +28,24 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         this.AltMagicConsumptionID = AltMagicConsumptionID;
     }
 
-    skip() {
-        return this.action !== this.skill.selectedSpell;
-    }
-
     get runePreservationChance() {
         let preserveChance = this.modifiers.getRunePreservationChance();
         preserveChance += this.game.modifiers.altMagicRunePreservationChance;
         return Math.min(preserveChance, 80) / 100;
     }
 
-    actionXP(realmID:string): number {
+    skip() {
+        return this.action !== this.skill.selectedSpell;
+    }
+
+    actionXP(realmID: string): number {
         let xp;
 
         // base xp
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             xp = this.action.baseExperience;
-        }        else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
-             xp = this.action.baseAbyssalExperience;
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            xp = this.action.baseAbyssalExperience;
         }
 
         // modifyXP
@@ -55,7 +54,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         }
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             return this.modifyMelvorXP(xp);
-        }        else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
             return this.modifyAbyssalXP(xp);
         }
 
@@ -105,7 +104,7 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
         const resourceSetsUsed = attempts * (1 - this.runePreservationChance);
         this.currentRuneCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
             const amt = counter.items.get(cost.item) ?? 0;
-            counter.items.set(cost.item,  amt + cost.quantity * resourceSetsUsed);
+            counter.items.set(cost.item, amt + cost.quantity * resourceSetsUsed);
         })
     }
 

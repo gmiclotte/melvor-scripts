@@ -22,9 +22,7 @@ import {EtaCooking} from "./EtaCooking";
 import {EtaThieving} from "./EtaThieving";
 import {EtaMagic} from "./EtaMagic";
 import {MultiActionSkill} from "./MultiActionSkill";
-import {MultiWoodcutting} from "./MultiWoodcutting";
 import {EtaAgility} from "./EtaAgility";
-import {MultiAgility} from "./MultiAgility";
 import {EtaAstrology} from "./EtaAstrology";
 import {EtaArchaeology} from "./EtaArchaeology";
 
@@ -120,7 +118,7 @@ export class ETA extends TinyMod {
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         // @ts-ignore
-        if(game.cartography && skill.id === game.cartography.id) {
+        if (game.cartography && skill.id === game.cartography.id) {
             // cartography is not implemented
             return;
         }

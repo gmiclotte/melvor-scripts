@@ -26,16 +26,16 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.finalXpMap = new Map<string, number>();
         }
 
-        skip() {
-            return this.action !== this.skill.selectedRecipe;
-        }
-
         get noResourceCheckpointLeft() {
             return this.attemptsToResourceCheckpoint() <= 0;
         }
 
         get resourcesCompleted() {
             return !this.resourcesReached && this.noResourceCheckpointLeft;
+        }
+
+        skip() {
+            return this.action !== this.skill.selectedRecipe;
         }
 
         completed() {
@@ -110,11 +110,11 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             const resourceSetsUsed = attempts * (1 - preservation / 100);
             this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
                 const amt = counter.items.get(cost.item) ?? 0;
-                counter.items.set(cost.item,  amt + cost.quantity * resourceSetsUsed);
+                counter.items.set(cost.item, amt + cost.quantity * resourceSetsUsed);
             })
             this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
                 const amt = counter.currencies.get(cost.currency) ?? 0;
-                counter.currencies.set(cost.currency,  amt + cost.quantity * resourceSetsUsed);
+                counter.currencies.set(cost.currency, amt + cost.quantity * resourceSetsUsed);
             })
         }
 
@@ -157,13 +157,13 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         getRecipeCosts() {
             // @ts-ignore
             const costs = new Costs(undefined);
-            this.action.itemCosts.forEach((cost :{ item:Item, quantity :number}) => {
+            this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
                 let quantity = this.modifyItemCost(cost.item, cost.quantity);
                 if (quantity > 0) {
                     costs.addItem(cost.item, quantity);
                 }
             });
-            this.action.currencyCosts.forEach((cost:{ currency:Currency, quantity :number}) => {
+            this.action.currencyCosts.forEach((cost: { currency: Currency, quantity: number }) => {
                 let quantity = this.modifyCurrencyCost(cost.currency, cost.quantity);
                 if (quantity > 0) {
                     costs.addCurrency(cost.currency, quantity);
@@ -172,21 +172,21 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             return costs;
         }
 
-        getUncappedCostReduction(item: Item|undefined) {
+        getUncappedCostReduction(item: Item | undefined) {
             return this.modifiers.getValue("melvorD:skillCostReduction", // ModifierIDs.skillCostReduction
                 this.getActionModifierQuery()
             );
         }
 
-        getCostReduction(item:Item|undefined=undefined) {
+        getCostReduction(item: Item | undefined = undefined) {
             return Math.min(80, this.getUncappedCostReduction(item));
         }
 
-        getFlatCostReduction(item: Item|undefined=undefined) {
+        getFlatCostReduction(item: Item | undefined = undefined) {
             return 0;
         }
 
-        modifyItemCost(item:Item|undefined, quantity:number) {
+        modifyItemCost(item: Item | undefined, quantity: number) {
             const costReduction = this.getCostReduction(item);
             quantity *= 1 - costReduction / 100;
             quantity = Math.ceil(quantity);
@@ -194,7 +194,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             return Math.max(1, quantity);
         }
 
-        modifyCurrencyCost(currency:Currency, quantity: number) {
+        modifyCurrencyCost(currency: Currency, quantity: number) {
             const costReduction = this.getCostReduction();
             quantity *= 1 - costReduction / 100;
             quantity = Math.ceil(quantity);
