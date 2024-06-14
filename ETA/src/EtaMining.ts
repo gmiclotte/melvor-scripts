@@ -1,7 +1,8 @@
-import type {Mining} from "../../Game-Files/gameTypes/rockTicking";
+import type {Mining, MiningRock} from "../../Game-Files/gameTypes/rockTicking";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
+import type {roundToTickInterval} from "../../Game-Files/gameTypes/utils";
 
 export class EtaMining extends EtaSkillWithMastery {
     constructor(game: Game, mining: Mining, action: any, settings: Settings) {
@@ -68,6 +69,10 @@ export class EtaMining extends EtaSkillWithMastery {
             }
             return previous;
         }, 0);
+    }
+
+    isMasteryActionUnlocked(action: MiningRock, skillLevel: number) {
+        return super.isBasicSkillRecipeUnlocked(action, skillLevel) && this.totalCurrentMasteryLevel >= action.totalMasteryRequired;
     }
 
     getFlatIntervalModifier() {

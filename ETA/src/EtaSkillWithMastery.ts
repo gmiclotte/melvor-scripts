@@ -60,15 +60,6 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return this.masteryLevel + this.totalMasteryWithoutAction;
     }
 
-    get totalUnlockedMasteryActions() {
-        return this.skill.actions.reduce((previous: number, action: any) => {
-            if (this.skillLevel >= action.level) {
-                previous++;
-            }
-            return previous;
-        }, 0);
-    }
-
     get getMasteryXPToAddForAction() {
         let xpToAdd = this.getBaseMasteryXPToAddForAction(this.masteryModifiedInterval);
         xpToAdd *= 1 + this.getMasteryXPModifier() / 100;
@@ -90,9 +81,36 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return !this.masteryReached && this.targets.masteryCompleted();
     }
 
+    get totalUnlockedMasteryActionsInRealm() {
+        const skillLevel = this.skillLevel;
+        let totalUnlockedMasteryActions = 0;
+        this.skill.actions.forEach((action: any) => {
+            if (action.realm.id !== this.action.realm.id) {
+                return;
+            }
+            if (this.isMasteryActionUnlocked(action, skillLevel)) {
+                totalUnlockedMasteryActions++;
+            }
+        });
+        return totalUnlockedMasteryActions;
+    }
+
+    isBasicSkillRecipeUnlocked(action: any, skillLevel: number) {
+        if (action.realm.id === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            return action.level <= skillLevel;
+        } else if (action.realm.id === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            return action.abyssalLevel <= skillLevel;
+        }
+        return false;
+    }
+
+    isMasteryActionUnlocked(action: any, skillLevel: number) {
+        return this.isBasicSkillRecipeUnlocked(action, skillLevel);
+    }
+
     getBaseMasteryXPToAddForAction(interval: number): number {
-        const totalUnlockedInRealm = this.skill.totalUnlockedMasteryActionsInRealm.get(this.action.realm);
-        const totalCurrent = this.skill.getTotalCurrentMasteryLevelInRealm(this.action.realm) + this.changeInMasteryLevel;
+        const totalUnlockedInRealm = this.totalUnlockedMasteryActionsInRealm;
+        const totalCurrent = this.totalCurrentMasteryLevel;
         const trueMax = this.skill.getTrueMaxTotalMasteryLevelInRealm(this.action.realm);
         const trueTotal = this.skill.getTrueTotalMasteryActionsInRealm(this.action.realm);
         const skillMasteryContribution = (totalUnlockedInRealm * totalCurrent) / trueMax;
@@ -130,7 +148,7 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
             this.masteryXp,
         );
         // compute total mastery, excluding current action
-        this.totalMasteryWithoutAction = this.skill.totalCurrentMasteryLevel - this.masteryLevel;
+        this.totalMasteryWithoutAction = this.skill.getTotalCurrentMasteryLevelInRealm(this.action.realm) - this.masteryLevel;
         // flag to check if target was already reached
         this.masteryReached = false;
     }
