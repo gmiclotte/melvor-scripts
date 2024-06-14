@@ -191,12 +191,20 @@ export class EtaSkill {
     }
 
     xpToNextLevel(level: number, xp: number): number {
-        const nextXp = this.levelToXp(level + 1);
+        let nextXp = this.levelToXp(level + 1);
+        while (nextXp <= xp) {
+            level++;
+            nextXp = this.levelToXp(level + 1);
+        }
         return nextXp - xp;
     }
 
     masteryXpToNextLevel(level: number, xp: number): number {
-        const nextXp = this.masteryLevelToXp(level + 1);
+        let nextXp = this.masteryLevelToXp(level + 1);
+        while (nextXp <= xp) {
+            level++;
+            nextXp = this.masteryLevelToXp(level + 1);
+        }
         return nextXp - xp;
     }
 
@@ -263,10 +271,10 @@ export class EtaSkill {
         const realmID = this.action.realm.id;
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             // @ts-ignore 2304
-            return exp.levelToXP(level) + 0.00001;
+            return exp.levelToXP(level);
         } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
             // @ts-ignore 2304
-            return abyssalExp.levelToXP(level) + 0.00001;
+            return abyssalExp.levelToXP(level);
         }
         return 1;
     }
