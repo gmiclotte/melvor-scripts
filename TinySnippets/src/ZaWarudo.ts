@@ -1,4 +1,4 @@
-import {Game} from "../../Game-Files/built/game";
+import type {Game} from "../../Game-Files/gameTypes/game";
 import {Snippet} from "./Snippets";
 
 class ZaWarudo {
@@ -237,31 +237,38 @@ export function pauseOfflineProgress(ctx: any, game: Game, zaWarudo: ZaWarudo) {
     // create UI
     zaWarudo.createUI();
 
-    // patch Game.startMainLoop
-    ctx.patch(Game, 'startMainLoop').replace(function (
-        this: Game,
-        original: () => Promise<any>,
-    ) {
+    // Patch: stop time if toggle is enabled
+    // @ts-ignore
+    window.onSaveDataLoad = () => {
         // @ts-ignore
-        if (game.loopStarted) {
-            return;
-        }
-        // @ts-ignore
-        if (!confirmedLoaded && ctx.api().snippets.toggles.get(`${zaWarudo.name}GamePause`)) {
-            // Game is not yet loaded and the game loop should not be started
-            ctx.api().snippets.log('Stop time!');
-            return;
-        }
-        // @ts-ignore
-        return __awaiter(game, void 0, void 0, function* () {
-            // add time to time bank
-            yield game.processOffline();
-            // start the game loop
-            yield original();
+        return __awaiter(this, void 0, void 0, function* () {
+            // @ts-ignore
+            yield updateWindow();
+            // @ts-ignore
+            if (!isLoaded) {
+                throw new Error('updateWindow failed.');
+            }
+            $('#m-page-loader-test').attr('class', 'd-none');
+            // @ts-ignore
+            if (!confirmedLoaded && ctx.api().snippets.toggles.get(`${zaWarudo.name}GamePause`)) {
+                // Game is not yet loaded and the game loop should not be started
+                ctx.api().snippets.log('Stop time!');
+            } else {
+                // @ts-ignore
+                if (!isCreatingSave) {
+                    yield game.processOffline();
+                }
+                game.startMainLoop();
+            }
+            // @ts-ignore
+            confirmedLoaded = true;
+            // @ts-ignore
+            yield mod.trigger.interfaceReady();
         });
-    });
+    }
 
     // patch Game.processOffline
+    // @ts-ignore
     ctx.patch(Game, 'processOffline').replace(function (
         this: Game,
         original: () => Promise<any>,
@@ -331,7 +338,7 @@ export function pauseOfflineProgress(ctx: any, game: Game, zaWarudo: ZaWarudo) {
                 game.startMainLoop();
             } else {
                 // @ts-ignore
-                game.render();
+                setTimeout(() => game.render());
             }
         });
     };
@@ -341,6 +348,7 @@ export function pauseOfflineProgress(ctx: any, game: Game, zaWarudo: ZaWarudo) {
 export function pauseOfflineProgressSetting(ctx: any): Snippet {
     const zaWarudo = new ZaWarudo(ctx);
     return {
+        object: zaWarudo,
         function: (ctx: any, game: Game) => pauseOfflineProgress(ctx, game, zaWarudo),
         setting: {
             type: 'switch',

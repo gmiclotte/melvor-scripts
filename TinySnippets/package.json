@@ -1,6 +1,6 @@
 {
     "name": "tinys_snippets",
-    "version": "0.0.1-46",
+    "version": "0.1.0",
     "description": "Collection of small scripts",
     "config": {
         "tinyMod": "../TinyMod"
