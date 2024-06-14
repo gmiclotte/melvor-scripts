@@ -70,10 +70,11 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
     }
 
     get getMasteryXPToAddForAction() {
-        const interval = this.masteryModifiedInterval;
-        let xpToAdd = (((this.totalUnlockedMasteryActions * this.totalCurrentMasteryLevel) / this.skill.trueMaxTotalMasteryLevel
-            + this.masteryLevel * (this.skill.trueTotalMasteryActions / 10)) * (interval / 1000)) / 2;
+        let xpToAdd = this.getBaseMasteryXPToAddForAction(this.masteryModifiedInterval);
         xpToAdd *= 1 + this.getMasteryXPModifier() / 100;
+        if (this.modifiers.halveMasteryXP > 0) {
+            xpToAdd /= 2;
+        }
         return xpToAdd;
     }
 
@@ -87,6 +88,18 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
 
     get masteryCompleted() {
         return !this.masteryReached && this.targets.masteryCompleted();
+    }
+
+    getBaseMasteryXPToAddForAction(interval: number): number {
+        const totalUnlockedInRealm = this.skill.totalUnlockedMasteryActionsInRealm.get(this.action.realm);
+        const totalCurrent = this.skill.getTotalCurrentMasteryLevelInRealm(this.action.realm) + this.changeInMasteryLevel;
+        const trueMax = this.skill.getTrueMaxTotalMasteryLevelInRealm(this.action.realm);
+        const trueTotal = this.skill.getTrueTotalMasteryActionsInRealm(this.action.realm);
+        const skillMasteryContribution = (totalUnlockedInRealm * totalCurrent) / trueMax;
+        const actionMasteryContribution = this.masteryLevel * (trueTotal / 10);
+        const average = (skillMasteryContribution + actionMasteryContribution) / 2;
+        const intervalFactor = interval / 1000;
+        return average * intervalFactor;
     }
 
     /***
