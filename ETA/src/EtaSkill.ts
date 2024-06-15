@@ -291,10 +291,14 @@ export class EtaSkill {
 
     progress(): void {
         const gainsPerAction = this.gainsPerAction();
-        const attempts = this.attemptsToCheckpoint(gainsPerAction);
+        let attempts = this.attemptsToCheckpoint(gainsPerAction);
         if (attempts === Infinity) {
             this.infiniteActions = true;
             return;
+        }
+        if (attempts < 1) {
+            console.warn('ETA: attempts to checkpoint is lower than 1!');
+            attempts = 1;
         }
         this.addAttempts(gainsPerAction, attempts);
         this.setFinalValues();
