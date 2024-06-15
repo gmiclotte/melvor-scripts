@@ -60,10 +60,8 @@ export class MultiActionSkill extends EtaSkillWithPool {
         let mastery = 0;
         const weights = this.weights;
         this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
-            rateMap.set(actionID, calculator.gainsPerAction());
-        });
-        this.calculators.forEach((calculator: EtaSkillWithMastery, actionID: string) => {
-            const gains = rateMap.get(actionID)!;
+            const gains = calculator.gainsPerAction();
+            rateMap.set(actionID, gains);
             const weight = weights.get(actionID)!;
             xp += gains.xp * weight;
             mastery += gains.mastery * weight;
@@ -104,7 +102,10 @@ export class MultiActionSkill extends EtaSkillWithPool {
     init(game: Game) {
         super.init(game);
         this.isComputing = true;
-        this.calculators.forEach((calculator) => calculator.init(game));
+        this.calculators.forEach((calculator) => {
+            calculator.init(game);
+            calculator.targets = calculator.getTargets();
+        });
     }
 
     setFinalValues() {

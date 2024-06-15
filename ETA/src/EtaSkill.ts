@@ -235,7 +235,6 @@ export class EtaSkill {
         this.skillReached = false;
         // compute the targets
         this.setNextMilestone();
-        this.targets = this.getTargets();
     }
 
     setFinalValues() {
@@ -256,6 +255,7 @@ export class EtaSkill {
 
     iterate(game: Game): void {
         this.init(game);
+        this.targets = this.getTargets();
         // limit to 1000 iterations, in case something goes wrong
         const maxIt = 1000;
         let it = 0;

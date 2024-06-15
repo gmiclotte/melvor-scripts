@@ -20,10 +20,6 @@ export class EtaAgility extends EtaSkillWithMastery {
         return this.courseDuration === Infinity ? this.actionInterval : this.courseDuration;
     }
 
-    init(game: Game) {
-        super.init(game);
-    }
-
     getPercentageIntervalModifier() {
         let modifier = super.getPercentageIntervalModifier();
         // Mastery Level Scaling: Every 10 levels, reduce the interval by 3%

@@ -218,7 +218,8 @@ export class ETA extends TinyMod {
         this.displayManager.injectHTML(display, this.timeRemaining(calculator), new Date());
         if (injectSubCalcs) {
             calculator.calculators.forEach(sub => {
-                this.displayManager.injectHTML(display, sub, new Date())
+                const subDisplay = this.displayManager.getDisplay(skill, sub.action.id);
+                this.displayManager.injectHTML(subDisplay!, sub, new Date())
             });
         }
     }
