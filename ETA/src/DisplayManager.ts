@@ -95,7 +95,7 @@ export class DisplayManager {
     private createSkillDisplayAtMasteryBar(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery | undefined {
         let display;
         // @ts-ignore
-        console.log(`querying for skill ${skill.id} and action ${actionID}`);
+        // console.log(`querying for skill ${skill.id} and action ${actionID}`);
         // @ts-ignore
         const query = `[data-skill-id="${skill.id}"][data-action-id="${actionID}"]`;
         const node = document.querySelector(query);
