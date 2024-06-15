@@ -28,10 +28,7 @@ export class TargetsWithIntensity extends TargetsWithMastery {
     }
 
     completed(): boolean {
-        if (!super.completed()) {
-            return false;
-        }
-        // check mastery xp
-        return this.masteryCompleted();
+        // check intensity
+        return super.completed() && this.intensityCompleted();
     }
 }

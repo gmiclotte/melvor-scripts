@@ -42,7 +42,7 @@ export class MultiActionSkill extends EtaSkillWithPool {
         if (this.infiniteActions) {
             return true;
         }
-        if (!this.targets.completed()) {
+        if (!super.completed()) {
             return false;
         }
         let masteriesCompleted = true;

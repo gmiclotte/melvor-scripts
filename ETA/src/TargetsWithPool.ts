@@ -24,10 +24,7 @@ export class TargetsWithPool extends Targets {
     }
 
     completed(): boolean {
-        if (!super.completed()) {
-            return false;
-        }
         // check pool xp
-        return this.poolCompleted();
+        return super.completed() && this.poolCompleted();
     }
 }

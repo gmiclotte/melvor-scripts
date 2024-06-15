@@ -193,12 +193,6 @@ export class EtaSkill {
     }
 
     completed() {
-        if (!this.nextMilestoneReached) {
-            return false;
-        }
-        if (!this.nextSkillReached) {
-            return false;
-        }
         return this.infiniteActions || this.targets.completed();
     }
 

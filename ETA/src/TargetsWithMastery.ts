@@ -24,10 +24,6 @@ export class TargetsWithMastery extends TargetsWithPool {
     }
 
     completed(): boolean {
-        if (!super.completed()) {
-            return false;
-        }
-        // check mastery xp
-        return this.masteryCompleted();
+        return super.completed() && this.masteryCompleted();
     }
 }
