@@ -14,7 +14,18 @@ export class Targets {
         }
         // target level
         const currentLevel = current.initialVirtualLevel;
-        this.skillLevel = settings.getTargetLevel(current.actionRealmID, current.skill.id, currentLevel);
+        let targets: number[] = [];
+
+        if (this.current.settings.get('SHOW_LEVEL_NEXT')) {
+            targets.push(currentLevel + 1);
+        }
+        if (this.current.settings.get('SHOW_LEVEL_MILESTONE') && current.nextMilestone !== Infinity) {
+            targets.push(current.nextMilestone);
+        }
+        if (this.current.settings.get('SHOW_LEVEL_TARGET')) {
+            targets.push(settings.getTargetLevel(current.actionRealmID, current.skill.id, currentLevel));
+        }
+        this.skillLevel = Math.max(1, ...targets);
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
 

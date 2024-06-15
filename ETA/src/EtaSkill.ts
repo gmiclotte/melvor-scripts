@@ -28,8 +28,8 @@ export class EtaSkill {
     public nextSkillReached: boolean;
     public nextMilestoneReached: boolean;
     public skillReached: boolean;
+    public readonly settings: Settings;
     protected readonly modifiers: PlayerModifierTable;
-    protected readonly settings: Settings;
     protected currentRatesSet: boolean;
     // other
     protected infiniteActions: boolean;
@@ -230,9 +230,9 @@ export class EtaSkill {
         this.currentRatesSet = false;
         this.infiniteActions = false;
         // flag to check if target was already reached
-        this.nextSkillReached = false;
-        this.nextMilestoneReached = false;
-        this.skillReached = false;
+        this.nextSkillReached = !this.settings.get('SHOW_LEVEL_NEXT');
+        this.nextMilestoneReached = !this.settings.get('SHOW_LEVEL_MILESTONE');
+        this.skillReached = !this.settings.get('SHOW_LEVEL_TARGET');
         // compute the targets
         this.setNextMilestone();
     }
