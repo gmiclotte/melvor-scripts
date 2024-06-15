@@ -156,11 +156,25 @@ export class Display {
     }
 
     skillToolTip(result: EtaSkill, now: Date) {
-        return this.finalLevelElement(
+        let elt = this.finalLevelElement(
             'Final Level',
             this.formatLevel(this.finalLevel(result)),
             'success',
-        ) + this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
+        );
+        if (this.settings.get('SHOW_LEVEL_NEXT')) {
+            elt += this.tooltipSection(result.actionsTaken.nextSkill, now, `+1 (${result.initialVirtualLevel + 1})`, '');
+        }
+        if (this.settings.get('SHOW_LEVEL_MILESTONE') && result.nextMilestone !== Infinity) {
+            let msHtml = '';
+            result.milestoneMedia.forEach((media: string) => {
+                msHtml += `<img class="skill-icon-xs mr-2" src="${media}">`;
+            });
+            elt += this.tooltipSection(result.actionsTaken.nextMilestone, now, `${msHtml} (${result.nextMilestone})`, '');
+        }
+        if (this.settings.get('SHOW_LEVEL_TARGET')) {
+            elt += this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
+        }
+        return elt;
     }
 
     finalLevel(result: EtaSkill) {
@@ -221,7 +235,7 @@ export class Display {
     wrapTimeLeft(s: string) {
         return ''
             + '<div class="row no-gutters">'
-            + '	<span class="col-12 m-1" style="padding:0.5rem 1.25rem;min-height:2.5rem;font-size:0.875rem;line-height:1.25rem;text-align:center">'
+            + '	<span class="col-12 m-1" style="padding:0 1.25rem 0.125rem 1.25rem;min-height:2.5rem;font-size:0.875rem;line-height:1.25rem;text-align:center">'
             + s
             + '	</span>'
             + '</div>';

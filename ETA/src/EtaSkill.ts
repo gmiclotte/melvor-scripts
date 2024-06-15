@@ -19,10 +19,14 @@ export class EtaSkill {
     public initial: Rates;
     // @ts-ignore
     public targets: Targets;
+    public nextMilestone: number;
+    public milestoneMedia: string[];
     // current rates
     public attemptsPerHour: number;
     public currentRates: Rates;
     // targets reached
+    public nextSkillReached: boolean;
+    public nextMilestoneReached: boolean;
     public skillReached: boolean;
     protected readonly modifiers: PlayerModifierTable;
     protected readonly settings: Settings;
@@ -40,6 +44,8 @@ export class EtaSkill {
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
+        this.nextMilestone = 0;
+        this.milestoneMedia = [];
         this.currentRatesSet = false;
         this.attemptsPerHour = 0;
         this.currentRates = Rates.emptyRates;
@@ -47,6 +53,8 @@ export class EtaSkill {
         // @ts-ignore
         this.TICK_INTERVAL = TICK_INTERVAL;
         // flag to check if target was already reached
+        this.nextSkillReached = false;
+        this.nextMilestoneReached = false;
         this.skillReached = false;
         this.isComputing = false;
     }
@@ -104,6 +112,14 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
+    get nextSkillCompleted() {
+        return !this.nextSkillReached && this.skillLevel >= this.initialVirtualLevel + 1;
+    }
+
+    get nextMilestoneCompleted() {
+        return !this.nextMilestoneReached && this.skillLevel >= this.nextMilestone;
+    }
+
     get activeRealmID(): string {
         // @ts-ignore
         return this.activeRealm().id;
@@ -116,6 +132,30 @@ export class EtaSkill {
 
     get actionIsInActiveRealm(): boolean {
         return this.actionRealmID === this.activeRealmID;
+    }
+
+    setNextMilestone(): void {
+        const realmID = this.actionRealmID;
+        let milestones: any[] = [];
+        let milestoneLevels: number[] = [];
+        if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            milestones = this.skill.milestones;
+            milestoneLevels = milestones.map((x: any) => x.level);
+        } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
+            milestones = this.skill.abyssalMilestones;
+            milestoneLevels = milestones.map((x: any) => x.abyssalLevel);
+        }
+        this.nextMilestone = milestoneLevels.find((milestone: number) => milestone > this.skillLevel) ?? Infinity;
+        if (this.nextMilestone === Infinity) {
+            this.nextMilestoneReached = true;
+            return;
+        }
+        this.milestoneMedia = [];
+        milestones.forEach((milestone: number, idx: number) => {
+            if (milestoneLevels[idx] === this.nextMilestone) {
+                this.milestoneMedia.push(milestones[idx].media);
+            }
+        });
     }
 
     activeRealm(): Realm {
@@ -153,6 +193,12 @@ export class EtaSkill {
     }
 
     completed() {
+        if (!this.nextMilestoneReached) {
+            return false;
+        }
+        if (!this.nextSkillReached) {
+            return false;
+        }
         return this.infiniteActions || this.targets.completed();
     }
 
@@ -184,13 +230,24 @@ export class EtaSkill {
         this.currentRatesSet = false;
         this.infiniteActions = false;
         // flag to check if target was already reached
+        this.nextSkillReached = false;
+        this.nextMilestoneReached = false;
         this.skillReached = false;
         // compute the targets
+        this.setNextMilestone();
         this.targets = this.getTargets();
     }
 
     setFinalValues() {
         // check targets
+        if (this.nextSkillCompleted) {
+            this.actionsTaken.nextSkill = this.actionsTaken.active.clone();
+            this.nextSkillReached = true;
+        }
+        if (this.nextMilestoneCompleted) {
+            this.actionsTaken.nextMilestone = this.actionsTaken.active.clone();
+            this.nextMilestoneReached = true;
+        }
         if (this.skillCompleted) {
             this.actionsTaken.skill = this.actionsTaken.active.clone();
             this.skillReached = true;

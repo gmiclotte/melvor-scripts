@@ -72,6 +72,27 @@ export class Settings {
                     hint: 'Show action times.',
                     default: true,
                 },
+                {
+                    type: 'switch',
+                    name: 'SHOW_LEVEL_NEXT',
+                    label: 'Show ETA for next level',
+                    hint: 'Show ETA for next level.',
+                    default: true,
+                },
+                {
+                    type: 'switch',
+                    name: 'SHOW_LEVEL_MILESTONE',
+                    label: 'Show ETA for next milestone',
+                    hint: 'Show ETA for next milestone.',
+                    default: true,
+                },
+                {
+                    type: 'switch',
+                    name: 'SHOW_LEVEL_TARGET',
+                    label: 'Show ETA for target level',
+                    hint: 'Show ETA for target level.',
+                    default: true,
+                },
             ],
             numerical: [
                 {

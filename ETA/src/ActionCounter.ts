@@ -1,6 +1,8 @@
 export class ActionCounterWrapper {
     public active: ActionCounter;
     public skill: ActionCounter;
+    public nextSkill: ActionCounter;
+    public nextMilestone: ActionCounter;
     public mastery: ActionCounter;
     public pool: ActionCounter;
     public intensity: ActionCounter;
@@ -8,6 +10,8 @@ export class ActionCounterWrapper {
     constructor() {
         this.active = this.empty;
         this.skill = this.empty;
+        this.nextSkill = this.empty;
+        this.nextMilestone = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
         this.intensity = this.empty;
@@ -20,6 +24,8 @@ export class ActionCounterWrapper {
     reset() {
         this.active = this.empty;
         this.skill = this.empty;
+        this.nextSkill = this.empty;
+        this.nextMilestone = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
         this.intensity = this.empty;
