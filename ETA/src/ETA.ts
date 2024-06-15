@@ -105,7 +105,7 @@ export class ETA extends TinyMod {
             const skillMap = new Map<string, EtaSkill>();
             skill.actions.forEach((action: any) => {
                 skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
-                this.displayManager.getDisplay(skill, action.id);
+                // this.displayManager.getDisplay(skill, action.id);
             });
             // @ts-ignore
             const skillID = skill.id;
@@ -116,17 +116,16 @@ export class ETA extends TinyMod {
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+        if (!this.game.loopStarted || !this.game.enableRendering) {
+            //this.log('Game loop is not running or rendering, probably fastforwarding. Skip all ETA recomputes.');
+            return;
+        }
         if (skill.actions === undefined) {
             return;
         }
         // @ts-ignore
         if (game.cartography && skill.id === game.cartography.id) {
             // cartography is not implemented
-            return;
-        }
-        // @ts-ignore
-        if (!this.game.loopStarted) {
-            //this.log('Game loop is not running, probably fastforwarding. Skip all ETA recomputes.');
             return;
         }
         if (this.game.openPage.action !== skill) {
