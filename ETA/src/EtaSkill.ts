@@ -74,6 +74,15 @@ export class EtaSkill {
         return this.xpToLevel(this.initial.xp);
     }
 
+    get melvorSkillLevel(): number {
+        if (this.actionRealmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
+            // compute the currently simulated skill level when we are in Melvor
+            return Math.min(this.skillLevel, this.skill.currentLevelCap);
+        }
+        // return the current skill level in case we are in another realm
+        return this.skill.level;
+    }
+
     /***
      * Interval methods
      */

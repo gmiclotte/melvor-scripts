@@ -49,8 +49,7 @@ export class EtaThieving extends EtaSkillWithMastery {
     }
 
     getStealthAgainstNPC() {
-        const mastery = this.masteryLevel;
-        let stealth = this.skillLevel + mastery;
+        let stealth = this.melvorSkillLevel + this.changeInMasteryLevel;
         if (this.checkMasteryMilestone(99)) {
             stealth += 75;
         }
