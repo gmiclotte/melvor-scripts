@@ -17,6 +17,7 @@ export class EtaSkill {
     public actionsTaken: ActionCounterWrapper;
     // initial and target
     public initial: Rates;
+    // @ts-ignore
     public targets: Targets;
     // current rates
     public attemptsPerHour: number;
@@ -36,7 +37,6 @@ export class EtaSkill {
         this.modifiers = game.modifiers;
         this.settings = settings;
         this.initial = Rates.emptyRates;
-        this.targets = this.getTargets();
         this.skill.baseInterval = skill.baseInterval ?? 0;
         this.actionsTaken = new ActionCounterWrapper();
         this.skillXp = 0;
@@ -57,7 +57,7 @@ export class EtaSkill {
     }
 
     get actionLevel(): number {
-        const realmID = this.action.realm.id;
+        const realmID = this.actionRealmID;
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             return this.action.level;
         } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
@@ -95,12 +95,30 @@ export class EtaSkill {
         return !this.skillReached && this.targets.skillCompleted();
     }
 
+    get activeRealmID(): string {
+        // @ts-ignore
+        return this.activeRealm().id;
+    }
+
+    get actionRealmID(): string {
+        // @ts-ignore
+        return this.actionRealm().id;
+    }
+
+    get actionIsInActiveRealm(): boolean {
+        return this.actionRealmID === this.activeRealmID;
+    }
+
     activeRealm(): Realm {
         return this.skill.currentRealm;
     }
 
+    actionRealm(): Realm {
+        return this.action.realm;
+    }
+
     skip() {
-        return this.action.realm !== this.activeRealm();
+        return !this.actionIsInActiveRealm;
     }
 
     /***
@@ -109,7 +127,7 @@ export class EtaSkill {
 
     gainsPerAction() {
         return new Rates(
-            this.actionXP(this.action.realm.id),
+            this.actionXP(this.actionRealmID),
             this.successRate,
             this.averageAttemptTime,
             1, // unit
@@ -134,10 +152,7 @@ export class EtaSkill {
     }
 
     init(game: Game) {
-        if (!this.activeRealm()) {
-            console.log('Failed to determine active realm for skill', this.skill.id);
-        }
-        const realmID = this.action.realm.id;
+        const realmID = this.actionRealmID;
         this.isComputing = true;
         // get initial values
         // actions performed
@@ -161,6 +176,8 @@ export class EtaSkill {
         this.infiniteActions = false;
         // flag to check if target was already reached
         this.skillReached = false;
+        // compute the targets
+        this.targets = this.getTargets();
     }
 
     setFinalValues() {
@@ -173,8 +190,6 @@ export class EtaSkill {
 
     iterate(game: Game): void {
         this.init(game);
-        // compute the targets
-        this.targets = this.getTargets();
         // limit to 1000 iterations, in case something goes wrong
         const maxIt = 1000;
         let it = 0;
@@ -256,7 +271,7 @@ export class EtaSkill {
      */
 
     xpToLevel(xp: number): number {
-        const realmID = this.action.realm.id;
+        const realmID = this.actionRealmID;
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             // @ts-ignore 2304
             return exp.xpToLevel(xp);
@@ -268,7 +283,7 @@ export class EtaSkill {
     }
 
     levelToXp(level: number): number {
-        const realmID = this.action.realm.id;
+        const realmID = this.actionRealmID;
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
             // @ts-ignore 2304
             return exp.levelToXP(level);

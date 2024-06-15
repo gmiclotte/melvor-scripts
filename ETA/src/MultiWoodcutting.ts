@@ -38,4 +38,8 @@ export class MultiWoodcutting extends MultiActionSkill {
         });
         return maxTime;
     }
+
+    xpToLevel(xp: number): number {
+        return super.xpToLevel(xp);
+    }
 }

@@ -43,7 +43,7 @@ export class EtaCooking extends ResourceSkillWithMastery {
 
     skip() {
         const category = this.action.category;
-        return this.action !== this.skill.selectedRecipes.get(category) || this.action.realm !== this.activeRealm();
+        return this.action !== this.skill.selectedRecipes.get(category) || !this.actionIsInActiveRealm;
     }
 
     getMasteryXPModifier() {

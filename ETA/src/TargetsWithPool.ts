@@ -16,7 +16,7 @@ export class TargetsWithPool extends Targets {
         // target pool percentage
         const currentPool = (100 * current.initial.pool) / current.getBaseMasteryPoolCap();
         this.poolPercent = settings.getTargetPool(current.skill.id, currentPool, current.skill.masteryPoolCapPercent);
-        this.poolXp = this.poolPercent / 100 * current.skill.getBaseMasteryPoolCap(current.action.realm);
+        this.poolXp = this.poolPercent / 100 * current.skill.getBaseMasteryPoolCap(current.actionRealm());
     }
 
     poolCompleted(): boolean {

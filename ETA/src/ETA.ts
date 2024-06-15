@@ -26,6 +26,8 @@ import {EtaAgility} from "./EtaAgility";
 import {EtaAstrology} from "./EtaAstrology";
 import {EtaArchaeology} from "./EtaArchaeology";
 import {EtaHarvesting} from "./EtaHarvesting";
+import {MultiAgility} from "./MultiAgility";
+import {MultiWoodcutting} from "./MultiWoodcutting";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -135,7 +137,6 @@ export class ETA extends TinyMod {
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
                 if (!this.skipAction(skill, action)) {
-                    // this.log(`Recomputing ${skill.id} ${action.id}.`);
                     this.computeAndInjectHTML(skill, action);
                 } else {
                     this.displayManager.hideHTML(skill, action.id);
@@ -163,9 +164,10 @@ export class ETA extends TinyMod {
                     return;
             }
             if (!this.skipMultiAction(skill, actions)) {
-                // this.log(`Recomputing ${skill.id} multi.`);
+                // @ts-ignore
                 this.computeAndInjectMultiHTML(skill, actions, injectSubCalcs);
             } else {
+                // @ts-ignore
                 this.displayManager.hideHTML(skill);
             }
         });
@@ -198,29 +200,27 @@ export class ETA extends TinyMod {
             // already computing
             return;
         }
+        // check if the display exists
+        const display = this.displayManager.getDisplay(skill);
+        if (display === undefined) {
+            return;
+        }
         // create new multi action calculators
         if (skillID === this.game.woodcutting.id) {
-            return
-            // TODO
-            //  calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
+            calculator = new MultiWoodcutting(this.game, this.game.woodcutting, actions, this.settings);
         } else if (skillID === this.game.agility.id) {
-            return
-            // TODO
-            //  calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
+            calculator = new MultiAgility(this.game, this.game.agility, actions, this.settings);
         } else {
             return;
         }
-        /*
-        TODO
+        // inject the calculator results
         this.skillMultiCalculators.set(skillID, calculator);
-        this.displayManager.getDisplay(skill);
-        this.displayManager.injectHTML(this.timeRemaining(calculator), new Date());
+        this.displayManager.injectHTML(display, this.timeRemaining(calculator), new Date());
         if (injectSubCalcs) {
             calculator.calculators.forEach(sub => {
-                this.displayManager.injectHTML(sub, new Date())
+                this.displayManager.injectHTML(display, sub, new Date())
             });
         }
-         */
     }
 
     skipAction(skill: SkillWithMastery<MasteryAction, MasterySkillData>, action: any): boolean {

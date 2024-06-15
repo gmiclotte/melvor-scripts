@@ -4,18 +4,20 @@ import {RatesWithMastery} from "./RatesWithMastery";
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {MultiRates} from "./MultiRates";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
+import type {Realm} from "../../Game-Files/gameTypes/realms";
 
 export class MultiActionSkill extends EtaSkillWithPool {
     public calculators: Map<string, EtaSkillWithMastery>;
+    private _actionRealm: Realm | undefined;
 
     constructor(game: Game, skill: any, actions: any[], settings: Settings) {
         super(game, skill, {}, settings);
-        // create calculators
+        // init
         this.calculators = new Map<string, EtaSkillWithMastery>;
-        actions.forEach((action: any) => this.calculators.set(
-            action.id,
-            new EtaSkillWithMastery(game, skill, action, settings),
-        ));
+        // set realm
+        actions.forEach((action: any) => {
+            this._actionRealm = action.realm;
+        });
     }
 
     get masteryCompleted() {
@@ -30,6 +32,10 @@ export class MultiActionSkill extends EtaSkillWithPool {
             weights.set(actionID, 1);
         });
         return weights;
+    }
+
+    actionRealm(): Realm {
+        return this._actionRealm!;
     }
 
     completed() {
@@ -96,26 +102,9 @@ export class MultiActionSkill extends EtaSkillWithPool {
     }
 
     init(game: Game) {
+        super.init(game);
         this.isComputing = true;
         this.calculators.forEach((calculator) => calculator.init(game));
-        // get initial values
-        // actions performed
-        this.actionsTaken.reset();
-        // current xp
-        this.skillXp = this.skill.xp;
-        // current pool xp
-        this.poolXp = this.skill.masteryPoolXP;
-        // initial
-        this.initial = new RatesWithMastery(
-            this.skillXp,
-            -Infinity,
-            this.poolXp,
-            this.successRate,
-            0, // ms
-            1, // unit
-        );
-        // flag to check if target was already reached
-        this.poolReached = false;
     }
 
     setFinalValues() {

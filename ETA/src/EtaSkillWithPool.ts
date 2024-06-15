@@ -9,6 +9,7 @@ export class EtaSkillWithPool extends EtaSkill {
     public poolXp: number;
     // initial and target
     public initial: RatesWithPool;
+    // @ts-ignore
     public targets: TargetsWithPool;
     // current rates
     public currentRates: RatesWithPool;
@@ -19,7 +20,6 @@ export class EtaSkillWithPool extends EtaSkill {
     constructor(...[game, skill, action, settings]: [Game, any, any, Settings]) {
         const args: [Game, any, any, Settings] = [game, skill, action, settings];
         super(...args);
-        this.targets = this.getTargets();
         this.poolXp = 0;
         this.currentRates = RatesWithPool.emptyRates;
         this.initial = RatesWithPool.emptyRates;
@@ -51,7 +51,7 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     get nextPoolCheckpointXp() {
-        return this.nextPoolCheckpoint / 100 * this.skill.getBaseMasteryPoolCap(this.action.realm);
+        return this.nextPoolCheckpoint / 100 * this.skill.getBaseMasteryPoolCap(this.actionRealm());
     }
 
     /***
@@ -81,7 +81,7 @@ export class EtaSkillWithPool extends EtaSkill {
         super.init(game);
         // get initial values
         // current pool xp
-        this.poolXp = this.skill.getMasteryPoolXP(this.action.realm);
+        this.poolXp = this.skill.getMasteryPoolXP(this.actionRealm());
         // initial
         this.initial = RatesWithPool.addPoolToRates(
             this.initial,
@@ -134,11 +134,11 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     isMelvorPoolTierActive(tier: number) {
-        return this.action.realm.id === "melvorD:Melvor" /* RealmIDs.Melvor */ && this.isPoolTierActive(tier);
+        return this.actionRealmID === "melvorD:Melvor" /* RealmIDs.Melvor */ && this.isPoolTierActive(tier);
     }
 
     isAbyssalPoolTierActive(tier: number) {
-        return this.action.realm.id === "melvorItA:Abyssal" /* RealmIDs.Abyssal */ && this.isPoolTierActive(tier);
+        return this.actionRealmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */ && this.isPoolTierActive(tier);
     }
 
     isPoolTierActive(tier: number) {
@@ -150,7 +150,7 @@ export class EtaSkillWithPool extends EtaSkill {
     }
 
     getBaseMasteryPoolCap() {
-        return this.skill.getBaseMasteryPoolCap(this.action.realm);
+        return this.skill.getBaseMasteryPoolCap(this.actionRealm());
     }
 
     poolXpToPercent(poolXp: number) {

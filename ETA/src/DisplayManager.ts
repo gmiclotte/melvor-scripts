@@ -144,23 +144,25 @@ export class DisplayManager {
         const displayID = this.getDisplayID(skill);
         const display = new DisplayWithPool(this, this.settings, this.game.bank, this.game.items, displayID);
         let node;
-        node = document.getElementsByClassName('progress-bar bg-woodcutting');
+        node = document.getElementById('woodcutting-grants');
         if (node === null) {
             return display;
         }
-        node = node[0].parentNode;
-        node!.parentNode!.insertBefore(display.container, node!.nextSibling);
+        node = node.parentElement;
+        node!.parentElement!.insertBefore(display.container, node);
         return display;
     }
 
     private createAgilityMultiDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>): Display {
         const displayID = this.getDisplayID(skill);
-        const node = document.getElementById('agility-breakdown-items');
         const display = new DisplayWithPool(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        node = document.getElementById('agility-breakdown');
         if (node === null) {
             return display;
         }
-        node.appendChild(display.container);
+        node = node!.parentElement;
+        node!.insertBefore(display.container, node!.children[2]);
         return display;
     }
 

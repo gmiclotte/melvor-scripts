@@ -11,6 +11,7 @@ export class EtaHarvesting extends EtaSkillWithMastery {
 
     // initial and target
     public initial: RatesWithIntensity;
+    // @ts-ignore
     public targets: TargetsWithIntensity;
     // current rates
     public currentRates: RatesWithIntensity;
@@ -29,7 +30,6 @@ export class EtaHarvesting extends EtaSkillWithMastery {
         this.intensityWeights = this.products.map((product: HarvestingProduct) => product.weight);
         this.totalWeight = this.intensityWeights.reduce((a, b) => a + b, 0);
         this.intensity = 0;
-        this.targets = this.getTargets();
         this.currentRates = RatesWithIntensity.emptyRates;
         this.initial = RatesWithIntensity.emptyRates;
         // flag to check if target was already reached
