@@ -323,6 +323,8 @@ export function pauseOfflineProgress(ctx: any, game: Game, zaWarudo: ZaWarudo) {
             if (loopStarted) {
                 // if loop was started, then stop it
                 game.stopMainLoop();
+
+                game.enableRendering = false;
             } else {
                 // if loop was not started, then add time to time bank
                 yield game.processOffline();
@@ -336,6 +338,7 @@ export function pauseOfflineProgress(ctx: any, game: Game, zaWarudo: ZaWarudo) {
             // restart loop if it was running, else keep it paused but force a render
             if (loopStarted) {
                 game.startMainLoop();
+                game.enableRendering = true;
             } else {
                 // @ts-ignore
                 setTimeout(() => game.render());
