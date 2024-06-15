@@ -3,6 +3,7 @@ import {EtaSkill} from "./EtaSkill";
 export class Targets {
     public skillLevel: number;
     public skillXp: number;
+    public hideSkillTarget: boolean;
     protected readonly current: EtaSkill;
 
     constructor(current: EtaSkill, settings: any) {
@@ -10,6 +11,7 @@ export class Targets {
         if (current.action === undefined) {
             this.skillLevel = 0;
             this.skillXp = 0;
+            this.hideSkillTarget = false;
             return this;
         }
         // target level
@@ -22,10 +24,14 @@ export class Targets {
         if (this.current.settings.get('SHOW_LEVEL_MILESTONE') && current.nextMilestone !== Infinity) {
             targets.push(current.nextMilestone);
         }
+        let skillLevelTarget = settings.getTargetLevel(current.actionRealmID, current.skill.id, currentLevel);
         if (this.current.settings.get('SHOW_LEVEL_TARGET')) {
-            targets.push(settings.getTargetLevel(current.actionRealmID, current.skill.id, currentLevel));
+            targets.push(skillLevelTarget);
         }
         this.skillLevel = Math.max(1, ...targets);
+
+        // if the skill level target is
+        this.hideSkillTarget = skillLevelTarget <= currentLevel;
         this.skillXp = this.current.levelToXp(this.skillLevel);
     }
 

@@ -24,10 +24,14 @@ export class DisplayWithMastery extends DisplayWithPool {
     }
 
     finalMastery(result: EtaSkillWithMastery) {
-        return result.virtualMasteryLevel + this.getProgressInLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
+        return result.virtualMasteryLevel + this.getProgressInMasteryLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
     }
 
-    getProgressInLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
-        return super.getProgressInLevel(result, currentXp, level, type);
+    getProgressInMasteryLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
+        const currentLevel = level;
+        const currentLevelXp = result.masteryLevelToXp(currentLevel);
+        const nextLevelXp = result.masteryLevelToXp(currentLevel + 1);
+        // progress towards next level
+        return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
     }
 }
