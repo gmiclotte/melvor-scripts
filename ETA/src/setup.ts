@@ -16,31 +16,31 @@ export function setup(ctx: any): void {
         {clas: GatheringSkill, method: 'stop'},
         // patch ArtisanSkill.selectRecipeOnClick
         // @ts-ignore
-        // TODO {clas: ArtisanSkill, method: 'selectRecipeOnClick'},
+        {clas: ArtisanSkill, method: 'selectRecipeOnClick'},
         // patch Fishing.onAreaFishSelection
         // @ts-ignore
-        // TODO {clas: Fishing, method: 'onAreaFishSelection'},
+        {clas: Fishing, method: 'onAreaFishSelection'},
         // patch Firemaking.selectLog
         // @ts-ignore
-        // TODO {clas: Firemaking, method: 'selectLog'},
+        {clas: Firemaking, method: 'selectLog'},
         // patch Cooking.onRecipeSelectionClick
         // @ts-ignore
-        // TODO {clas: Cooking, method: 'onRecipeSelectionClick'},
+        {clas: Cooking, method: 'onRecipeSelectionClick'},
         // patch Thieving.onNPCPanelSelection
         // @ts-ignore
-        // TODO {clas: Thieving, method: 'onNPCPanelSelection'},
+        {clas: Thieving, method: 'onNPCPanelSelection'},
         // patch selectAltRecipeOnClick
         // @ts-ignore
-        // TODO {clas: Fletching, method: 'selectAltRecipeOnClick'},
+        {clas: Fletching, method: 'selectAltRecipeOnClick'},
         // @ts-ignore
-        // TODO {clas: Summoning, method: 'selectAltRecipeOnClick'},
+        {clas: Summoning, method: 'selectNonShardCostOnClick'},
         // patch AltMagic
         // @ts-ignore
-        // TODO {clas: AltMagic, method: 'selectSpellOnClick'},
+        {clas: AltMagic, method: 'selectSpellOnClick'},
         // @ts-ignore
-        // TODO {clas: AltMagic, method: 'selectItemOnClick'},
+        {clas: AltMagic, method: 'selectItemOnClick'},
         // @ts-ignore
-        // TODO {clas: AltMagic, method: 'selectBarOnClick'},
+        {clas: AltMagic, method: 'selectBarOnClick'},
     ].forEach(patch => {
         ctx.patch(patch.clas, patch.method).after(function () {
             // @ts-ignore
