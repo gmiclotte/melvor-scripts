@@ -53,9 +53,15 @@ export class EtaMining extends EtaSkillWithMastery {
         const effectiveRockHP = this.maxRockHP / rockHPDivisor;
         // respawn interval
         let respawnInterval = this.action.baseRespawnInterval;
+        let respawnModifier = this.modifiers.getValue(
+            "melvorD:miningNodeRespawnInterval" /* ModifierIDs.miningNodeRespawnInterval */,
+            this.getActionModifierQuery()
+        );
         if (this.isMelvorPoolTierActive(1) || this.isAbyssalPoolTierActive(1)) {
-            respawnInterval *= 0.9;
+            respawnModifier -= 10;
         }
+        respawnInterval *= 1 + respawnModifier / 100;
+        respawnInterval = Math.max(respawnInterval, 250);
         // @ts-ignore
         respawnInterval = roundToTickInterval(respawnInterval);
         // average action time is time for one cycle divided by number of actions during that cycle
