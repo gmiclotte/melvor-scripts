@@ -13,14 +13,31 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return this.skill.masteryModifiedInterval;
     }
 
+    get isMakingRunes() {
+        return this.action.subcategories.some((subcat: any) =>
+            subcat.id === "melvorF:Runes" /* RunecraftingSubcategoryIDs.Runes */
+        );
+    }
+
     actionXP(realmID: string) {
         let xp = super.actionXP(realmID);
-        // Tier 2 Mastery Pool Checkpoint: 250% base xp when making runes
-        if (this.skill.isMakingRunes && this.isMelvorPoolTierActive(1)) {
-            xp *= 2.5;
-        }
-        if (this.skill.isMakingRunes && this.isAbyssalPoolTierActive(1)) {
-            xp *= 1.25;
+        // add rune base xp modifiers
+        if (this.isMakingRunes) {
+            let runeBaseXPModifier = 0;
+            if (realmID === "melvorD:Melvor") {
+                runeBaseXPModifier = this.modifiers.runecraftingBaseXPForRunes;
+                // Tier 2 Mastery Pool Checkpoint: +150% base xp when making runes
+                if (this.isMelvorPoolTierActive(1)) {
+                    runeBaseXPModifier += 150;
+                }
+            } else if (realmID === "melvorItA:Abyssal") {
+                runeBaseXPModifier = this.modifiers.runecraftingBaseAXPForRunes;
+                // Tier 2 Abyssal Mastery Pool Checkpoint: +25% base xp when making runes
+                if (this.isAbyssalPoolTierActive(1)) {
+                    runeBaseXPModifier += 25;
+                }
+            }
+            xp *= 1 + runeBaseXPModifier / 100;
         }
         return xp;
     }
