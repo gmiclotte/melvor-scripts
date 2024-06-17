@@ -22,10 +22,10 @@ export class EtaCooking extends ResourceSkillWithMastery {
     }
 
     get recipeSuccessChance() {
-        const masteryLevel = this.masteryLevel;
         // @ts-ignore
         let chance = Cooking.baseSuccessChance;
         chance += this.modifiers.getValue("melvorD:successfulCookChance" /* ModifierIDs.successfulCookChance */, this.getActionModifierQuery());
+        chance += .6 * this.changeInMasteryLevel;
         let chanceCap = 100;
         // Pig + Mole Synergy: Cap success rate at 75%
         chanceCap += this.modifiers.cookingSuccessCap;

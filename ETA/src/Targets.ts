@@ -27,7 +27,6 @@ export class Targets {
             targets.push(current.nextMilestone);
         }
         this.skillLevelTarget = settings.getTargetLevel(current.actionRealmID, current.skill, currentLevel);
-        console.log(this.skillLevelTarget)
         if (this.current.settings.get('SHOW_LEVEL_TARGET')) {
             targets.push(this.skillLevelTarget);
         }
