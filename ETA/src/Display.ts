@@ -172,7 +172,7 @@ export class Display {
             elt += this.tooltipSection(result.actionsTaken.nextMilestone, now, `${msHtml} (${result.nextMilestone})`, '');
         }
         if (this.settings.get('SHOW_LEVEL_TARGET') && !result.targets.hideSkillTarget) {
-            elt += this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevel, '');
+            elt += this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevelTarget, '');
         }
         return elt;
     }

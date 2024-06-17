@@ -109,7 +109,7 @@ export class EtaSkill {
     }
 
     get skillCompleted() {
-        return !this.skillReached && this.targets.skillCompleted();
+        return !this.skillReached && this.skillLevel >= this.targets.skillLevelTarget;
     }
 
     get nextSkillCompleted() {

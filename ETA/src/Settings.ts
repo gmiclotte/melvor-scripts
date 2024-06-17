@@ -111,28 +111,28 @@ export class Settings {
                     name: 'GLOBAL_TARGET_LEVEL',
                     label: 'Global level targets',
                     hint: 'Global level targets.',
-                    default: [99, 120],
+                    default: [],
                 },
                 {
                     type: 'numberArray',
                     name: 'GLOBAL_TARGET_ABYSSAL',
                     label: 'Global abyssal level targets',
                     hint: 'Global abyssal level targets.',
-                    default: [60],
+                    default: [],
                 },
                 {
                     type: 'numberArray',
                     name: 'GLOBAL_TARGET_MASTERY',
                     label: 'Global mastery targets',
                     hint: 'Global mastery targets.',
-                    default: [99],
+                    default: [],
                 },
                 {
                     type: 'numberArray',
                     name: 'GLOBAL_TARGET_POOL',
                     label: 'Global pool targets (%)',
                     hint: 'Global pool targets (%).',
-                    default: [100],
+                    default: [],
                 },
             ],
         };
@@ -217,11 +217,25 @@ export class Settings {
         return Math.ceil(target);
     }
 
-    getTargetLevel(realmID: string, skillID: string, current: number) {
+    getTargetLevel(realmID: string, skill: SkillWithMastery<MasteryAction, MasterySkillData>, current: number) {
+        // @ts-ignore
+        const skillID = skill.id;
         if (realmID === "melvorD:Melvor" /* RealmIDs.Melvor */) {
-            return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillID), 99, 170);
+            // default to the current level cap
+            let defaultTarget = skill.currentLevelCap;
+            if (skill.game.currentGamemode.capNonCombatSkillLevels) {
+                // cap non-combat skills at player's combat level
+                defaultTarget = Math.min(defaultTarget, skill.game.playerNormalCombatLevel);
+            }
+            if (current < 99 && 99 < defaultTarget) {
+                // default to 99 if current level is below 99 and level cap is over 99
+                defaultTarget = 99;
+            }
+            return this.getTarget(current, this.get('GLOBAL_TARGET_LEVEL'), this.get('TARGET_LEVEL', skillID), defaultTarget, 170);
         } else if (realmID === "melvorItA:Abyssal" /* RealmIDs.Abyssal */) {
-            return this.getTarget(current, this.get('GLOBAL_TARGET_ABYSSAL'), this.get('TARGET_ABYSSAL', skillID), 99, 170);
+            // default to the current abyssal level cap
+            let defaultTarget = skill.currentAbyssalLevelCap;
+            return this.getTarget(current, this.get('GLOBAL_TARGET_ABYSSAL'), this.get('TARGET_ABYSSAL', skillID), defaultTarget, 170);
         }
     }
 
