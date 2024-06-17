@@ -104,6 +104,15 @@ export class Settings {
                     min: 0,
                     max: Infinity,
                 },
+                {
+                    type: 'number',
+                    name: 'minimalRecomputeTime',
+                    label: 'Minimal time between recomputes in ms',
+                    hint: 'Minimal time between recomputes in ms.',
+                    default: 1000,
+                    min: 0,
+                    max: Infinity,
+                },
             ],
             targets: [
                 {

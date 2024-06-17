@@ -41,6 +41,7 @@ export class ETA extends TinyMod {
     private skillMultiCalculators: Map<string, MultiActionSkill>;
     private displayManager: DisplayManager;
     private readonly npcAreaMap: Map<string, ThievingArea>;
+    private recomputeTimeMap: Map<string, number>
 
     constructor(ctx: any, settings: Settings, game: Game, tag: string = 'ETA') {
         super(ctx, tag);
@@ -71,6 +72,7 @@ export class ETA extends TinyMod {
             this.game.herblore,
             this.game.summoning,
         ];
+        this.recomputeTimeMap = new Map<string, number>();
 
         // add skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
@@ -117,7 +119,24 @@ export class ETA extends TinyMod {
         }
     }
 
-    recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+    recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>, throttle: boolean) {
+        // @ts-ignore
+        const skillID = skill.id;
+        // recompute a skill only once every x ms
+        const now = Date.now();
+        if (throttle && this.recomputeTimeMap.has(skillID)) {
+            const lastRecompute = this.recomputeTimeMap.get(skillID)!;
+            if (now - lastRecompute < this.settings.get('minimalRecomputeTime')) {
+                // throttle recomputes
+                // this.log(`Throttling recomputation of ${skillID} to once every ${this.settings.get('minimalRecomputeTime')}ms`)
+                return;
+            } else {
+                // this.log(`Recomputing ${skillID} after ${now - lastRecompute}ms`);
+            }
+        }
+        this.recomputeTimeMap.set(skillID, now);
+
+        // check if the skill should be recomputed
         if (!this.game.loopStarted || !this.game.enableRendering) {
             //this.log('Game loop is not running or rendering, probably fastforwarding. Skip all ETA recomputes.');
             return;
@@ -126,17 +145,18 @@ export class ETA extends TinyMod {
             return;
         }
         // @ts-ignore
-        if (game.cartography && skill.id === game.cartography.id) {
+        if (game.cartography && skillID === game.cartography.id) {
             // cartography is not implemented
             return;
         }
         if (this.game.openPage.action !== skill) {
-            // this.log(`Not on ${skill.id} page`);
+            // this.log(`Not on ${skillID} page`);
             return;
         }
         setTimeout(() => {
             skill.actions.forEach((action: any) => {
                 if (!this.skipAction(skill, action)) {
+                    // this.log(`Recomputing ${skillID} ${action.id}`)
                     this.computeAndInjectHTML(skill, action);
                 } else {
                     this.displayManager.hideHTML(skill, action.id);
@@ -145,7 +165,7 @@ export class ETA extends TinyMod {
             let actions: any[];
             let injectSubCalcs = false;
             // @ts-ignore
-            switch (skill.id) {
+            switch (skillID) {
                 case this.game.woodcutting.id:
                     actions = [...this.game.woodcutting.activeTrees];
                     break;
@@ -164,6 +184,7 @@ export class ETA extends TinyMod {
                     return;
             }
             if (!this.skipMultiAction(skill, actions)) {
+                // this.log(`Recomputing ${skillID} multi actions ${actions.map(a => a.id)}`)
                 // @ts-ignore
                 this.computeAndInjectMultiHTML(skill, actions, injectSubCalcs);
             } else {
@@ -399,7 +420,7 @@ export class ETA extends TinyMod {
                     () => this.settings.get(key, skillID),
                     (_: any, __: string, result: any) => {
                         this.settings.set(key, result, skillID);
-                        recomputeSkill(skill);
+                        recomputeSkill(skill, false);
                     },
                 );
             });
@@ -407,14 +428,14 @@ export class ETA extends TinyMod {
     }
 }
 
-export function recomputeSkill(skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
+export function recomputeSkill(skill: SkillWithMastery<MasteryAction, MasterySkillData>, throttle: boolean) {
     // @ts-ignore
     const etaApi = mod.api.ETA;
     if (etaApi === undefined || etaApi.ETA === undefined) {
         return;
     }
     // @ts-ignore
-    etaApi.ETA.recompute(skill);
+    etaApi.ETA.recompute(skill, throttle);
 }
 
 export function recomputeEverySkill() {
@@ -431,5 +452,5 @@ export function recomputeEverySkill() {
         return;
     }
     // @ts-ignore
-    etaApi.ETA.recompute(skill);
+    etaApi.ETA.recompute(skill, false);
 }

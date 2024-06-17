@@ -11,40 +11,40 @@ export function setup(ctx: any): void {
     [
         // patch GatheringSkill.startActionTimer
         // @ts-ignore
-        {clas: GatheringSkill, method: 'startActionTimer'},
+        {clas: GatheringSkill, method: 'startActionTimer', throttle: true},
         // @ts-ignore
-        {clas: GatheringSkill, method: 'stop'},
+        {clas: GatheringSkill, method: 'stop', throttle: false},
         // patch ArtisanSkill.selectRecipeOnClick
         // @ts-ignore
-        {clas: ArtisanSkill, method: 'selectRecipeOnClick'},
+        {clas: ArtisanSkill, method: 'selectRecipeOnClick', throttle: false},
         // patch Fishing.onAreaFishSelection
         // @ts-ignore
-        {clas: Fishing, method: 'onAreaFishSelection'},
+        {clas: Fishing, method: 'onAreaFishSelection', throttle: false},
         // patch Firemaking.selectLog
         // @ts-ignore
-        {clas: Firemaking, method: 'selectLog'},
+        {clas: Firemaking, method: 'selectLog', throttle: false},
         // patch Cooking.onRecipeSelectionClick
         // @ts-ignore
-        {clas: Cooking, method: 'onRecipeSelectionClick'},
+        {clas: Cooking, method: 'onRecipeSelectionClick', throttle: false},
         // patch Thieving.onNPCPanelSelection
         // @ts-ignore
-        {clas: Thieving, method: 'onNPCPanelSelection'},
+        {clas: Thieving, method: 'onNPCPanelSelection', throttle: false},
         // patch selectAltRecipeOnClick
         // @ts-ignore
-        {clas: Fletching, method: 'selectAltRecipeOnClick'},
+        {clas: Fletching, method: 'selectAltRecipeOnClick', throttle: false},
         // @ts-ignore
-        {clas: Summoning, method: 'selectNonShardCostOnClick'},
+        {clas: Summoning, method: 'selectNonShardCostOnClick', throttle: false},
         // patch AltMagic
         // @ts-ignore
-        {clas: AltMagic, method: 'selectSpellOnClick'},
+        {clas: AltMagic, method: 'selectSpellOnClick', throttle: false},
         // @ts-ignore
-        {clas: AltMagic, method: 'selectItemOnClick'},
+        {clas: AltMagic, method: 'selectItemOnClick', throttle: false},
         // @ts-ignore
-        {clas: AltMagic, method: 'selectBarOnClick'},
+        {clas: AltMagic, method: 'selectBarOnClick', throttle: false},
     ].forEach(patch => {
         ctx.patch(patch.clas, patch.method).after(function () {
             // @ts-ignore
-            recomputeSkill(this);
+            recomputeSkill(this, patch.throttle);
         });
     });
 
@@ -63,76 +63,4 @@ export function setup(ctx: any): void {
             ETA: new ETA(ctx, settings, game),
         })
     });
-}
-
-export function testup(mod: any, game: Game): any {
-    // clean up existing UI elements
-    // @ts-ignore
-    if (window.eta && window.eta.displayManager) {
-        // @ts-ignore
-        window.eta.displayManager.removeAllDisplays();
-    }
-    const settings = new Settings(mod.getDevContext(), game);
-    const eta = new ETA(mod.getDevContext(), settings, game, 'Dev');
-    // @ts-ignore
-    window.eta = eta;
-
-    // mining
-    {
-        let skill = game.mining;
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            if (!skill.activeRock.isRespawning && skill.activeRock.currentHP > 0) {
-                skill.actionTimer.start(skill.actionInterval);
-                skill.renderQueue.progressBar = true;
-            }
-            eta.recompute(skill);
-        }
-    }
-
-    // thieving
-    {
-        let skill = game.thieving;
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            // Override to prevent action timer starting when stunned
-            if (!(skill.stunState === 1 /* ThievingStunState.Stunned */)) {
-                skill.actionTimer.start(skill.actionInterval);
-                skill.renderQueue.progressBar = true;
-            }
-            eta.recompute(skill);
-        }
-    }
-
-    // skills with generic startActionTimer
-    [
-        game.woodcutting,
-        game.fishing,
-        game.firemaking,
-        game.cooking,
-        // mining is handled separately
-        game.smithing,
-        // thieving is handled separately
-        game.fletching,
-        game.crafting,
-        game.runecrafting,
-        game.herblore,
-        game.agility,
-        game.summoning,
-        game.astrology,
-        game.altMagic,
-    ].forEach((skill: any) => {
-        // initial compute
-        eta.recompute(skill);
-        skill.startActionTimer = () => {
-            skill.actionTimer.start(skill.actionInterval);
-            skill.renderQueue.progressBar = true;
-            eta.recompute(skill);
-        }
-    });
-
-    // return eta object
-    return eta;
 }
