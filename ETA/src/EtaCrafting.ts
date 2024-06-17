@@ -44,7 +44,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
         return modifier;
     }
 
-    getFlatCostReduction(item: Item) {
+    getFlatCostReduction(item: Item | undefined) {
         let reduction = super.getFlatCostReduction(item);
         // TODO: Convert to category scoped modifier
         // Monkey + Pig Synergy: Dragonhide cost reduced by 1. Minimum 1.

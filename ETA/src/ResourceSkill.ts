@@ -187,15 +187,15 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             return Math.min(80, this.getUncappedCostReduction(item));
         }
 
-        getFlatCostReduction(item: Item | undefined = undefined) {
+        getFlatCostReduction(item: Item | undefined) {
             return 0;
         }
 
-        modifyItemCost(item: Item | undefined, quantity: number) {
+        modifyItemCost(item: Item, quantity: number) {
             const costReduction = this.getCostReduction(item);
             quantity *= 1 - costReduction / 100;
             quantity = Math.ceil(quantity);
-            quantity -= this.getFlatCostReduction();
+            quantity -= this.getFlatCostReduction(item);
             return Math.max(1, quantity);
         }
 
@@ -203,7 +203,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             const costReduction = this.getCostReduction();
             quantity *= 1 - costReduction / 100;
             quantity = Math.ceil(quantity);
-            quantity -= this.getFlatCostReduction();
+            quantity -= this.getFlatCostReduction(undefined);
             return Math.max(1, quantity);
         }
     }

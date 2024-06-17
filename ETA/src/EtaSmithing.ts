@@ -56,7 +56,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
         return reduction;
     }
 
-    getFlatCostReduction(item: Item) {
+    getFlatCostReduction(item: Item | undefined) {
         let reduction = super.getFlatCostReduction(item);
         // @ts-ignore
         if (item !== undefined && item.id == "melvorD:Coal_Ore" /* ItemIDs.Coal_Ore */) {
