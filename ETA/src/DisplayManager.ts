@@ -93,21 +93,20 @@ export class DisplayManager {
     }
 
     private createSkillDisplayAtMasteryBar(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): DisplayWithMastery | undefined {
+        // @ts-ignore
+        const skillID = skill.id;
         let display;
-        // @ts-ignore
         // console.log(`querying for skill ${skill.id} and action ${actionID}`);
-        // @ts-ignore
-        const query = `[data-skill-id="${skill.id}"][data-action-id="${actionID}"]`;
+        const query = `[data-skill-id="${skillID}"][data-action-id="${actionID}"]`;
         const node = document.querySelector(query);
         if (node !== null) {
             const displayID = this.getDisplayID(skill, actionID);
-            // @ts-ignore
-            switch (skill.id) {
+            switch (skillID) {
                 case 'melvorD:Woodcutting':
                 case 'melvorD:Fishing':
                 case 'melvorD:Mining':
-                case 'melvorAoD:Thieving':
-                case 'melvorAoD:Agility':
+                case 'melvorD:Thieving':
+                case 'melvorD:Agility':
                 case 'melvorAoD:Astrology':
                 case 'melvorAoD:Archaeology':
                     display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
@@ -118,7 +117,11 @@ export class DisplayManager {
                 default:
                     display = new ResourceDisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
             }
-            node!.parentNode!.insertBefore(display.container, node);
+            if (skillID === 'melvorD:Thieving') {
+                node!.parentNode!.parentNode!.append(display.container);
+            } else {
+                node!.parentNode!.insertBefore(display.container, node);
+            }
         }
         return display
     }
@@ -134,7 +137,8 @@ export class DisplayManager {
     private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display | undefined {
         // create new display
         // @ts-ignore
-        if (skill.id === this.game.altMagic.id) {
+        const skillID = skill.id;
+        if (skillID === this.game.altMagic.id) {
             return this.createMagicDisplay(skill, actionID);
         }
         return this.createSkillDisplayAtMasteryBar(skill, actionID);
