@@ -1,6 +1,6 @@
 {
     "name": "melvor_unlimited_offline",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Removes the offline time limit.",
     "config": {
         "tinyMod": "../TinyMod"

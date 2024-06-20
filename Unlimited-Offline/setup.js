@@ -1,7 +1,7 @@
 export function setup(gameContext) {
     // Override max offline time variable
-    game.MAX_OFFLINE_TIME = 9223372036854775807; 
-    
+    game.MAX_OFFLINE_TIME = Infinity;
+
     // patch the max offline time message out
-    loadedLangJson.MENU_TEXT_MAX_OFFLINE_TIME = 'There is no maximum limit for offline time.';
+    loadedLangJson.MENU_TEXT_MAX_OFFLINE_TIME = ' ';
 }
