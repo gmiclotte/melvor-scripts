@@ -2,7 +2,6 @@ import {ETA, recomputeEverySkill, recomputeSkill} from './ETA';
 import type {GatheringSkill} from "../../Game-Files/gameTypes/skill";
 import type {SidebarItem} from "../../Game-Files/gameTypes/sidebar";
 import {Settings} from "./Settings";
-import type {Game} from "../../Game-Files/gameTypes/game";
 
 export function setup(ctx: any): void {
     // load style sheet

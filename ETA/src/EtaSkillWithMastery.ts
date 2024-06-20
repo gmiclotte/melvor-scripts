@@ -48,10 +48,6 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
         return this.masteryLevel - this.initialMasteryLevel;
     }
 
-    get changeIn10MasteryLevel() {
-        return Math.floor(this.masteryLevel / 10) - Math.floor(this.initialMasteryLevel / 10);
-    }
-
     get virtualMasteryLevel(): number {
         return this.masteryXpToLevel(this.masteryXp);
     }
@@ -93,6 +89,10 @@ export class EtaSkillWithMastery extends EtaSkillWithPool {
             }
         });
         return totalUnlockedMasteryActions;
+    }
+
+    changeInXMasteryLevel(x: number) {
+        return Math.floor(this.masteryLevel / x) - Math.floor(this.initialMasteryLevel / x);
     }
 
     isBasicSkillRecipeUnlocked(action: any, skillLevel: number) {

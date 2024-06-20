@@ -14,8 +14,7 @@ export class EtaSmithing extends ResourceSkillWithMastery {
     }
 
     getPreservationChance(chance: number) {
-        const masteryLevel = this.masteryLevel;
-        chance += Math.floor(masteryLevel / 20) * 5;
+        chance += this.changeInXMasteryLevel(20) * 5;
         if (this.checkMasteryMilestone(99)) {
             chance += 10;
         }
