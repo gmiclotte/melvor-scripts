@@ -46,7 +46,9 @@ export class EtaFishing extends EtaSkillWithMastery {
     getJunkChance(): number {
         // Mastery Pool Tier 2: No longer catch junk
         // Mastery Level 65: No longer catch junk
-        if (this.isMelvorPoolTierActive(1) || this.checkMasteryMilestone(65)) {
+        if (this.modifiers.getValue("melvorD:cannotFishJunk" /* ModifierIDs.cannotFishJunk */, this.getActionModifierQuery())
+            || this.isMelvorPoolTierActive(1)
+            || this.checkMasteryMilestone(65)) {
             return 0;
         }
         // get junk chance
