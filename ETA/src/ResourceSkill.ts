@@ -138,6 +138,9 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 "melvorD:skillPreservationChance" /* ModifierIDs.skillPreservationChance */,
                 this.getActionModifierQuery()
             );
+            if (this.skill.game.currentGamemode.disablePreservation) {
+                chance = 0;
+            }
             chance += this.modifiers.bypassGlobalPreservationChance;
             chance = Math.min(chance, this.getPreservationCap());
             if (chance < 0) {
