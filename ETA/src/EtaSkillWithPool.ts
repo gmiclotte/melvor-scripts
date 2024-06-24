@@ -127,7 +127,7 @@ export class EtaSkillWithPool extends EtaSkill {
      */
 
     poolPerAction(masteryXp: number) {
-        if (this.skillLevel >= 99) {
+        if (this.melvorSkillLevel >= 99) {
             return masteryXp / 2;
         }
         return masteryXp / 4;
