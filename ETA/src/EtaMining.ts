@@ -45,7 +45,7 @@ export class EtaMining extends EtaSkillWithMastery {
         // account for rockHPPreserveChance
         rockHPDivisor -= this.rockHPPreserveChance / 100;
         // rock regenerates 1 hp every 10s, i.e. every 1e4 ms
-        rockHPDivisor -= actionInterval / 1e4;
+        rockHPDivisor -= actionInterval / this.skill.passiveRegenInterval;
         if (rockHPDivisor <= 0) {
             // rock never dies
             return actionInterval;

@@ -100,7 +100,7 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
                 return 0;
             }
             // apply preservation
-            return resourceSets / (1 - this.getPreservationChance(0) / 100);
+            return Math.ceil(resourceSets / (1 - this.getPreservationChance(0) / 100));
         }
 
         addAttempts(gainsPerAction: ResourceRates, attempts: number) {
@@ -112,14 +112,16 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         addCost(counter: ResourceActionCounter, attempts: number, preservation: number) {
+            // round resourceSetsUsed to ceil for positive numbers and floor for negative numbers
             const resourceSetsUsed = attempts * (1 - preservation / 100);
+            const roundedResourceSetsUsed = Math.sign(resourceSetsUsed) * Math.ceil(Math.abs(resourceSetsUsed));
             this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
                 const amt = counter.items.get(cost.item) ?? 0;
-                counter.items.set(cost.item, amt + cost.quantity * resourceSetsUsed);
+                counter.items.set(cost.item, amt + cost.quantity * roundedResourceSetsUsed);
             })
             this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
                 const amt = counter.currencies.get(cost.currency) ?? 0;
-                counter.currencies.set(cost.currency, amt + cost.quantity * resourceSetsUsed);
+                counter.currencies.set(cost.currency, amt + cost.quantity * roundedResourceSetsUsed);
             })
         }
 
