@@ -27,8 +27,4 @@ export class DisplayWithIntensity extends DisplayWithMastery {
     finalIntensity(result: EtaHarvesting) {
         return `${result.intensityPercentage.toFixed(2)}%`;
     }
-
-    getProgressInLevel(result: EtaHarvesting, currentXp: number, level: number, type: string): number {
-        return super.getProgressInLevel(result, currentXp, level, type);
-    }
 }

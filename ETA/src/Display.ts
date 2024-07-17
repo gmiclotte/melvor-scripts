@@ -4,6 +4,7 @@ import {DisplayManager} from "./DisplayManager";
 import {Settings} from "./Settings";
 import type {Bank} from "../../Game-Files/gameTypes/bank2";
 import type {ItemRegistry} from "../../Game-Files/gameTypes/namespaceRegistry";
+import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 
 export type displayConstructor<BaseDisplay = Display> = new(...args: any[]) => Display;
 
@@ -185,6 +186,14 @@ export class Display {
         const currentLevel = level;
         const currentLevelXp = result.levelToXp(currentLevel);
         const nextLevelXp = result.levelToXp(currentLevel + 1);
+        // progress towards next level
+        return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
+    }
+
+    getProgressInMasteryLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
+        const currentLevel = level;
+        const currentLevelXp = result.masteryLevelToXp(currentLevel);
+        const nextLevelXp = result.masteryLevelToXp(currentLevel + 1);
         // progress towards next level
         return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
     }

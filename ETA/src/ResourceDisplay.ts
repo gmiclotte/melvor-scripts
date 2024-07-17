@@ -71,14 +71,11 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
 
         finalMastery(result: ResourceSkillWithMastery) {
             if (result.finalXpMap === undefined) {
-                return result.virtualMasteryLevel + this.getProgressInLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
+                return result.virtualMasteryLevel + this.getProgressInMasteryLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
             }
             const masteryXp = result.finalXpMap.get('masteryXp')!;
             const masteryLevel = result.masteryXpToLevel(masteryXp);
-            if (masteryLevel >= 99) {
-                return 99;
-            }
-            return masteryLevel + this.getProgressInLevel(result, masteryXp, masteryLevel, 'mastery');
+            return masteryLevel + this.getProgressInMasteryLevel(result, masteryXp, masteryLevel, 'mastery');
         }
     }
 }
