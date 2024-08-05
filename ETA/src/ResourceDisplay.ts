@@ -37,19 +37,43 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
         }
 
         resourcesLeftToHTML(resources: ResourceActionCounter) {
-            if (resources.items === undefined) {
+            let req = '';
+            if (resources.items !== undefined) {
+                resources.items.forEach((quantity: number, item: Item) => {
+                        req += this.requiresItemHTML(item.media, quantity); // `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
+                    }
+                )
+            }
+            if (resources.currencies !== undefined) {
+                resources.currencies.forEach((quantity: number, currency: Currency) => {
+                        req += this.requiresItemHTML(currency.media, quantity); // `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${currency.media}">`;
+                    }
+                )
+            }
+            if (req.length === 0) {
                 return '';
             }
-            let req = '';
-            resources.items.forEach((quantity: number, item: Item) => {
-                    req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${item.media}">`;
-                }
-            )
-            resources.currencies.forEach((quantity: number, currency: Currency) => {
-                    req += `<span>${this.formatNumber(Math.ceil(quantity))}</span><img class="skill-icon-xs mr-2" src="${currency.media}">`;
-                }
-            )
-            return `<br/>Requires: ${req}`;
+            console.log(req)
+            return this.requiresHTML(req);
+        }
+
+        requiresItemHTML(media: string, quantity: number) {
+            return `
+            <div class="btn-light pointer-enabled mr-3 mb-1 info-icon">
+                <img class="skill-icon-xs" src="${media}">
+                <div class="font-size-sm text-white text-center">
+                    <small class="badge-pill bg-secondary">${this.formatNumber(Math.ceil(quantity))}</small>
+                </div>
+            </div>
+            `
+        }
+
+        requiresHTML(requirements: string) {
+            return `
+            <div class="row justify-content-center">
+                ${requirements}
+            </div>
+            `
         }
 
         finalLevel(result: ResourceSkillWithMastery) {

@@ -17,7 +17,7 @@ export class DisplayWithPool extends Display {
 
     poolToolTip(result: EtaSkillWithMastery, now: Date) {
         const tooltip = this.finalLevelElement(
-            'Final Pool XP',
+            'Final Pool',
             this.formatLevel(this.finalPool(result)) + '%',
             'warning',
         )

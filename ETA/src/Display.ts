@@ -148,8 +148,12 @@ export class Display {
             });
         }
         // wrap and return
+        const tooltip = this.tooltipContent(result, now);
+        console.log(tooltip);
         // @ts-ignore
-        this.element._tippy.setContent(`<div>${this.tooltipContent(result, now)}</div>`);
+        console.log(`"${result.skill.id}-${result.action.id}-tooltip"`)
+        // @ts-ignore
+        this.element._tippy.setContent(`<div id="${result.skill.id}-${result.action.id}-tooltip">${tooltip}</div>`);
     }
 
     tooltipContent(result: EtaSkill, now: Date) {
@@ -162,17 +166,30 @@ export class Display {
             this.formatLevel(this.finalLevel(result)),
             'success',
         );
-        if (this.settings.get('SHOW_LEVEL_NEXT')) {
+        const nextLevelIsMilestone = result.nextMilestone === result.initialVirtualLevel + 1;
+        if (this.settings.get('SHOW_LEVEL_NEXT')
+            // don't show +1 if next level is a milestone
+            && !(this.settings.get('SHOW_LEVEL_MILESTONE') && nextLevelIsMilestone)
+        ) {
             elt += this.tooltipSection(result.actionsTaken.nextSkill, now, `+1 (${result.initialVirtualLevel + 1})`, '');
         }
         if (this.settings.get('SHOW_LEVEL_MILESTONE') && result.nextMilestone !== Infinity) {
             let msHtml = '';
+            if (this.settings.get('SHOW_LEVEL_NEXT') && nextLevelIsMilestone) {
+                msHtml += '+1 '
+            }
             result.milestoneMedia.forEach((media: string) => {
                 msHtml += `<img class="skill-icon-xs mr-2" src="${media}">`;
             });
             elt += this.tooltipSection(result.actionsTaken.nextMilestone, now, `${msHtml} (${result.nextMilestone})`, '');
         }
-        if (this.settings.get('SHOW_LEVEL_TARGET') && !result.targets.hideSkillTarget) {
+        if (this.settings.get('SHOW_LEVEL_TARGET')
+            && !result.targets.hideSkillTarget
+            // don't show target if it is the next level
+            && !(this.settings.get('SHOW_LEVEL_NEXT') && result.targets.skillLevelTarget === result.initialVirtualLevel + 1)
+            // don't show target if it is the next milestone
+            && !(this.settings.get('SHOW_LEVEL_MILESTONE') && result.targets.skillLevelTarget === result.nextMilestone)
+        ) {
             elt += this.tooltipSection(result.actionsTaken.skill, now, result.targets.skillLevelTarget, '');
         }
         return elt;
@@ -218,22 +235,10 @@ export class Display {
     }
 
     finalLevelElement(finalName: string, finalTarget: string, label: string) {
-        return ''
-            + '<div class="row no-gutters">'
-            + '  <div class="col-6" style="white-space: nowrap;">'
-            + '    <h3 class="font-size-base m-1" style="color:white;" >'
-            + `      <span class="p-1" style="text-align:center; display: inline-block;line-height: normal;color:white;">`
-            + finalName
-            + '      </span>'
-            + '    </h3>'
-            + '  </div>'
-            + '  <div class="col-6" style="white-space: nowrap;">'
-            + '    <h3 class="font-size-base m-1" style="color:white;" >'
-            + `      <span class="p-1 bg-${label} rounded" style="text-align:center; display: inline-block;line-height: normal;width: 100px;color:white;">`
-            + finalTarget
-            + '      </span>'
-            + '    </h3>'
-            + '  </div>'
+        return '<div class="row no-gutters justify-content-center">'
+            + `    <span class="col-10 p-1 font-size-sm bg-${label} rounded" style="text-align:center">`
+            + `        ${finalName}: ${finalTarget}`
+            + '    </span>'
             + '</div>';
     }
 
@@ -244,7 +249,7 @@ export class Display {
     wrapTimeLeft(s: string) {
         return ''
             + '<div class="row no-gutters">'
-            + '	<span class="col-12 m-1" style="padding:0 1.25rem 0.125rem 1.25rem;min-height:2.5rem;font-size:0.875rem;line-height:1.25rem;text-align:center">'
+            + '	<span class="font-size-sm col-12 m-1" style="padding:0 1.25rem 0.125rem 1.25rem;min-height:2.5rem;font-size:0.875rem;line-height:1.25rem;text-align:center">'
             + s
             + '	</span>'
             + '</div>';
@@ -258,21 +263,26 @@ export class Display {
         return levelString;
     }
 
-    // Convert milliseconds to hours/minutes/seconds and format them
-    msToHms(ms: number) {
+    // Convert milliseconds to years/hours/minutes/seconds and format them
+    msToHms(ms: number, limit: number = 2) {
         let seconds = Number(ms / 1000);
-        // split seconds in days, hours, minutes and seconds
-        let d = Math.floor(seconds / 86400)
+        // split seconds in years, days, hours, minutes and seconds
+        let y = Math.floor(seconds / 31536000);
+        let d = Math.floor(seconds % 31536000 / 86400)
         let h = Math.floor(seconds % 86400 / 3600);
         let m = Math.floor(seconds % 3600 / 60);
         let s = Math.floor(seconds % 60);
         // append h/hour/hours etc depending, then concat and return
         return [
+            this.appendName(y, "year"),
             this.appendName(d, "day"),
             this.appendName(h, "hour"),
             this.appendName(m, "minute"),
             this.appendName(s, "second"),
-        ].filter(x => x.length).join(' ');
+        ]
+            .filter(x => x.length)
+            .slice(0, limit)
+            .join(' ');
     }
 
     // help function for time display
