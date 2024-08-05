@@ -48,7 +48,7 @@ export class EtaCrafting extends ResourceSkillWithMastery {
         // TODO: Convert to category scoped modifier
         // Monkey + Pig Synergy: Dragonhide cost reduced by 1. Minimum 1.
         if (this.action.category.id === "melvorF:Dragonhide" /* CraftingCategoryIDs.Dragonhide */) {
-            reduction += this.modifiers.flatCraftingDragonhideCost;
+            reduction -= this.modifiers.flatCraftingDragonhideCost;
         }
         return reduction;
     }
