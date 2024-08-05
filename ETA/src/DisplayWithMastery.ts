@@ -19,7 +19,7 @@ export class DisplayWithMastery extends DisplayWithPool {
         return this.finalLevelElement(
             'Final Mastery',
             this.formatLevel(this.finalMastery(result)),
-            'primary',
+            'info',
         ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
     }
 
