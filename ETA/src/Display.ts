@@ -149,9 +149,6 @@ export class Display {
         }
         // wrap and return
         const tooltip = this.tooltipContent(result, now);
-        console.log(tooltip);
-        // @ts-ignore
-        console.log(`"${result.skill.id}-${result.action.id}-tooltip"`)
         // @ts-ignore
         this.element._tippy.setContent(`<div id="${result.skill.id}-${result.action.id}-tooltip">${tooltip}</div>`);
     }

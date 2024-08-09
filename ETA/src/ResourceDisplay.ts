@@ -53,7 +53,6 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
             if (req.length === 0) {
                 return '';
             }
-            console.log(req)
             return this.requiresHTML(req);
         }
 
