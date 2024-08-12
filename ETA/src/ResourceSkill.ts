@@ -95,12 +95,12 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
                 attemptsToCheckpoint.push((this.remainingResources.currencies.get(cost.currency) ?? 0) / cost.quantity);
             })
-            const resourceSets = Math.min(...attemptsToCheckpoint, Infinity);
+            const resourceSets = Math.floor(Math.min(...attemptsToCheckpoint, Infinity));
             if (resourceSets <= 0) {
                 return 0;
             }
             // apply preservation
-            return Math.ceil(resourceSets / (1 - this.getPreservationChance(0) / 100));
+            return Math.floor(resourceSets / (1 - this.getPreservationChance(0) / 100));
         }
 
         addAttempts(gainsPerAction: ResourceRates, attempts: number) {
@@ -112,16 +112,22 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
         }
 
         addCost(counter: ResourceActionCounter, attempts: number, preservation: number) {
-            // round resourceSetsUsed to ceil for positive numbers and floor for negative numbers
-            const resourceSetsUsed = attempts * (1 - preservation / 100);
-            const roundedResourceSetsUsed = Math.sign(resourceSetsUsed) * Math.ceil(Math.abs(resourceSetsUsed));
+            // set resourceSetsUsed to at most -1 for negative and at least 1 for positive values
+            let resourceSetsUsed = attempts * (1 - preservation / 100);
+            if (-1 < resourceSetsUsed && resourceSetsUsed < 0) {
+                resourceSetsUsed = -1;
+            }
+            if (0 < resourceSetsUsed && resourceSetsUsed < 1) {
+                resourceSetsUsed = 1;
+            }
+
             this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
                 const amt = counter.items.get(cost.item) ?? 0;
-                counter.items.set(cost.item, amt + cost.quantity * roundedResourceSetsUsed);
+                counter.items.set(cost.item, amt + cost.quantity * resourceSetsUsed);
             })
             this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
                 const amt = counter.currencies.get(cost.currency) ?? 0;
-                counter.currencies.set(cost.currency, amt + cost.quantity * roundedResourceSetsUsed);
+                counter.currencies.set(cost.currency, amt + cost.quantity * resourceSetsUsed);
             })
         }
 

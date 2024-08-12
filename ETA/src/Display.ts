@@ -15,7 +15,6 @@ export class Display {
     protected readonly settings: Settings;
     protected readonly bank: Bank;
     protected readonly items: ItemRegistry;
-    protected readonly formatNumber: (_: any) => string;
 
     constructor(...[manager, settings, bank, items, id]:
                     [DisplayManager, Settings, Bank, ItemRegistry, string]) {
@@ -27,12 +26,15 @@ export class Display {
         this.container = this.displayContainer(id);
 
         this.element = this.container.firstChild as HTMLElement;
-        // @ts-ignore
-        this.formatNumber = formatNumber;
     }
 
     get isHookedUp() {
         return this.container.parentElement !== null;
+    }
+
+    formatNumber(n: any): string {
+        // @ts-ignore
+        return formatNumber(n, 0);
     }
 
     addMSToDate(date: Date, ms: number) {
