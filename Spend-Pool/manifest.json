@@ -1,0 +1,5 @@
+{
+  "namespace": "SpendPool",
+  "setup": "setup.mjs",
+  "load": []
+}
