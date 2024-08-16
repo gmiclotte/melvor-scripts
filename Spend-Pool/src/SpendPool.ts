@@ -109,8 +109,12 @@ export class SpendPool extends TinyMod {
     }
 
     spendAllMastery(skill: SkillWithMastery<MasteryAction, MasterySkillData>, realm: Realm, cutoff = 95, verbose = false) {
-        while (this.spendMastery(skill, realm, cutoff, verbose)) {
-        }
+        const spend = () => {
+            if (this.spendMastery(skill, realm, cutoff, verbose)) {
+                setTimeout(spend, 0);
+            }
+        };
+        spend();
     }
 
     createSettingsMenu(): void {

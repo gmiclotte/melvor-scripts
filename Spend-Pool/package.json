@@ -1,6 +1,6 @@
 {
     "name": "melvor_spend_pool",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A script to estimate the remaining time to skilling targets in the game Melvor Idle",
     "config": {
         "tinyMod": "../TinyMod"
