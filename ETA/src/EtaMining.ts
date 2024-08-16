@@ -3,10 +3,43 @@ import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
 import type {roundToTickInterval} from "../../Game-Files/gameTypes/utils";
+import {RatesWithCount} from "./RatesWithCount";
 
 export class EtaMining extends EtaSkillWithMastery {
+    // initial and target
+    public initial: RatesWithCount;
+    // current rates
+    public currentRates: RatesWithCount;
+    // trackers
+    nodeHP: number;
+    // other
+    finalXpMap: Map<string, number> | undefined;
+    // targets reached
+    private nodeHPReached: boolean;
+
     constructor(game: Game, mining: Mining, action: any, settings: Settings) {
         super(game, mining, action, settings);
+        // track node HP for nodes that do not respawn
+        this.nodeHP = 0;
+        this.currentRates = RatesWithCount.emptyRates;
+        this.initial = RatesWithCount.emptyRates;
+        // flag to check if target was already reached
+        this.nodeHPReached = false;
+    }
+
+    get nodeHPCompleted() {
+        return !this.nodeHPReached && this.nodeHP <= 0;
+    }
+
+    get nodeHPPerAction() {
+        const hpPerAction = 1 - this.rockHPPreserveChance / 100;
+        if (hpPerAction <= 0) {
+            return 0;
+        }
+        if (hpPerAction >= 1) {
+            return 1;
+        }
+        return hpPerAction;
     }
 
     get maxRockHP() {
@@ -75,6 +108,57 @@ export class EtaMining extends EtaSkillWithMastery {
             }
             return previous;
         }, 0);
+    }
+
+    init(game: Game) {
+        super.init(game);
+        if (this.action.fixedMaxHP !== undefined) {
+            this.nodeHP = this.action.currentHP;
+        } else {
+            this.nodeHP = Infinity;
+        }
+        // initial
+        this.initial = RatesWithCount.addCountToRates(
+            this.initial,
+            this.nodeHP,
+        );
+        // flag to check if target was already reached
+        this.nodeHPReached = this.nodeHP === Infinity;
+    }
+
+    completed() {
+        return this.nodeHPReached && super.completed();
+    }
+
+    setFinalValues() {
+        super.setFinalValues();
+        if (this.nodeHPCompleted) {
+            this.actionsTaken.count = this.actionsTaken.active.clone();
+            this.finalXpMap = this.getXpMap();
+            this.nodeHPReached = true;
+        }
+    }
+
+    gainsPerAction() {
+        return RatesWithCount.addCountToRates(
+            super.gainsPerAction(),
+            this.nodeHPPerAction,
+        );
+    }
+
+    attemptsToCheckpoint(gainsPerAction: RatesWithCount) {
+        // if current rates is not set, then we are in the first iteration, and we can set it
+        this.setCurrentRates(gainsPerAction);
+        const attemptsToIntensityCheckpoint = this.nodeHP > 0 ? Math.max(1, this.nodeHP / gainsPerAction.count) : Infinity;
+        return Math.ceil(Math.min(
+            super.attemptsToCheckpoint(gainsPerAction),
+            attemptsToIntensityCheckpoint,
+        ));
+    }
+
+    addAttempts(gainsPerAction: RatesWithCount, attempts: number) {
+        super.addAttempts(gainsPerAction, attempts);
+        this.nodeHP = this.nodeHP - attempts * gainsPerAction.count;
     }
 
     isMasteryActionUnlocked(action: MiningRock, skillLevel: number) {

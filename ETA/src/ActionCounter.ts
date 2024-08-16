@@ -5,7 +5,7 @@ export class ActionCounterWrapper {
     public nextMilestone: ActionCounter;
     public mastery: ActionCounter;
     public pool: ActionCounter;
-    public intensity: ActionCounter;
+    public count: ActionCounter;
 
     constructor() {
         this.active = this.empty;
@@ -14,7 +14,7 @@ export class ActionCounterWrapper {
         this.nextMilestone = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
-        this.intensity = this.empty;
+        this.count = this.empty;
     }
 
     get empty() {
@@ -28,7 +28,7 @@ export class ActionCounterWrapper {
         this.nextMilestone = this.empty;
         this.mastery = this.empty;
         this.pool = this.empty;
-        this.intensity = this.empty;
+        this.count = this.empty;
     }
 }
 

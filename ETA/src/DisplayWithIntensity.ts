@@ -2,29 +2,35 @@ import {EtaHarvesting} from "./EtaHarvesting";
 import {DisplayWithMastery} from "./DisplayWithMastery";
 
 export class DisplayWithIntensity extends DisplayWithMastery {
-    injectRates(result: EtaHarvesting) {
-        super.injectRates(result);
+    protected result!: EtaHarvesting;
+
+    setResult(result: EtaHarvesting) {
+        this.result = result;
+    }
+
+    injectRates() {
+        super.injectRates();
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent += "\r\nIntensity/h: " + this.formatNumber(Math.floor(result.currentRates.hourlyRates.intensity));
+            this.element.textContent += "\r\nIntensity/h: " + this.formatNumber(Math.floor(this.result.currentRates.hourlyRates.count));
         }
     }
 
-    tooltipContent(result: EtaHarvesting, now: Date) {
-        return this.skillToolTip(result, now)
-            + this.masteryToolTip(result, now)
-            + this.poolToolTip(result, now)
-            + this.intensityToolTip(result, now);
+    tooltipContent(now: Date) {
+        return this.skillToolTip(now)
+            + this.masteryToolTip(now)
+            + this.poolToolTip(now)
+            + this.intensityToolTip(now);
     }
 
-    intensityToolTip(result: EtaHarvesting, now: Date) {
+    intensityToolTip(now: Date) {
         return this.finalLevelElement(
             'Final Intensity',
-            this.finalIntensity(result),
+            this.finalIntensity(),
             'success',
-        ) + this.tooltipSection(result.actionsTaken.intensity, now, result.targets.intensityMilestone, '');
+        ) + this.tooltipSection(this.result.actionsTaken.count, now, this.result.targets.intensityMilestone, '');
     }
 
-    finalIntensity(result: EtaHarvesting) {
-        return `${result.intensityPercentage.toFixed(2)}%`;
+    finalIntensity() {
+        return `${this.result.intensityPercentage.toFixed(2)}%`;
     }
 }

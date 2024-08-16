@@ -4,7 +4,6 @@ import {DisplayManager} from "./DisplayManager";
 import {Settings} from "./Settings";
 import type {Bank} from "../../Game-Files/gameTypes/bank2";
 import type {ItemRegistry} from "../../Game-Files/gameTypes/namespaceRegistry";
-import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 
 export type displayConstructor<BaseDisplay = Display> = new(...args: any[]) => Display;
 
@@ -15,6 +14,7 @@ export class Display {
     protected readonly settings: Settings;
     protected readonly bank: Bank;
     protected readonly items: ItemRegistry;
+    protected result!: EtaSkill;
 
     constructor(...[manager, settings, bank, items, id]:
                     [DisplayManager, Settings, Bank, ItemRegistry, string]) {
@@ -30,6 +30,10 @@ export class Display {
 
     get isHookedUp() {
         return this.container.parentElement !== null;
+    }
+
+    setResult(result: EtaSkill) {
+        this.result = result;
     }
 
     formatNumber(n: any): string {
@@ -78,13 +82,13 @@ export class Display {
         return date + hours + ':' + minutes + amOrPm;
     }
 
-    injectHTML(result: EtaSkill, now: Date) {
+    injectHTML(now: Date) {
         if (this.element === null) {
             return undefined;
         }
-        this.injectRateElement(result);
-        this.injectProductCountElement(result);
-        this.generateTooltips(result, now);
+        this.injectRateElement();
+        this.injectProductCountElement();
+        this.generateTooltips(now);
         this.showElement();
     }
 
@@ -95,46 +99,46 @@ export class Display {
         }
     }
 
-    injectRateElement(result: EtaSkill) {
+    injectRateElement() {
         this.element.style.display = 'block';
         this.element.textContent = "";
-        this.injectRates(result);
-        this.injectActions(result);
+        this.injectRates();
+        this.injectActions();
     }
 
-    injectRates(result: EtaSkill) {
+    injectRates() {
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent += "Xp/h: " + this.formatNumber(Math.floor(result.currentRates.hourlyRates.xp));
+            this.element.textContent += "Xp/h: " + this.formatNumber(Math.floor(this.result.currentRates.hourlyRates.xp));
         }
     }
 
-    injectActions(result: EtaSkill) {
-        if (this.settings.get('SHOW_ACTION_TIME') && result.attemptsPerHour > 0) {
-            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * result.attemptsPerHour) / 100);
+    injectActions() {
+        if (this.settings.get('SHOW_ACTION_TIME') && this.result.attemptsPerHour > 0) {
+            this.element.textContent += "\r\nActions/h: " + this.formatNumber(Math.round(100 * this.result.attemptsPerHour) / 100);
             // this.element.textContent += "\r\nSuccesses/h: " + this.formatNumber(Math.round(100 * 3.6e6 / result.currentRates.hourlyRates.ms) / 100);
         }
     }
 
-    injectProductCountElement(result: EtaSkill) {
+    injectProductCountElement() {
         const youHaveElementId = this.element.id + "-YouHave";
         const youHaveElement = document.getElementById(youHaveElementId);
-        if (result.action.product !== undefined && youHaveElement !== null) {
+        if (this.result.action.product !== undefined && youHaveElement !== null) {
             youHaveElement.style.display = 'block';
             while (youHaveElement.lastChild) {
                 youHaveElement.removeChild(youHaveElement.lastChild);
             }
             const span = document.createElement('span');
-            span.textContent = `You have: ${this.formatNumber(this.bank.getQty(result.action.product))}`;
+            span.textContent = `You have: ${this.formatNumber(this.bank.getQty(this.result.action.product))}`;
             youHaveElement.appendChild(span);
             const img = document.createElement('img');
             img.classList.add('skill-icon-xs');
             img.classList.add('mr-2');
-            img.src = result.action.product.media;
+            img.src = this.result.action.product.media;
             youHaveElement.appendChild(img);
         }
     }
 
-    generateTooltips(result: EtaSkill, now: Date, flags = {
+    generateTooltips(now: Date, flags = {
         noSkill: false,
         noMastery: false,
         noPool: false
@@ -150,21 +154,22 @@ export class Display {
             });
         }
         // wrap and return
-        const tooltip = this.tooltipContent(result, now);
+        const tooltip = this.tooltipContent(now);
         // @ts-ignore
-        this.element._tippy.setContent(`<div id="${result.skill.id}-${result.action.id}-tooltip">${tooltip}</div>`);
+        this.element._tippy.setContent(`<div id="${this.result.skill.id}-${this.result.action.id}-tooltip">${tooltip}</div>`);
     }
 
-    tooltipContent(result: EtaSkill, now: Date) {
-        return this.skillToolTip(result, now);
+    tooltipContent(now: Date) {
+        return this.skillToolTip(now);
     }
 
-    skillToolTip(result: EtaSkill, now: Date) {
+    skillToolTip(now: Date) {
         let elt = this.finalLevelElement(
             'Final Level',
-            this.formatLevel(this.finalLevel(result)),
+            this.formatLevel(this.finalLevel()),
             'success',
         );
+        const result = this.result;
         const nextLevelIsMilestone = result.nextMilestone === result.initialVirtualLevel + 1;
         if (this.settings.get('SHOW_LEVEL_NEXT')
             // don't show +1 if next level is a milestone
@@ -194,22 +199,22 @@ export class Display {
         return elt;
     }
 
-    finalLevel(result: EtaSkill) {
-        return result.skillLevel + this.getProgressInLevel(result, result.skillXp, result.skillLevel, "skill");
+    finalLevel() {
+        return this.result.skillLevel + this.getProgressInLevel(this.result.skillXp, this.result.skillLevel);
     }
 
-    getProgressInLevel(result: EtaSkill, currentXp: number, level: number, type: string): number {
+    getProgressInLevel(currentXp: number, level: number): number {
         const currentLevel = level;
-        const currentLevelXp = result.levelToXp(currentLevel);
-        const nextLevelXp = result.levelToXp(currentLevel + 1);
+        const currentLevelXp = this.result.levelToXp(currentLevel);
+        const nextLevelXp = this.result.levelToXp(currentLevel + 1);
         // progress towards next level
         return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
     }
 
-    getProgressInMasteryLevel(result: EtaSkillWithMastery, currentXp: number, level: number, type: string): number {
+    getProgressInMasteryLevel(currentXp: number, level: number): number {
         const currentLevel = level;
-        const currentLevelXp = result.masteryLevelToXp(currentLevel);
-        const nextLevelXp = result.masteryLevelToXp(currentLevel + 1);
+        const currentLevelXp = this.result.masteryLevelToXp(currentLevel);
+        const nextLevelXp = this.result.masteryLevelToXp(currentLevel + 1);
         // progress towards next level
         return (currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp);
     }

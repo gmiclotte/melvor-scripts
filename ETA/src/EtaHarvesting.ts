@@ -2,7 +2,7 @@ import type {Harvesting, HarvestingProduct} from "../../Game-Files/gameTypes/har
 import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Settings} from "./Settings";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import {RatesWithIntensity} from "./RatesWithIntensity";
+import {RatesWithCount} from "./RatesWithCount";
 import {TargetsWithIntensity} from "./TargetsWithIntensity";
 
 export class EtaHarvesting extends EtaSkillWithMastery {
@@ -10,11 +10,11 @@ export class EtaHarvesting extends EtaSkillWithMastery {
     public intensity: number;
 
     // initial and target
-    public initial: RatesWithIntensity;
+    public initial: RatesWithCount;
     // @ts-ignore
     public targets: TargetsWithIntensity;
     // current rates
-    public currentRates: RatesWithIntensity;
+    public currentRates: RatesWithCount;
     // targets reached
     public intensityReached: boolean;
     public readonly intensityMilestones: number[];
@@ -30,8 +30,8 @@ export class EtaHarvesting extends EtaSkillWithMastery {
         this.intensityWeights = this.products.map((product: HarvestingProduct) => product.weight);
         this.totalWeight = this.intensityWeights.reduce((a, b) => a + b, 0);
         this.intensity = 0;
-        this.currentRates = RatesWithIntensity.emptyRates;
-        this.initial = RatesWithIntensity.emptyRates;
+        this.currentRates = RatesWithCount.emptyRates;
+        this.initial = RatesWithCount.emptyRates;
         // flag to check if target was already reached
         this.intensityReached = false;
     }
@@ -92,7 +92,7 @@ export class EtaHarvesting extends EtaSkillWithMastery {
     setFinalValues() {
         super.setFinalValues();
         if (this.intensityCompleted) {
-            this.actionsTaken.intensity = this.actionsTaken.active.clone();
+            this.actionsTaken.count = this.actionsTaken.active.clone();
             this.intensityReached = true;
         }
     }
@@ -101,7 +101,7 @@ export class EtaHarvesting extends EtaSkillWithMastery {
         super.init(game);
         this.intensity = this.action.currentIntensity;
         // initial
-        this.initial = RatesWithIntensity.addIntensityToRates(
+        this.initial = RatesWithCount.addCountToRates(
             this.initial,
             this.intensity,
         );
@@ -113,35 +113,35 @@ export class EtaHarvesting extends EtaSkillWithMastery {
         return milestone / 100 * this.veinMaxIntensity;
     }
 
-    attemptsToCheckpoint(gainsPerAction: RatesWithIntensity) {
+    attemptsToCheckpoint(gainsPerAction: RatesWithCount) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
         const nextMilestone = this.nextIntensityMilestone;
         const nextIntensity = this.intensityForMilestone(nextMilestone);
         const requiredForIntensityCheckPoint = nextIntensity - this.intensity;
-        const attemptsToIntensityCheckpoint = requiredForIntensityCheckPoint / gainsPerAction.intensity;
+        const attemptsToIntensityCheckpoint = requiredForIntensityCheckPoint / gainsPerAction.count;
         return Math.ceil(Math.min(
             super.attemptsToCheckpoint(gainsPerAction),
             attemptsToIntensityCheckpoint,
         ));
     }
 
-    addAttempts(gainsPerAction: RatesWithIntensity, attempts: number) {
+    addAttempts(gainsPerAction: RatesWithCount, attempts: number) {
         super.addAttempts(gainsPerAction, attempts);
-        this.intensity += gainsPerAction.intensity * attempts;
+        this.intensity += gainsPerAction.count * attempts;
     }
 
     gainsPerAction() {
-        return RatesWithIntensity.addIntensityToRates(
+        return RatesWithCount.addCountToRates(
             super.gainsPerAction(),
             this.veinIntensityGainPerAction,
         );
     }
 
-    setCurrentRatesNoCheck(gains: RatesWithIntensity): RatesWithIntensity {
-        return this.currentRates = RatesWithIntensity.addIntensityToRates(
+    setCurrentRatesNoCheck(gains: RatesWithCount): RatesWithCount {
+        return this.currentRates = RatesWithCount.addCountToRates(
             super.setCurrentRatesNoCheck(gains),
-            gains.intensity / gains.ms,
+            gains.count / gains.ms,
         );
     }
 }

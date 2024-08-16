@@ -2,28 +2,34 @@ import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {DisplayWithPool} from "./DisplayWithPool";
 
 export class DisplayWithMastery extends DisplayWithPool {
-    injectRates(result: EtaSkillWithMastery) {
-        super.injectRates(result);
+    protected result!: EtaSkillWithMastery;
+
+    setResult(result: EtaSkillWithMastery) {
+        this.result = result;
+    }
+
+    injectRates() {
+        super.injectRates();
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent += "\r\nMXp/h: " + this.formatNumber(Math.floor(result.currentRates.hourlyRates.mastery));
+            this.element.textContent += "\r\nMXp/h: " + this.formatNumber(Math.floor(this.result.currentRates.hourlyRates.mastery));
         }
     }
 
-    tooltipContent(result: EtaSkillWithMastery, now: Date) {
-        return this.skillToolTip(result, now)
-            + this.masteryToolTip(result, now)
-            + this.poolToolTip(result, now);
+    tooltipContent(now: Date) {
+        return this.skillToolTip(now)
+            + this.masteryToolTip(now)
+            + this.poolToolTip(now);
     }
 
-    masteryToolTip(result: EtaSkillWithMastery, now: Date) {
+    masteryToolTip(now: Date) {
         return this.finalLevelElement(
             'Final Mastery',
-            this.formatLevel(this.finalMastery(result)),
+            this.formatLevel(this.finalMastery()),
             'info',
-        ) + this.tooltipSection(result.actionsTaken.mastery, now, result.targets.masteryLevel, '');
+        ) + this.tooltipSection(this.result.actionsTaken.mastery, now, this.result.targets.masteryLevel, '');
     }
 
-    finalMastery(result: EtaSkillWithMastery) {
-        return result.virtualMasteryLevel + this.getProgressInMasteryLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
+    finalMastery() {
+        return this.result.virtualMasteryLevel + this.getProgressInMasteryLevel(this.result.masteryXp, this.result.virtualMasteryLevel);
     }
 }

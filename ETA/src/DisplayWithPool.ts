@@ -1,24 +1,29 @@
-import {EtaSkillWithMastery} from "./EtaSkillWithMastery";
 import {Display} from "./Display";
 import {EtaSkillWithPool} from "./EtaSkillWithPool";
 
 export class DisplayWithPool extends Display {
-    injectRates(result: EtaSkillWithPool) {
-        super.injectRates(result);
+    protected result!: EtaSkillWithPool;
+
+    setResult(result: EtaSkillWithPool) {
+        this.result = result;
+    }
+
+    injectRates() {
+        super.injectRates();
         if (this.settings.get('SHOW_XP_RATE')) {
-            this.element.textContent += `\r\nPool/h: ${result.poolXpToPercent(result.currentRates.hourlyRates.pool).toFixed(2)}%`;
+            this.element.textContent += `\r\nPool/h: ${this.result.poolXpToPercent(this.result.currentRates.hourlyRates.pool).toFixed(2)}%`;
         }
     }
 
-    tooltipContent(result: EtaSkillWithMastery, now: Date) {
-        return super.tooltipContent(result, now)
-            + this.poolToolTip(result, now);
+    tooltipContent(now: Date) {
+        return super.tooltipContent(now)
+            + this.poolToolTip(now);
     }
 
-    poolToolTip(result: EtaSkillWithMastery, now: Date) {
+    poolToolTip(now: Date) {
         const tooltip = this.finalLevelElement(
             'Final Pool',
-            this.formatLevel(this.finalPool(result)) + '%',
+            this.formatLevel(this.finalPool()) + '%',
             'warning',
         )
         let prepend = ''
@@ -31,10 +36,10 @@ export class DisplayWithPool extends Display {
             }
         }
          */
-        return tooltip + this.tooltipSection(result.actionsTaken.pool, now, `${result.targets.poolPercent}%`, prepend);
+        return tooltip + this.tooltipSection(this.result.actionsTaken.pool, now, `${this.result.targets.poolPercent}%`, prepend);
     }
 
-    finalPool(result: EtaSkillWithPool) {
-        return result.getMasteryPoolProgress;
+    finalPool() {
+        return this.result.getMasteryPoolProgress;
     }
 }

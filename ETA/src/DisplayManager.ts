@@ -9,18 +9,17 @@ import type {ThievingArea} from "../../Game-Files/gameTypes/thieving2";
 import {DisplayWithPool} from "./DisplayWithPool";
 import {EtaSkill} from "./EtaSkill";
 import {DisplayWithIntensity} from "./DisplayWithIntensity";
+import {MiningDisplay} from "./MiningDisplay";
 
 export class DisplayManager {
     private readonly game: Game;
     private readonly displays: Map<string, Display>;
     private readonly settings: Settings;
-    private readonly npcAreaMap: Map<string, ThievingArea>;
 
     constructor(game: Game, settings: Settings, npcAreaMap: Map<string, ThievingArea>) {
         this.displays = new Map<string, Display>()
         this.settings = settings;
         this.game = game;
-        this.npcAreaMap = npcAreaMap;
     }
 
     removeAllDisplays() {
@@ -72,7 +71,8 @@ export class DisplayManager {
 
     injectHTML(display: Display, result: EtaSkill, now: Date) {
         display.container.style.display = 'block';
-        display.injectHTML(result, now);
+        display.setResult(result);
+        display.injectHTML(now);
         result.isComputing = false;
     }
 
@@ -104,12 +104,14 @@ export class DisplayManager {
             switch (skillID) {
                 case 'melvorD:Woodcutting':
                 case 'melvorD:Fishing':
-                case 'melvorD:Mining':
                 case 'melvorD:Thieving':
                 case 'melvorD:Agility':
                 case 'melvorAoD:Astrology':
                 case 'melvorAoD:Archaeology':
                     display = new DisplayWithMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+                    break;
+                case 'melvorD:Mining':
+                    display = new MiningDisplay(this, this.settings, this.game.bank, this.game.items, displayID);
                     break;
                 case 'melvorItA:Harvesting':
                     display = new DisplayWithIntensity(this, this.settings, this.game.bank, this.game.items, displayID);

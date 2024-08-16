@@ -1,6 +1,6 @@
 import {DisplayWithMastery} from "./DisplayWithMastery";
 import {ResourceActionCounter} from "./ResourceActionCounter";
-import {ResourceSkillWithMastery, ResourceSkillWithoutMastery} from "./ResourceSkill";
+import {ResourceSkillWithMastery} from "./ResourceSkill";
 import {Display, displayConstructor} from "./Display";
 import type {Currency} from "../../Game-Files/gameTypes/currency";
 import type {Item} from "../../Game-Files/gameTypes/item";
@@ -8,18 +8,24 @@ import type {Item} from "../../Game-Files/gameTypes/item";
 function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: BaseDisplay) {
 
     return class extends baseDisplay {
-        injectHTML(result: ResourceSkillWithoutMastery, now: Date) {
+        protected result!: ResourceSkillWithMastery;
+
+        setResult(result: ResourceSkillWithMastery) {
+            this.result = result;
+        }
+
+        injectHTML(now: Date) {
             if (this.element === null) {
                 return undefined;
             }
-            this.injectRateElement(result);
-            this.injectResourceTimeElement(result, now);
-            this.generateTooltips(result, now);
+            this.injectRateElement();
+            this.injectResourceTimeElement(now);
+            this.generateTooltips(now);
             this.showElement();
         }
 
-        injectResourceTimeElement(result: ResourceSkillWithoutMastery, now: Date) {
-            const resourceActionsTaken = result.actionsTaken.resources;
+        injectResourceTimeElement(now: Date) {
+            const resourceActionsTaken = this.result.actionsTaken.resources;
             if (!resourceActionsTaken) {
                 return;
             }
@@ -75,30 +81,30 @@ function ResourceDisplay<BaseDisplay extends displayConstructor>(baseDisplay: Ba
             `
         }
 
-        finalLevel(result: ResourceSkillWithMastery) {
-            if (result.finalXpMap === undefined) {
-                return super.finalLevel(result);
+        finalLevel() {
+            if (this.result.finalXpMap === undefined) {
+                return super.finalLevel();
             }
-            const skillXp = result.finalXpMap.get('skillXp')!;
-            const skillLevel = result.xpToLevel(skillXp);
-            return skillLevel + this.getProgressInLevel(result, skillXp, skillLevel, 'skill');
+            const skillXp = this.result.finalXpMap.get('skillXp')!;
+            const skillLevel = this.result.xpToLevel(skillXp);
+            return skillLevel + this.getProgressInLevel(skillXp, skillLevel);
 
         }
 
-        finalPool(result: ResourceSkillWithMastery) {
-            if (result.finalXpMap === undefined) {
-                return result.getMasteryPoolProgress;
+        finalPool() {
+            if (this.result.finalXpMap === undefined) {
+                return this.result.getMasteryPoolProgress;
             }
-            return result.poolXpToPercentWithModifiers(result.finalXpMap.get('poolXp')!);
+            return this.result.poolXpToPercentWithModifiers(this.result.finalXpMap.get('poolXp')!);
         }
 
-        finalMastery(result: ResourceSkillWithMastery) {
-            if (result.finalXpMap === undefined) {
-                return result.virtualMasteryLevel + this.getProgressInMasteryLevel(result, result.masteryXp, result.virtualMasteryLevel, "mastery");
+        finalMastery() {
+            if (this.result.finalXpMap === undefined) {
+                return this.result.virtualMasteryLevel + this.getProgressInMasteryLevel(this.result.masteryXp, this.result.virtualMasteryLevel);
             }
-            const masteryXp = result.finalXpMap.get('masteryXp')!;
-            const masteryLevel = result.masteryXpToLevel(masteryXp);
-            return masteryLevel + this.getProgressInMasteryLevel(result, masteryXp, masteryLevel, 'mastery');
+            const masteryXp = this.result.finalXpMap.get('masteryXp')!;
+            const masteryLevel = this.result.masteryXpToLevel(masteryXp);
+            return masteryLevel + this.getProgressInMasteryLevel(masteryXp, masteryLevel);
         }
     }
 }
