@@ -11,6 +11,7 @@ export class MiningDisplay extends DisplayWithMastery {
         }
         this.injectRateElement();
         this.injectResourceTimeElement(now);
+        this.injectProductCountElement();
         this.generateTooltips(now);
         this.showElement();
     }
