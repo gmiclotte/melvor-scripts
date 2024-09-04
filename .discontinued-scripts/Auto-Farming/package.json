@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "cd ./dist && web-ext lint",
     "compile-script": "cp ${npm_package_config_tinyMod}/config/tsconfig.json tsconfig.json && npx tsc",
-    "build-script": "cp ${npm_package_config_tinyMod}/scripts/build.js build.js && node build.js ${npm_package_config_tinyMod}",
+    "build-script": "mkdir -p build && cp ${npm_package_config_tinyMod}/scripts/build.js build.js && node build.js ${npm_package_config_tinyMod}",
     "test-script": "cp ${npm_package_config_tinyMod}/scripts/test.sh test.sh && bash test.sh ${npm_package_config_tinyMod}",
     "build": "npm run compile-script; npm run build-script; npm run test-script"
   },
