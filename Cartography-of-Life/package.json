@@ -1,6 +1,6 @@
 {
     "name": "cartography_of_life",
-    "version": "0.0.1-2",
+    "version": "0.0.1",
     "description": "A script that adds some QoL to Cartography in Melvor Idle",
     "config": {
         "tinyMod": "../TinyMod"

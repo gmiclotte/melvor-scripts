@@ -1,5 +1,5 @@
 {
-  "namespace": "Cartography-of-Life",
+  "namespace": "cartography_of_life",
   "setup": "setup.mjs",
   "load": []
 }
