@@ -122,15 +122,11 @@ export class EtaSummoning extends ResourceSkillWithMastery {
         costs.addItem(nonShardItem, qtyToAdd);
     }
 
-    getAltRecipeCosts() {
+    getRecipeCosts() {
         const costs = super.getRecipeCosts();
         if (this.action.nonShardItemCosts.length > 0) {
             this.addNonShardCosts(costs);
         }
         return costs;
-    }
-
-    getRecipeCosts() {
-        return this.getAltRecipeCosts();
     }
 }

@@ -11,6 +11,14 @@ export class EtaCosts {
         this._currencies = new Map();
     }
 
+    clearItem(item: any) {
+        this._items.delete(item);
+    }
+
+    setItem(item: any, quantity: number) {
+        this._items.set(item, quantity);
+    }
+
     addItem(item: any, quantity: number) {
         var _a;
         this._items.set(item, quantity + ((_a = this._items.get(item)) !== null && _a !== void 0 ? _a : 0));

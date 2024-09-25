@@ -87,14 +87,18 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             ));
         }
 
-        attemptsToResourceCheckpoint() {
+        attemptsToResourceCheckpoint(costs: EtaCosts = this.currentCosts) {
             const attemptsToCheckpoint: number[] = [];
-            this.currentCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
-                attemptsToCheckpoint.push((this.remainingResources.items.get(cost.item) ?? 0) / cost.quantity);
-            })
-            this.currentCosts.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
-                attemptsToCheckpoint.push((this.remainingResources.currencies.get(cost.currency) ?? 0) / cost.quantity);
-            })
+            costs.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
+                if (cost.quantity > 0) {
+                    attemptsToCheckpoint.push((this.remainingResources.items.get(cost.item) ?? 0) / cost.quantity);
+                }
+            });
+            costs.getCurrencyQuantityArray().forEach((cost: { currency: Currency, quantity: number }) => {
+                if (cost.quantity > 0) {
+                    attemptsToCheckpoint.push((this.remainingResources.currencies.get(cost.currency) ?? 0) / cost.quantity);
+                }
+            });
             const resourceSets = Math.floor(Math.min(...attemptsToCheckpoint, Infinity));
             if (resourceSets <= 0) {
                 return 0;
@@ -107,7 +111,9 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             // compute preservation before increasing the stats
             const preservation = this.getPreservationChance(0);
             super.addAttempts(gainsPerAction, attempts);
+            // reduce remaining resources
             this.addCost(this.remainingResources, -attempts, preservation);
+            // increase actions taken
             this.addCost(this.actionsTaken.active, attempts, preservation);
         }
 
@@ -175,15 +181,11 @@ export function ResourceSkill<BaseSkill extends etaSkillConstructor>(baseSkill: 
             const costs = new Costs(undefined);
             this.action.itemCosts.forEach((cost: { item: Item, quantity: number }) => {
                 let quantity = this.modifyItemCost(cost.item, cost.quantity);
-                if (quantity > 0) {
-                    costs.addItem(cost.item, quantity);
-                }
+                costs.addItem(cost.item, quantity);
             });
             this.action.currencyCosts.forEach((cost: { currency: Currency, quantity: number }) => {
                 let quantity = this.modifyCurrencyCost(cost.currency, cost.quantity);
-                if (quantity > 0) {
-                    costs.addCurrency(cost.currency, quantity);
-                }
+                costs.addCurrency(cost.currency, quantity);
             });
             return costs;
         }
