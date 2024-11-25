@@ -2,7 +2,7 @@ import type {Runecrafting} from "../../Game-Files/gameTypes/runecrafting";
 import {Settings} from "./Settings";
 import {ResourceSkillWithMastery} from "./ResourceSkill";
 import type {Game} from "../../Game-Files/gameTypes/game";
-import type {Item, RuneItem} from "../../Game-Files/gameTypes/item";
+import type {EquipmentItem, Item, RuneItem} from "../../Game-Files/gameTypes/item";
 import {EtaCosts} from "./EtaCosts";
 
 export class EtaRunecrafting extends ResourceSkillWithMastery {
@@ -49,11 +49,17 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
     getUncappedCostReduction(item: Item) {
         let reduction = super.getUncappedCostReduction(item);
         // @ts-ignore
-        if (item instanceof RuneItem) {
+        if (item instanceof RuneItem || item instanceof EquipmentItem) {
             reduction += this.modifiers.getValue(
                 "melvorD:runecraftingRuneCostReduction" /* ModifierIDs.runecraftingRuneCostReduction */,
                 this.getActionModifierQuery()
             );
+            // per 10 mastery levels: 5% cost reduction
+            reduction += this.changeInXMasteryLevel(10) * 5;
+            // Level 99 Mastery: 15% cost reduction
+            if (this.checkMasteryMilestone(99)) {
+                reduction += 15;
+            }
         }
         return reduction;
     }
@@ -103,7 +109,7 @@ export class EtaRunecrafting extends ResourceSkillWithMastery {
         return super.attemptsToResourceCheckpoint(this.grossCosts) > 0;
     }
 
-    attemptsToResourceCheckpoint(costs: EtaCosts = this.currentCosts): number {
+    attemptsToResourceCheckpoint(costs: EtaCosts = this.getCurrentRecipeCosts()): number {
         if (!this.grossOK()) {
             return 0
         }
