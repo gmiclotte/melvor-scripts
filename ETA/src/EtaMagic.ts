@@ -86,9 +86,10 @@ export class EtaMagic extends ResourceSkillWithoutMastery {
 
     attemptsToResourceCheckpoint() {
         const attemptsToCheckpoint: number[] = [];
+        const currentCosts = this.getCurrentRecipeCosts();
         this.currentRuneCosts.getItemQuantityArray().forEach((cost: { item: Item, quantity: number }) => {
             // @ts-ignore
-            const itemCost = this.currentCosts._items.get(cost.item) ?? 0;
+            const itemCost = currentCosts._items.get(cost.item) ?? 0;
             const quantity = cost.quantity * (1 - this.runePreservationChance) + itemCost;
             attemptsToCheckpoint.push((this.remainingResources.items.get(cost.item) ?? 0) / quantity);
         })
