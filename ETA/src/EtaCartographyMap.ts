@@ -10,17 +10,25 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
     private digSite: any;
     private map: any;
     private upgradesLeft: number;
+    private index: number;
+    private upgradesSimulated: number[];
+    private maxUpgradeActions: number;
 
     constructor(game: Game, cartography: Cartography, action: any, settings: Settings) {
         super(game, cartography, action, settings);
         this.upgradesLeft = 0;
+        this.index = -1;
+        this.upgradesSimulated = [];
+        this.maxUpgradeActions = 0;
     }
 
     get tier() {
         if (this.map === undefined) {
             return 0;
         }
-        return this.map.tier.index;
+        // count how many tiers have been reached
+        // @ts-ignore
+        return DigSiteMap.tiers.reduce((a, x) => a + (x.upgradeActions <= this.upgradesSimulated[this.index]), 0) - 1;
     }
 
     get actionInterval() {
@@ -39,26 +47,40 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
         this.digSite = this.skill.selectedMapUpgradeDigsite;
         this.map = this.digSite.selectedUpgradeMap;
         // @ts-ignore
-        const maxUpgradeActions = DigSiteMap.tiers[DigSiteMap.tiers.length - 1].upgradeActions;
+        this.maxUpgradeActions = DigSiteMap.tiers[DigSiteMap.tiers.length - 1].upgradeActions;
         this.upgradesLeft = this.digSite.maps.reduce((a: number, x: any) =>
-                a + Math.max(maxUpgradeActions - x._upgradeActions, 0),
+                a + Math.max(this.maxUpgradeActions - x._upgradeActions, 0),
             0,
         );
+        this.index = this.digSite.selectedUpgradeIndex;
+        this.upgradesSimulated = this.digSite.maps.map((x: any) => x._upgradeActions);
         super.init(game);
     }
 
     attemptsToCheckpoint(gainsPerAction: Rates) {
         // if current rates is not set, then we are in the first iteration, and we can set it
         this.setCurrentRates(gainsPerAction);
+        // @ts-ignore
+        const nextTierAt = DigSiteMap.tiers[this.tier + 1].upgradeActions;
+        const current = this.upgradesSimulated[this.index];
         return Math.ceil(Math.min(
             super.attemptsToCheckpoint(gainsPerAction),
-            this.upgradesLeft,
+            nextTierAt - current,
         ));
     }
 
     addAttempts(gainsPerAction: Rates, attempts: number) {
         super.addAttempts(gainsPerAction, attempts);
         this.upgradesLeft -= attempts;
+        this.upgradesSimulated[this.index] += attempts;
+        // determine next map, if required
+        if (this.upgradesSimulated[this.index] === this.maxUpgradeActions) {
+            this.index = 0;
+            while (this.upgradesSimulated[this.index] === this.maxUpgradeActions) {
+                this.index++;
+            }
+            this.map = this.digSite.maps[this.index];
+        }
     }
 
     actionXP(realmID: string): number {
@@ -68,10 +90,11 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
     getRecipeCosts() {
         // @ts-ignore
         const costs = new Costs(undefined);
-        if (this.digSite.mapUpgradeCost[this.tier] === undefined) {
+        const upgradeCost = this.digSite.mapUpgradeCost[this.tier]
+        if (upgradeCost === undefined) {
             return costs;
         }
-        this.digSite.mapUpgradeCost[this.tier].items.forEach((cost: { item: Item, quantity: number }) => {
+        upgradeCost.items.forEach((cost: { item: Item, quantity: number }) => {
             let quantity = this.modifyItemCost(cost.item, cost.quantity);
             costs.addItem(cost.item, quantity);
         });
