@@ -28,6 +28,10 @@ import {EtaArchaeology} from "./EtaArchaeology";
 import {EtaHarvesting} from "./EtaHarvesting";
 import {MultiAgility} from "./MultiAgility";
 import {MultiWoodcutting} from "./MultiWoodcutting";
+import {EtaCartographyPaper} from "./EtaCartographyPaper";
+import {EtaCartographyMap} from "./EtaCartographyMap";
+import {EtaCartographySurvey} from "./EtaCartographySurvey";
+import {Cartography} from "../../Game-Files/gameTypes/cartography";
 
 export class ETA extends TinyMod {
     public readonly artisanSkills: SkillWithMastery<MasteryAction, MasterySkillData>[];
@@ -74,7 +78,7 @@ export class ETA extends TinyMod {
         ];
         this.recomputeTimeMap = new Map<string, number>();
 
-        // add skills
+        // add non-combat skills
         this.addSkillCalculators(EtaWoodcutting, game.woodcutting);
         this.addSkillCalculators(EtaFishing, game.fishing);
         this.addSkillCalculators(EtaFiremaking, game.firemaking);
@@ -82,7 +86,6 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaMining, game.mining);
         this.addSkillCalculators(EtaSmithing, game.smithing);
         this.addSkillCalculators(EtaThieving, game.thieving);
-        // Farming not included
         this.addSkillCalculators(EtaFletching, game.fletching);
         this.addSkillCalculators(EtaCrafting, game.crafting);
         this.addSkillCalculators(EtaRunecrafting, game.runecrafting);
@@ -90,9 +93,10 @@ export class ETA extends TinyMod {
         this.addSkillCalculators(EtaAgility, game.agility);
         this.addSkillCalculators(EtaSummoning, game.summoning);
         this.addSkillCalculators(EtaAstrology, game.astrology);
-        // Township not included
         this.addSkillCalculators(EtaMagic, game.altMagic);
-        // Cartography not included
+        if (this.game.cartography) {
+            this.addCartCalculators(game.cartography);
+        }
         if (this.game.archaeology) {
             this.addSkillCalculators(EtaArchaeology, game.archaeology);
         }
@@ -104,10 +108,39 @@ export class ETA extends TinyMod {
         this.log('Loaded!');
     }
 
+    addCartCalculators(cartography: Cartography) {
+        try {
+            const skillMap = new Map<string, EtaSkill>();
+            skillMap.set('ETA:PaperMaking', new EtaCartographyPaper(
+                this.game,
+                cartography,
+                {id: 'ETA:PaperMaking'},
+                this.settings,
+            ));
+            skillMap.set('ETA:MapCreation', new EtaCartographyMap(
+                this.game,
+                cartography,
+                {id: 'ETA:MapCreation'},
+                this.settings,
+            ));
+            skillMap.set('ETA:Survey', new EtaCartographySurvey(
+                this.game,
+                cartography,
+                {id: 'ETA:Survey'},
+                this.settings,
+            ));
+            // @ts-ignore
+            const skillID = cartography.id;
+            this.skillCalculators.set(skillID, skillMap);
+        } catch (e) {
+            this.log(e);
+        }
+    }
+
     addSkillCalculators(constructor: etaSkillConstructor, skill: SkillWithMastery<MasteryAction, MasterySkillData>) {
         try {
             const skillMap = new Map<string, EtaSkill>();
-            skill.actions.forEach((action: any) => {
+            this.getSkillActions(skill).forEach((action: any) => {
                 skillMap.set(action.id, new constructor(this.game, skill, action, this.settings));
                 // this.displayManager.getDisplay(skill, action.id);
             });
@@ -117,6 +150,19 @@ export class ETA extends TinyMod {
         } catch (e) {
             this.log(e)
         }
+    }
+
+    getSkillActions(skill: SkillWithMastery<MasteryAction, MasterySkillData>): any[] {
+        // @ts-ignore
+        if (game.cartography && skill.id === game.cartography.id) {
+            // cartography has custom actions
+            return [
+                {id: 'ETA:PaperMaking'},
+                {id: 'ETA:MapCreation'},
+                {id: 'ETA:Survey'},
+            ];
+        }
+        return skill.actions;
     }
 
     recompute(skill: SkillWithMastery<MasteryAction, MasterySkillData>, throttle: boolean) {
@@ -141,12 +187,7 @@ export class ETA extends TinyMod {
             //this.log('Game loop is not running or rendering, probably fastforwarding. Skip all ETA recomputes.');
             return;
         }
-        if (skill.actions === undefined) {
-            return;
-        }
-        // @ts-ignore
-        if (game.cartography && skillID === game.cartography.id) {
-            // cartography is not implemented
+        if (this.getSkillActions(skill) === undefined) {
             return;
         }
         if (this.game.openPage.action !== skill) {
@@ -154,7 +195,8 @@ export class ETA extends TinyMod {
             return;
         }
         setTimeout(() => {
-            skill.actions.forEach((action: any) => {
+            this.getSkillActions(skill).forEach((action: any) => {
+                // this.log(`Checking ${skillID} ${action.id}`)
                 if (!this.skipAction(skill, action)) {
                     // this.log(`Recomputing ${skillID} ${action.id}`)
                     this.computeAndInjectHTML(skill, action);
@@ -264,6 +306,7 @@ export class ETA extends TinyMod {
         if (!calculator.levelReqReached) {
             return true;
         }
+        const cartID = this.game.cartography ? this.game.cartography.id : 'invalidID';
         const archID = this.game.archaeology ? this.game.archaeology.id : 'invalidID';
         const harvestingID = this.game.harvesting ? this.game.harvesting.id : 'invalidID';
         switch (skillID) {
@@ -273,6 +316,22 @@ export class ETA extends TinyMod {
             case harvestingID:
                 // compute all actions for woodcutting, mining, astrology, and harvesting
                 return false;
+            case cartID:
+                switch (action.id) {
+                    case 'ETA:Survey':
+                        // only compute survey if there are queued hexes
+                        return this.game.cartography.surveyQueue.size === 0;
+                    case 'ETA:MapCreation':
+                        // only compute map creation if there is a selected map
+                        const selectedDigSite = this.game.cartography.selectedMapUpgradeDigsite;
+                        return selectedDigSite === undefined
+                            || selectedDigSite.selectedUpgradeMap === undefined;
+                    case 'ETA:PaperMaking':
+                        // only compute paper making if there is a selected recipe
+                        return this.game.cartography.selectedPaperRecipe === undefined;
+                }
+                // unknown action, skip
+                return true;
             case this.game.agility.id:
                 // only compute selected obstacles for agility
                 const built = this.game.agility.activeCourse.builtObstacles.get(action.category);

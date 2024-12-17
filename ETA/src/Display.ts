@@ -17,7 +17,7 @@ export class Display {
     protected result!: EtaSkill;
 
     constructor(...[manager, settings, bank, items, id]:
-                    [DisplayManager, Settings, Bank, ItemRegistry, string]) {
+                [DisplayManager, Settings, Bank, ItemRegistry, string]) {
         this.manager = manager;
         this.settings = settings;
         this.bank = bank;

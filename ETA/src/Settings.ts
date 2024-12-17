@@ -160,7 +160,10 @@ export class Settings {
         this.generalSettings.add(this.generalSettingsArray.numerical);
         this.generalSettings.add(this.generalSettingsArray.targets);
         // skillSettings
-        this.skillList = game.skills.filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => skill.actions)
+        const cartID = game.cartography ? game.cartography.id : 'invalidID';
+        this.skillList = game.skills
+            // @ts-ignore
+            .filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => skill.actions || skill.id === cartID)
             // @ts-ignore
             .filter((skill: SkillWithMastery<MasteryAction, MasterySkillData>) => !['melvorD:Magic', 'melvorD:Farming'].includes(skill.id));
         this.skillList.push(game.altMagic);

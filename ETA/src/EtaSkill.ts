@@ -11,7 +11,7 @@ export type etaSkillConstructor<BaseSkill = EtaSkill> = new(...args: any[]) => B
 export class EtaSkill {
     public isComputing: boolean;
     public readonly skill: any;
-    public readonly action: any;
+    public action: any;
     // trackers
     public skillXp: number;
     public actionsTaken: ActionCounterWrapper;
@@ -250,6 +250,11 @@ export class EtaSkill {
     iterate(game: Game): void {
         this.init(game);
         this.targets = this.getTargets();
+        this.iterateInner();
+        this.setCurrentRates(this.gainsPerAction());
+    }
+
+    iterateInner(): void {
         // limit to 1000 iterations, in case something goes wrong
         const maxIt = 1000;
         let it = 0;
@@ -262,7 +267,6 @@ export class EtaSkill {
                 break;
             }
         }
-        this.setCurrentRates(this.gainsPerAction());
     }
 
     xpToNextLevel(level: number, xp: number): number {
@@ -291,7 +295,7 @@ export class EtaSkill {
             return;
         }
         if (attempts < 1) {
-            console.warn('ETA: attempts to checkpoint is lower than 1!');
+            console.warn('ETA: attempts to checkpoint is lower than 1:', attempts, this);
             attempts = 1;
         }
         this.addAttempts(gainsPerAction, attempts);

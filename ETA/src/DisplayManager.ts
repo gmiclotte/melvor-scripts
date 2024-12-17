@@ -136,12 +136,36 @@ export class DisplayManager {
         return display;
     }
 
+    private createCartographyDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display {
+        const displayID = this.getDisplayID(skill, actionID);
+        const display = new ResourceDisplayWithoutMastery(this, this.settings, this.game.bank, this.game.items, displayID);
+        let node;
+        switch (actionID) {
+            case 'ETA:MapCreation':
+                node = document.getElementById('map-create-pane')!.children[0].children[0].children[5].children[0].children[0].children[0];
+                break;
+            case 'ETA:PaperMaking':
+                node = document.getElementById('create-paper-pane')!.children[0].children[0].children[5].children[0].children[0].children[0];
+                break;
+            default:
+                const parent = document.getElementById('cartography-container')!.children[0].children[0].children[0];
+                node = parent.children[3];
+                parent.insertBefore(display.container, node);
+                return display;
+        }
+        node.appendChild(display.container);
+        return display;
+    }
+
     private createDisplay(skill: SkillWithMastery<MasteryAction, MasterySkillData>, actionID: string): Display | undefined {
         // create new display
         // @ts-ignore
         const skillID = skill.id;
         if (skillID === this.game.altMagic.id) {
             return this.createMagicDisplay(skill, actionID);
+        }
+        if (skillID === this.game.cartography.id) {
+            return this.createCartographyDisplay(skill, actionID);
         }
         return this.createSkillDisplayAtMasteryBar(skill, actionID);
     }

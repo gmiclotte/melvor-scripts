@@ -40,10 +40,29 @@ export function setup(ctx: any): void {
         {clas: AltMagic, method: 'selectItemOnClick', throttle: false},
         // @ts-ignore
         {clas: AltMagic, method: 'selectBarOnClick', throttle: false},
-    ].forEach(patch => {
-        ctx.patch(patch.clas, patch.method).after(function () {
+        {
             // @ts-ignore
-            recomputeSkill(this, patch.throttle);
+            clas: Cartography,
+            methods: [
+                'surveyOnClick',
+                'selectPaperRecipeOnClick',
+                'makePaperOnClick',
+                'createMapOnClick',
+                'selectDigSiteOnClick',
+                'selectDigSiteMapOnClick',
+                'startMapUpgradeOnClick',
+            ],
+            throttle: false,
+        },
+        // @ts-ignore
+        {clas: Cartography, method: 'action', throttle: true},
+    ].forEach(patch => {
+        const methods = patch.methods || [patch.method];
+        methods.forEach(method => {
+            ctx.patch(patch.clas, method).after(function () {
+                // @ts-ignore
+                recomputeSkill(this, patch.throttle);
+            });
         });
     });
 
