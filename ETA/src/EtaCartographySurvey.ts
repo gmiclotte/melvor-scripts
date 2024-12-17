@@ -126,4 +126,12 @@ export class EtaCartographySurvey extends ResourceSkillWithoutMastery {
     skip() {
         return !this.actionIsInActiveRealm;
     }
+
+    getPercentageIntervalModifier() {
+        let modifier = super.getPercentageIntervalModifier();
+        return modifier + this.modifiers.getValue(
+            "melvorD:cartographySurveyInterval" /* ModifierIDs.cartographySurveyInterval */,
+            this.getActionModifierQuery()
+        );
+    }
 }

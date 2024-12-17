@@ -116,4 +116,12 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
     completed() {
         return super.completed() || this.noResourceCheckpointLeft;
     }
+
+    getPercentageIntervalModifier() {
+        let modifier = super.getPercentageIntervalModifier();
+        return modifier + this.modifiers.getValue(
+            "melvorD:cartographyMapUpgradeInterval" /* ModifierIDs.cartographyMapUpgradeInterval */,
+            this.getActionModifierQuery()
+        );
+    }
 }
