@@ -164,7 +164,7 @@ export class DisplayManager {
         if (skillID === this.game.altMagic.id) {
             return this.createMagicDisplay(skill, actionID);
         }
-        if (skillID === this.game.cartography.id) {
+        if (this.game.cartography && skillID === this.game.cartography.id) {
             return this.createCartographyDisplay(skill, actionID);
         }
         return this.createSkillDisplayAtMasteryBar(skill, actionID);
