@@ -54,6 +54,7 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
         );
         this.index = this.digSite.selectedUpgradeIndex;
         this.upgradesSimulated = this.digSite.maps.map((x: any) => x._upgradeActions);
+        this.determineNextMap();
         super.init(game);
     }
 
@@ -69,18 +70,22 @@ export class EtaCartographyMap extends ResourceSkillWithoutMastery {
         ));
     }
 
-    addAttempts(gainsPerAction: Rates, attempts: number) {
-        super.addAttempts(gainsPerAction, attempts);
-        this.upgradesLeft -= attempts;
-        this.upgradesSimulated[this.index] += attempts;
+    determineNextMap() {
         // determine next map, if required
-        if (this.upgradesSimulated[this.index] === this.maxUpgradeActions) {
+        if (this.map === undefined || this.upgradesSimulated[this.index] === this.maxUpgradeActions) {
             this.index = 0;
             while (this.upgradesSimulated[this.index] === this.maxUpgradeActions) {
                 this.index++;
             }
             this.map = this.digSite.maps[this.index];
         }
+    }
+
+    addAttempts(gainsPerAction: Rates, attempts: number) {
+        super.addAttempts(gainsPerAction, attempts);
+        this.upgradesLeft -= attempts;
+        this.upgradesSimulated[this.index] += attempts;
+        this.determineNextMap();
     }
 
     actionXP(realmID: string): number {

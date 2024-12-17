@@ -51,6 +51,7 @@ export function setup(ctx: any): void {
                 'selectDigSiteOnClick',
                 'selectDigSiteMapOnClick',
                 'startMapUpgradeOnClick',
+                'deleteDigSiteMapOnClick',
             ],
             throttle: false,
         },
